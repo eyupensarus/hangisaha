@@ -1,0 +1,1948 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Oyna - Konya Halı Saha Kiralama ve Yönetim Platformu</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Oswald -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Oswald:wght@600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome İkonlar -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        sport: ['Oswald', 'sans-serif'],
+                    },
+                    colors: {
+                        pitch: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                            950: '#052e16',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #16a34a; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #22c55e; }
+
+        .hero-pitch-bg {
+            background: radial-gradient(circle at 80% 20%, rgba(34, 197, 94, 0.12) 0%, transparent 45%),
+                        linear-gradient(180deg, rgba(2, 6, 23, 0.85) 0%, rgba(2, 6, 23, 0.96) 100%);
+        }
+
+        .slot-btn {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .slot-btn:not(:disabled):hover {
+            transform: translateY(-2px);
+        }
+
+        @keyframes pulse-danger {
+            0%, 100% { border-color: rgba(239, 68, 68, 0.55); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.15); }
+            50% { border-color: rgba(239, 68, 68, 1); box-shadow: 0 0 24px 0 rgba(239, 68, 68, 0.35); }
+        }
+        .legal-alert-box {
+            animation: pulse-danger 2s infinite;
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased min-h-screen w-full overflow-x-hidden flex flex-col selection:bg-pitch-500 selection:text-slate-950 relative">
+
+    <!-- ARKA PLAN: SABİT HAFİF ŞEFFAF KONYA AMBLEMİ -->
+    <div class="fixed inset-0 pointer-events-none z-0 flex items-center justify-center overflow-hidden">
+        <svg viewBox="0 0 800 800" class="w-[88vw] max-w-[780px] h-auto opacity-[0.055] text-pitch-400 select-none" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <g stroke="currentColor" stroke-width="6" fill="none">
+                <rect x="175" y="175" width="450" height="450" rx="16" />
+                <rect x="175" y="175" width="450" height="450" rx="16" transform="rotate(45 400 400)" />
+                <circle cx="400" cy="400" r="345" stroke-dasharray="14 10" stroke-width="4" />
+                <circle cx="400" cy="400" r="240" stroke-width="3" />
+            </g>
+            <g transform="translate(400, 405)">
+                <path d="M0 -115 C26 -95 42 -50 42 15 C42 75 22 120 0 155 C-22 120 -42 75 -42 15 C-42 -50 -26 -95 0 -115 Z" />
+                <polygon points="0,-45 14,-14 45,0 14,14 0,45 -14,14 -45,0 -14,-14" fill="#020617" />
+                <circle cx="0" cy="0" r="10" />
+                <path d="M-22 -92 C-45 -130 -88 -145 -122 -130 C-102 -118 -96 -104 -116 -96 C-92 -90 -68 -74 -34 -68 Z" />
+                <path d="M22 -92 C45 -130 88 -145 122 -130 C102 -118 96 -104 116 -96 C92 -90 68 -74 34 -68 Z" />
+                <polygon points="0,-165 14,-130 0,-138 -14,-130" />
+                <path d="M-40 -55 C-115 -115 -225 -95 -275 -25 C-225 -22 -190 -8 -250 18 C-198 22 -165 36 -215 62 C-160 62 -115 58 -42 35 Z" />
+                <path d="M40 -55 C115 -115 225 -95 275 -25 C225 -22 190 -8 250 18 C-198 22 -165 36 -215 62 C-160 62 -115 58 42 35 Z" />
+                <path d="M-28 85 L-78 135 L-56 142 L-65 162 L-42 148 L-30 166 L-16 112 Z" />
+                <path d="M28 85 L78 135 L56 142 L65 162 L42 148 L30 166 L16 112 Z" />
+                <path d="M-24 140 L-62 215 L-22 195 L0 230 L22 195 L62 215 L24 140 Z" />
+            </g>
+            <text x="400" y="725" text-anchor="middle" font-family="Oswald, sans-serif" font-size="44" font-weight="700" letter-spacing="18">KONYA</text>
+        </svg>
+    </div>
+
+    <!-- Sağ Üst Bildirim (Toast) Alanı -->
+    <div id="toast-container" class="fixed top-24 right-4 z-50 flex flex-col gap-2.5 max-w-sm w-full pointer-events-none"></div>
+
+    <!-- ÜST NAVİGASYON ÇUBUĞU -->
+    <header class="w-full bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-40 shadow-2xl">
+        <div class="w-full px-4 sm:px-8 lg:px-12 h-20 sm:h-24 flex items-center justify-between gap-4">
+            
+            <!-- SOL TARAF -->
+            <div class="flex items-center gap-3 sm:gap-5">
+                <div id="auth-logged-out">
+                    <button onclick="openAuthModal()" class="bg-pitch-500 hover:bg-pitch-400 text-slate-950 font-extrabold px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl text-xs sm:text-sm transition shadow-lg shadow-pitch-500/25 flex items-center gap-2.5">
+                        <i class="fa-solid fa-right-to-bracket text-base"></i>
+                        <span>Giriş Yap / Kayıt Ol</span>
+                    </button>
+                </div>
+
+                <div id="auth-logged-in" class="hidden flex items-center gap-3">
+                    <button onclick="openProfileDrawer()" class="flex items-center gap-3 bg-slate-800/90 hover:bg-slate-800 border border-slate-700 hover:border-pitch-500/60 px-3.5 py-2 rounded-2xl transition shadow-md group">
+                        <img id="header-user-avatar" src="https://placehold.co/44x44/16a34a/ffffff?text=U" alt="Profil" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl border-2 border-pitch-500 object-cover">
+                        <div class="text-left">
+                            <div class="flex items-center gap-1.5">
+                                <span id="header-user-name" class="text-xs sm:text-sm font-bold text-white group-hover:text-pitch-400 transition leading-tight">Kullanıcı</span>
+                                <span id="header-owner-pill" class="hidden text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40">Tesis</span>
+                            </div>
+                            <div id="header-user-username" class="text-[11px] font-medium text-slate-400">@kullanici</div>
+                        </div>
+                        <i class="fa-solid fa-bars text-slate-400 group-hover:text-white ml-1 text-sm"></i>
+                    </button>
+                </div>
+
+                <div class="hidden md:flex items-center gap-2 border-l border-slate-800 pl-4">
+                    <button onclick="switchTab('explore')" id="nav-explore" class="px-4 py-2.5 rounded-xl text-sm font-bold bg-pitch-600 text-white shadow-md transition flex items-center gap-2">
+                        <i class="fa-solid fa-futbol"></i> <span id="nav-explore-label">Ana Sayfa</span>
+                    </button>
+                    <button onclick="switchTab('owner-panel')" id="nav-owner-panel" class="hidden px-4 py-2.5 rounded-xl text-sm font-bold text-amber-300 bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 transition flex items-center gap-2">
+                        <i class="fa-solid fa-store"></i> Saha Yönetimi
+                    </button>
+                </div>
+            </div>
+
+            <!-- SAĞ ÜST LOGO -->
+            <a href="javascript:void(0)" onclick="switchTab('explore')" title="Ana Sayfaya Dön" class="flex items-center gap-3 sm:gap-4 group select-none text-right">
+                <div class="flex flex-col items-end">
+                    <span class="font-sport text-3xl sm:text-5xl font-bold tracking-wider uppercase text-white group-hover:text-pitch-400 transition leading-none drop-shadow-[0_4px_16px_rgba(34,197,94,0.35)]">
+                        TOP <span class="text-pitch-400 group-hover:text-white transition">OYNA</span>
+                    </span>
+                    <span class="text-[10px] sm:text-xs font-extrabold tracking-[0.24em] text-amber-400/90 uppercase mt-1">
+                        KONYA HALI SAHA PLATFORMU
+                    </span>
+                </div>
+
+                <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-slate-900 via-pitch-950 to-slate-900 border-2 border-pitch-500/60 group-hover:border-amber-400 flex items-center justify-center shadow-xl shadow-pitch-500/25 group-hover:scale-105 transition shrink-0 relative overflow-hidden">
+                    <svg viewBox="0 0 120 120" class="w-10 h-10 sm:w-14 sm:h-14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="topOynaFlame" x1="15" y1="95" x2="95" y2="20" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#16a34a"/>
+                                <stop offset="55%" stop-color="#4ade80"/>
+                                <stop offset="100%" stop-color="#facc15"/>
+                            </linearGradient>
+                            <linearGradient id="ballGrad" x1="45" y1="30" x2="95" y2="85" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#ffffff"/>
+                                <stop offset="100%" stop-color="#cbd5e1"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M16 96 C38 96 65 92 98 76" stroke="#22c55e" stroke-width="3" stroke-linecap="round" stroke-dasharray="6 5" opacity="0.7"/>
+                        <path d="M24 106 C48 106 74 101 104 88" stroke="#facc15" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+                        <path d="M14 78 C24 58 42 46 60 44 C44 54 34 66 28 80 Z" fill="url(#topOynaFlame)"/>
+                        <path d="M10 60 C24 38 46 26 70 26 C50 35 38 47 26 62 Z" fill="url(#topOynaFlame)" opacity="0.85"/>
+                        <path d="M22 92 C32 76 48 66 66 64 C52 72 42 82 36 93 Z" fill="#facc15" opacity="0.9"/>
+                        <circle cx="74" cy="52" r="27" fill="url(#ballGrad)" stroke="#0f172a" stroke-width="3"/>
+                        <polygon points="74,39 84,46 80,58 68,58 64,46" fill="#0f172a"/>
+                        <polygon points="74,25 81,31 74,39 67,31" fill="#15803d"/>
+                        <polygon points="99,45 93,54 84,46 91,37" fill="#15803d"/>
+                        <polygon points="90,74 80,71 80,58 91,62" fill="#15803d"/>
+                        <polygon points="58,74 68,71 68,58 57,62" fill="#15803d"/>
+                        <polygon points="49,45 55,54 64,46 57,37" fill="#15803d"/>
+                    </svg>
+                </div>
+            </a>
+
+        </div>
+    </header>
+
+    <!-- ANA İÇERİK -->
+    <main class="flex-grow w-full relative z-10">
+
+        <!-- SEKME 1: ANA SAYFA -->
+        <section id="view-explore" class="w-full block">
+            <div class="hero-pitch-bg w-full pt-8 pb-10 px-4 sm:px-8 lg:px-12 border-b border-slate-800/80">
+                <div class="w-full max-w-[1680px] mx-auto">
+                    <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-7">
+                        <div>
+                            <div id="hero-badge" class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-pitch-500/15 border border-pitch-500/30 text-pitch-400 text-xs font-bold mb-3">
+                                <span class="w-2 h-2 rounded-full bg-pitch-400 animate-ping"></span>
+                                <span id="hero-badge-text">Konya Anlaşmalı Halı Sahalar • %0 Komisyon</span>
+                            </div>
+                            <h1 id="hero-title" class="font-sport text-3xl sm:text-5xl uppercase tracking-wide text-white leading-tight">
+                                Konya'da Maç Heyecanı <span class="text-pitch-400">Top Oyna</span> İle Başlar
+                            </h1>
+                            <p id="hero-subtitle" class="text-slate-300 text-sm sm:text-base mt-2 max-w-2xl">
+                                Konya ilçelerindeki anlaşmalı sahaların canlı boş ve dolu saatlerini inceleyin, yerinizi saniyeler içinde ayırtın ve ödemenizi doğrudan tesiste yapın.
+                            </p>
+                        </div>
+
+                        <div id="hero-owner-actions" class="hidden flex flex-wrap items-center gap-3">
+                            <button onclick="openAddPitchModal()" class="px-5 py-3 rounded-2xl bg-pitch-500 hover:bg-pitch-400 text-slate-950 font-extrabold text-sm shadow-lg shadow-pitch-500/25 flex items-center gap-2 transition">
+                                <i class="fa-solid fa-plus-circle text-base"></i> Yeni Saha Ekle
+                            </button>
+                            <button onclick="switchTab('owner-panel')" class="px-5 py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-sm shadow-lg shadow-amber-500/20 flex items-center gap-2 transition">
+                                <i class="fa-solid fa-sliders"></i> Saha Yönetimi
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filtre Çubuğu -->
+                    <div class="bg-slate-900/90 backdrop-blur-md rounded-3xl p-4 sm:p-6 shadow-2xl border border-slate-800">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">
+                                    <i class="fa-solid fa-magnifying-glass text-pitch-400 mr-1"></i> Halı Saha İsmi
+                                </label>
+                                <input type="text" id="filter-search" oninput="applyFilters()" placeholder="Saha adı yazın..." 
+                                    class="w-full px-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-pitch-500 focus:border-pitch-500 outline-none transition">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">
+                                    <i class="fa-solid fa-location-dot text-pitch-400 mr-1"></i> Konya İlçesi
+                                </label>
+                                <select id="filter-district" onchange="applyFilters()" 
+                                    class="w-full px-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-pitch-500 focus:border-pitch-500 outline-none transition">
+                                    <option value="">Tüm Konya İlçeleri</option>
+                                    <option value="Selçuklu">Konya / Selçuklu</option>
+                                    <option value="Meram">Konya / Meram</option>
+                                    <option value="Karatay">Konya / Karatay</option>
+                                    <option value="Ereğli">Konya / Ereğli</option>
+                                    <option value="Akşehir">Konya / Akşehir</option>
+                                    <option value="Beyşehir">Konya / Beyşehir</option>
+                                    <option value="Çumra">Konya / Çumra</option>
+                                    <option value="Seydişehir">Konya / Seydişehir</option>
+                                    <option value="Ilgın">Konya / Ilgın</option>
+                                    <option value="Cihanbeyli">Konya / Cihanbeyli</option>
+                                    <option value="Kulu">Konya / Kulu</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">
+                                    <i class="fa-regular fa-calendar text-pitch-400 mr-1"></i> Maç Tarihi
+                                </label>
+                                <input type="date" id="filter-date" onchange="applyFilters()" 
+                                    class="w-full px-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white font-medium focus:ring-2 focus:ring-pitch-500 focus:border-pitch-500 outline-none transition">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-pitch-400 uppercase mb-1.5">
+                                    <i class="fa-regular fa-clock mr-1"></i> İstenilen Boş Saat
+                                </label>
+                                <select id="filter-hour" onchange="applyFilters()" 
+                                    class="w-full px-4 py-3 bg-pitch-950/70 border border-pitch-600/60 text-pitch-300 font-bold rounded-xl text-sm focus:ring-2 focus:ring-pitch-500 outline-none transition">
+                                    <option value="">Tüm Saatler</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3.5 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+                            <div class="flex flex-wrap items-center gap-5 text-slate-300">
+                                <span class="flex items-center gap-2 font-semibold">
+                                    <span class="w-3.5 h-3.5 rounded bg-emerald-500 inline-block shadow shadow-emerald-500/40"></span> Boş Saat
+                                </span>
+                                <span class="flex items-center gap-2 font-semibold">
+                                    <span class="w-3.5 h-3.5 rounded bg-rose-600 inline-block shadow shadow-rose-600/40"></span> Dolu Saat
+                                </span>
+                                <span id="active-filter-summary" class="font-bold text-pitch-400"></span>
+                            </div>
+                            <button onclick="resetFilters()" class="text-slate-400 hover:text-white font-bold flex items-center gap-1.5 transition">
+                                <i class="fa-solid fa-rotate-left"></i> Filtreleri Temizle
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sahalar Grid Alanı -->
+            <div class="w-full max-w-[1680px] mx-auto px-4 sm:px-8 lg:px-12 py-8">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-2">
+                    <div>
+                        <h2 id="list-section-title" class="text-xl sm:text-2xl font-bold text-white">Anlaşmalı Konya Halı Sahaları</h2>
+                        <p id="list-section-subtitle" class="text-sm text-slate-400">Tüm kullanıcılar için boş ve dolu saatler anlık gösterilir. Ücretler doğrudan tesiste ödenir.</p>
+                    </div>
+                    <div class="inline-flex items-center gap-2 text-xs font-bold px-3.5 py-1.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 self-start sm:self-auto">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                        <span id="db-mode-badge">Canlı Doluluk Sistemi</span>
+                    </div>
+                </div>
+
+                <div id="pitches-grid" class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-6"></div>
+
+                <div id="empty-state-box" class="hidden bg-slate-900/90 backdrop-blur-sm rounded-3xl p-10 sm:p-16 text-center border border-slate-800 max-w-2xl mx-auto my-6 shadow-2xl">
+                    <div class="w-20 h-20 bg-pitch-500/10 border border-pitch-500/30 text-pitch-400 rounded-3xl flex items-center justify-center mx-auto mb-5 text-3xl shadow-inner">
+                        <i id="empty-state-icon" class="fa-solid fa-futbol"></i>
+                    </div>
+                    <h3 id="empty-state-title" class="text-xl sm:text-2xl font-bold text-white mb-2">Henüz kayıtlı halı saha bulunmuyor</h3>
+                    <p id="empty-state-desc" class="text-sm text-slate-400 mb-6 leading-relaxed">
+                        Sistemde şu an listelenecek aktif bir halı saha kaydı bulunmamaktadır. Tesis sahibi olarak kayıt olup işletmenize ait sahaları hemen ekleyebilirsiniz.
+                    </p>
+                    <div id="empty-state-actions" class="flex flex-wrap items-center justify-center gap-3">
+                        <button onclick="openAuthModal('register')" class="px-6 py-3 bg-pitch-500 hover:bg-pitch-400 text-slate-950 font-extrabold rounded-2xl text-sm transition shadow-lg shadow-pitch-500/20 flex items-center gap-2">
+                            <i class="fa-solid fa-store"></i> Tesis Sahibi Olarak Kayıt Ol
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEKME 2: TESİS SAHİBİ YÖNETİM PANELİ -->
+        <section id="view-owner-panel" class="hidden w-full max-w-[1680px] mx-auto px-4 sm:px-8 lg:px-12 py-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 bg-gradient-to-r from-slate-900 to-pitch-950 p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-xl">
+                <div>
+                    <span class="text-xs font-extrabold uppercase tracking-wider text-amber-400">İşletme Yönetim Merkezi</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white mt-1">Tesis Sahibi Saha Yönetimi</h2>
+                    <p class="text-sm text-slate-300 mt-1">Yalnızca kendi işletmenize ait sahaları görüntüler ve yönetirsiniz. Yeni saha ekleyebilir, saatlik dolulukları güncelleyebilir ve gelen randevuları takip edebilirsiniz.</p>
+                </div>
+                <div class="flex flex-wrap gap-3">
+                    <button onclick="switchTab('explore')" class="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-sm transition flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-left"></i> Ana Sayfa
+                    </button>
+                    <button onclick="openAddPitchModal()" class="px-5 py-3 bg-pitch-500 hover:bg-pitch-400 text-slate-950 font-extrabold rounded-xl text-sm transition shadow-lg shadow-pitch-500/20 flex items-center gap-2">
+                        <i class="fa-solid fa-plus-circle text-lg"></i> Yeni Saha Ekle
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-slate-900/90 p-4 rounded-2xl border border-slate-800 mb-6 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-sm font-bold text-slate-300"><i class="fa-regular fa-calendar-days text-pitch-400 mr-1.5"></i>Yönetilen Tarih:</span>
+                    <input type="date" id="owner-date-picker" onchange="renderOwnerPanel()" class="px-3.5 py-2 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white font-semibold focus:ring-2 focus:ring-pitch-500 outline-none">
+                </div>
+                <div class="text-xs text-slate-400">
+                    * Saat kutularına tıklayarak dışarıdan (telefonla) gelen kayıtları <span class="text-rose-400 font-bold">Dolu</span> yapabilir veya tekrar <span class="text-emerald-400 font-bold">Boş</span> duruma getirebilirsiniz.
+                </div>
+            </div>
+
+            <div id="owner-pitches-container" class="space-y-6"></div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="w-full bg-slate-900/90 text-slate-400 py-8 px-4 sm:px-8 lg:px-12 mt-16 border-t border-slate-800 relative z-10">
+        <div class="w-full max-w-[1680px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+            <div class="flex items-center gap-2.5">
+                <i class="fa-solid fa-futbol text-pitch-500 text-lg"></i>
+                <span class="font-sport font-bold text-white text-lg tracking-wider">TOP OYNA</span>
+                <span>© 2026 Konya Halı Saha Rezervasyon ve İşletme Platformu.</span>
+            </div>
+            <div>Ücretler doğrudan tesiste ödenir • Komisyon alınmaz</div>
+        </div>
+    </footer>
+
+    <!-- SOL PROFİL ÇEKMECESİ -->
+    <div id="profile-drawer-backdrop" onclick="closeProfileDrawer()" class="fixed inset-0 z-50 hidden bg-slate-950/75 backdrop-blur-sm transition-opacity"></div>
+    <aside id="profile-drawer" class="fixed top-0 left-0 z-50 h-full w-full max-w-md bg-slate-900 border-r border-slate-800 shadow-2xl transform -translate-x-full transition-transform duration-300 flex flex-col overflow-hidden">
+        
+        <div class="p-6 bg-gradient-to-br from-slate-950 to-pitch-950/60 border-b border-slate-800 relative">
+            <button onclick="closeProfileDrawer()" class="absolute top-5 right-5 w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex items-center gap-4">
+                <img id="drawer-avatar" src="https://placehold.co/64x64/16a34a/ffffff?text=U" alt="Profil" class="w-16 h-16 rounded-2xl border-2 border-pitch-500 object-cover shadow-lg">
+                <div>
+                    <h3 id="drawer-fullname" class="text-xl font-extrabold text-white leading-tight">Ad Soyad</h3>
+                    <div class="flex items-center gap-2 mt-1 flex-wrap">
+                        <span id="drawer-username" class="text-sm font-semibold text-pitch-400">@kullaniciadi</span>
+                        <span id="drawer-role-badge" class="text-[11px] font-extrabold px-2.5 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700">Üye</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 mt-6">
+                <button onclick="switchProfileSection('randevularim')" id="prof-tab-randevularim" class="py-2.5 px-2 rounded-xl text-xs font-extrabold bg-pitch-500 text-slate-950 shadow-md transition flex flex-col items-center gap-1">
+                    <i class="fa-solid fa-calendar-check text-sm"></i>
+                    <span id="prof-tab-randevularim-text">Randevularım</span>
+                </button>
+                <button onclick="switchProfileSection('ayarlar')" id="prof-tab-ayarlar" class="py-2.5 px-2 rounded-xl text-xs font-bold bg-slate-800/80 text-slate-300 hover:bg-slate-800 transition flex flex-col items-center gap-1">
+                    <i class="fa-solid fa-gear text-sm"></i>
+                    <span>Ayarlar</span>
+                </button>
+                <button onclick="switchProfileSection('puanlarim')" id="prof-tab-puanlarim" class="py-2.5 px-2 rounded-xl text-xs font-bold bg-slate-800/80 text-slate-300 hover:bg-slate-800 transition flex flex-col items-center gap-1">
+                    <i class="fa-solid fa-trophy text-sm text-amber-400"></i>
+                    <span>Puanlarım</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="flex-grow overflow-y-auto p-6 space-y-5">
+            <div id="prof-sec-randevularim" class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <h4 id="prof-bookings-heading" class="font-bold text-white text-base">Oluşturduğum Randevular</h4>
+                    <span id="prof-booking-count" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-pitch-500/20 text-pitch-400">0 Maç</span>
+                </div>
+
+                <div class="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-3.5 text-xs text-amber-200/90 leading-relaxed">
+                    <i class="fa-solid fa-circle-info text-amber-400 mr-1"></i>
+                    Maç saatinize <strong>3 saatten fazla</strong> süre varsa ücretsiz iptal edebilirsiniz. <strong>3 saatten az</strong> kaldıysa iptal durumunda maç ücretinin <strong>tamamının (%100)</strong> tediye edilmesi gerekmektedir.
+                </div>
+
+                <div id="drawer-bookings-list" class="space-y-3"></div>
+            </div>
+
+            <div id="prof-sec-ayarlar" class="hidden space-y-5">
+                <h4 class="font-bold text-white text-base">Hesap Ayarları</h4>
+
+                <form onsubmit="handleUpdatePassword(event)" class="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-3">
+                    <div class="flex items-center gap-2 text-sm font-bold text-white">
+                        <i class="fa-solid fa-lock text-pitch-400"></i>
+                        <span>Şifre Değiştir</span>
+                    </div>
+                    <div class="space-y-2">
+                        <input type="password" id="settings-old-pass" required placeholder="Mevcut Şifreniz" class="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-pitch-500 outline-none">
+                        <input type="password" id="settings-new-pass" required minlength="6" placeholder="Yeni Şifre (En az 6 karakter)" class="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-pitch-500 outline-none">
+                    </div>
+                    <button type="submit" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 transition">
+                        Şifreyi Güncelle
+                    </button>
+                </form>
+
+                <form onsubmit="handleUpdatePhone(event)" class="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-3">
+                    <div class="flex items-center gap-2 text-sm font-bold text-white">
+                        <i class="fa-solid fa-phone text-pitch-400"></i>
+                        <span>Telefon Numarası Değiştir</span>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Mevcut / Yeni Telefon Numarası</label>
+                        <input type="tel" id="settings-phone-input" required placeholder="05XX XXX XX XX" class="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-pitch-500 outline-none">
+                    </div>
+                    <button type="submit" class="w-full py-2.5 rounded-xl bg-pitch-600 hover:bg-pitch-500 text-white font-bold text-xs transition">
+                        Telefon Numarasını Güncelle
+                    </button>
+                </form>
+
+                <div class="bg-rose-950/30 border border-rose-500/40 rounded-2xl p-4 space-y-3">
+                    <div class="flex items-center gap-2 text-sm font-bold text-rose-400">
+                        <i class="fa-solid fa-trash-can"></i>
+                        <span>Hesabı Sil</span>
+                    </div>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Hesabınızı sildiğinizde profil bilgileriniz ve birikmiş puanlarınız kalıcı olarak kaldırılır.
+                    </p>
+                    <button type="button" onclick="openDeleteAccountModal()" class="w-full py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs transition">
+                        Hesabımı Kalıcı Olarak Sil
+                    </button>
+                </div>
+            </div>
+
+            <div id="prof-sec-puanlarim" class="hidden space-y-4">
+                <h4 class="font-bold text-white text-base">Top Oyna Puanlarım</h4>
+
+                <div class="bg-gradient-to-br from-amber-500/20 via-slate-950 to-pitch-950 border border-amber-500/40 rounded-3xl p-5 text-center">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center mx-auto mb-2 text-2xl">
+                        <i class="fa-solid fa-medal"></i>
+                    </div>
+                    <div class="text-xs font-bold uppercase tracking-wider text-amber-300">Toplam Sadakat Puanı</div>
+                    <div id="user-points-total" class="font-sport text-4xl font-bold text-white mt-1">100 PUAN</div>
+                    <div class="mt-2 inline-block px-3 py-1 rounded-full bg-pitch-500/20 text-pitch-300 text-xs font-bold">
+                        Top Oyna Aktif Üyesi
+                    </div>
+                </div>
+
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-3">
+                    <div class="text-xs font-bold uppercase text-slate-400">Puan Kazanım Geçmişi</div>
+                    <div id="points-history-list" class="space-y-2.5 text-xs"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-4 border-t border-slate-800 bg-slate-950 flex gap-2">
+            <button id="drawer-owner-btn" onclick="closeProfileDrawer(); switchTab('owner-panel');" class="hidden flex-1 py-3 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 font-bold text-xs transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-store"></i> Saha Yönetimi
+            </button>
+            <button onclick="logoutUser()" class="flex-1 py-3 rounded-xl bg-slate-800 hover:bg-rose-600 text-slate-200 hover:text-white font-bold text-xs transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-right-from-bracket"></i> Çıkış Yap
+            </button>
+        </div>
+    </aside>
+
+    <!-- MODAL 1: GİRİŞ YAP & YENİ KAYIT OL -->
+    <div id="auth-modal" class="fixed inset-0 z-50 hidden bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-800 relative max-h-[92vh] overflow-y-auto">
+            <button onclick="closeAuthModal()" class="absolute top-5 right-5 w-9 h-9 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center mb-5">
+                <div class="w-14 h-14 rounded-2xl bg-pitch-500/15 border border-pitch-500/30 text-pitch-400 flex items-center justify-center mx-auto mb-3 text-2xl">
+                    <i class="fa-solid fa-futbol"></i>
+                </div>
+                <h3 class="font-sport text-3xl uppercase tracking-wide text-white">TOP OYNA</h3>
+                <p class="text-xs text-slate-400 mt-1">Konya Halı Saha Rezervasyon & İşletme Ağı</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 p-1 bg-slate-950 rounded-2xl border border-slate-800 mb-6">
+                <button type="button" id="auth-tab-login" onclick="switchAuthMode('login')" class="py-2.5 rounded-xl text-xs font-extrabold bg-pitch-500 text-slate-950 transition">
+                    Giriş Yap
+                </button>
+                <button type="button" id="auth-tab-register" onclick="switchAuthMode('register')" class="py-2.5 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition">
+                    Yeni Kayıt Ol
+                </button>
+            </div>
+
+            <div id="auth-form-login" class="space-y-4">
+                <button type="button" onclick="loginWithGoogle()" class="w-full py-3.5 px-4 bg-white hover:bg-slate-100 text-slate-900 font-extrabold rounded-2xl shadow-lg transition flex items-center justify-center gap-3 text-sm">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24">
+                        <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.7 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.8C6.2 7.2 8.9 5 12 5z"/>
+                        <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.6l3.7 2.9c2.2-2 3.7-5 3.7-8.7z"/>
+                        <path fill="#FBBC05" d="M5.3 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.6 7.4C.6 9.4 0 11.6 0 14s.6 4.6 1.6 6.6l3.7-2.8z"/>
+                        <path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.8-2.1-6.7-5l-3.7 2.8C3.5 21.4 7.4 24 12 24z"/>
+                    </svg>
+                    <span>Google ile Giriş Yap</span>
+                </button>
+
+                <div class="relative flex py-1 items-center">
+                    <div class="flex-grow border-t border-slate-800"></div>
+                    <span class="flex-shrink mx-3 text-[11px] font-semibold text-slate-500">veya E-posta / Kullanıcı Adı ile</span>
+                    <div class="flex-grow border-t border-slate-800"></div>
+                </div>
+
+                <form onsubmit="handleStandardLogin(event)" class="space-y-3">
+                    <div>
+                        <input type="text" id="login-identifier" required placeholder="E-posta veya Kullanıcı Adı" class="w-full px-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-pitch-500 outline-none">
+                    </div>
+                    <div>
+                        <input type="password" id="login-password" required placeholder="Şifre" class="w-full px-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-pitch-500 outline-none">
+                    </div>
+                    <button type="submit" class="w-full py-3.5 rounded-xl bg-pitch-600 hover:bg-pitch-500 text-white font-extrabold text-sm transition shadow-lg">
+                        Giriş Yap
+                    </button>
+                </form>
+            </div>
+
+            <form id="auth-form-register" onsubmit="handleRegisterSubmit(event)" class="hidden space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1">Ad Soyad *</label>
+                    <input type="text" id="reg-fullname" required placeholder="Örn: Mustafa Özkan" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-pitch-500 outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-1">Kullanıcı Adı *</label>
+                        <input type="text" id="reg-username" required placeholder="@kullaniciadi" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-pitch-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-1">Telefon *</label>
+                        <input type="tel" id="reg-phone" required placeholder="05XX XXX XX XX" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-pitch-500 outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1">E-posta Adresi *</label>
+                    <input type="email" id="reg-email" required placeholder="ornek@email.com" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-pitch-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1">Şifre *</label>
+                    <input type="password" id="reg-password" required minlength="6" placeholder="En az 6 karakterli şifre" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-pitch-500 outline-none">
+                </div>
+
+                <label class="flex items-start gap-3 p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/35 cursor-pointer hover:bg-amber-500/15 transition">
+                    <input type="checkbox" id="reg-is-owner" class="mt-1 w-4 h-4 accent-amber-500 rounded">
+                    <div>
+                        <div class="text-sm font-bold text-amber-300 flex items-center gap-1.5">
+                            <i class="fa-solid fa-store"></i> Tesis Sahibi Olarak Kayıt Ol
+                        </div>
+                        <div class="text-[11px] text-slate-300 mt-0.5 leading-snug">
+                            Halı saha işletmecisiyseniz bu kutuyu işaretleyin. Giriş yaptığınızda sadece kendi işletmenizi görür ve sahalarınızı yönetebilirsiniz.
+                        </div>
+                    </div>
+                </label>
+
+                <button type="submit" class="w-full py-3.5 rounded-2xl bg-pitch-500 hover:bg-pitch-400 text-slate-950 font-extrabold text-sm shadow-lg transition">
+                    Kaydı Tamamla ve Giriş Yap
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: YASAL BİLGİLENDİRME -->
+    <div id="legal-booking-modal" class="fixed inset-0 z-50 hidden bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-3xl max-w-xl w-full overflow-hidden shadow-2xl border border-slate-700">
+            <div class="bg-gradient-to-r from-rose-600 to-red-700 px-6 py-4 text-white flex items-center gap-3">
+                <div class="w-11 h-11 rounded-xl bg-white/20 flex items-center justify-center text-xl shrink-0">
+                    <i class="fa-solid fa-scale-balanced"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg leading-tight">Önemli Rezervasyon ve İptal Şartları</h3>
+                    <p class="text-xs text-rose-100">Lütfen aşağıdaki kuralları dikkatlice okuyunuz (10 sn okuma süresi)</p>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 mb-4 flex items-center justify-between">
+                    <div>
+                        <div class="text-[11px] text-slate-400 font-semibold uppercase">Seçilen Tesis</div>
+                        <div id="modal-pitch-name" class="font-bold text-white text-base">Saha Adı</div>
+                        <div id="modal-pitch-loc" class="text-xs text-slate-400">Konya / İlçe</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-[11px] text-slate-400 font-semibold uppercase">Tarih & Saat</div>
+                        <div id="modal-booking-datetime" class="font-bold text-pitch-400 text-sm">18.11.2026 • 20:00</div>
+                        <div id="modal-booking-price" class="text-sm font-extrabold text-white mt-0.5">1.400 ₺</div>
+                    </div>
+                </div>
+
+                <div class="bg-emerald-950/50 border border-emerald-500/40 rounded-2xl p-3.5 mb-4 flex items-center gap-3">
+                    <i class="fa-solid fa-hand-holding-dollar text-emerald-400 text-xl shrink-0"></i>
+                    <div class="text-xs sm:text-sm text-emerald-200 font-medium">
+                        <strong>Ödeme Bilgisi:</strong> Maç ücreti doğrudan <strong>tesiste ödenecektir</strong>. Top Oyna platformu üzerinden <strong>hiçbir komisyon alınmaz</strong>.
+                    </div>
+                </div>
+
+                <div class="bg-rose-950/45 border-2 border-rose-500 legal-alert-box rounded-2xl p-5 mb-6">
+                    <div class="flex items-center gap-2 text-rose-400 font-extrabold text-xs uppercase tracking-wider mb-2">
+                        <i class="fa-solid fa-circle-exclamation text-base"></i> Zorunlu İptal ve Tediye Kuralı
+                    </div>
+                    <p class="text-white font-semibold text-sm sm:text-base leading-relaxed">
+                        Maç saatinizden 3 saat öncesine kadar ücretsiz iptal edebilirsiniz. Maç saatinize 3 saatten az süre kala iptal edilirse veya maça gelinmezse maç ücretinin <strong>TAMAMININ (%100)</strong> nakit veya banka aracılığıyla tediye edilmesi gerekmektedir. Ödeme yapılmadığı takdirde adli işlem başlatılır.
+                    </p>
+                </div>
+
+                <div class="flex flex-col-reverse sm:flex-row gap-3">
+                    <button type="button" onclick="closeLegalModal()" class="w-full sm:w-1/3 py-3.5 px-4 rounded-xl border border-slate-700 text-slate-300 font-bold text-sm hover:bg-slate-800 transition">
+                        Vazgeç
+                    </button>
+                    <button type="button" id="btn-confirm-legal" disabled onclick="finalizeBooking()" 
+                        class="w-full sm:w-2/3 py-3.5 px-4 rounded-xl font-extrabold text-sm transition flex items-center justify-center gap-2 bg-slate-800 text-slate-500 cursor-not-allowed">
+                        <i class="fa-solid fa-hourglass-half animate-spin"></i>
+                        <span>Anladım ve Onaylıyorum (10 sn)</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: İPTAL ONAYI -->
+    <div id="cancel-confirm-modal" class="fixed inset-0 z-50 hidden bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-700">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 rounded-2xl bg-rose-500/20 border border-rose-500/40 text-rose-400 flex items-center justify-center text-xl shrink-0">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white">Randevu İptal Hatırlatması</h3>
+                    <p class="text-xs text-slate-400">3 Saat Kuralı Bilgilendirmesi</p>
+                </div>
+            </div>
+
+            <div id="cancel-modal-message" class="bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-slate-200 mb-6 leading-relaxed"></div>
+
+            <div class="flex gap-3">
+                <button onclick="closeCancelModal()" class="w-1/2 py-3 rounded-xl border border-slate-700 text-slate-300 font-bold text-sm hover:bg-slate-800">Vazgeç</button>
+                <button id="btn-execute-cancel" class="w-1/2 py-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-sm transition">İptali Onayla</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 4: HESAP SİLME -->
+    <div id="delete-account-modal" class="fixed inset-0 z-50 hidden bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-rose-500/40">
+            <div class="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-xl mb-4">
+                <i class="fa-solid fa-user-xmark"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">Hesabınızı Silmek İstediğinize Emin Misiniz?</h3>
+            <p class="text-sm text-slate-300 mb-6 leading-relaxed">
+                Bu işlem geri alınamaz. Top Oyna hesabınız, puanlarınız ve profil ayarlarınız kalıcı olarak silinecektir.
+            </p>
+            <div class="flex gap-3">
+                <button onclick="closeDeleteAccountModal()" class="w-1/2 py-3 rounded-xl border border-slate-700 text-slate-300 font-bold text-sm hover:bg-slate-800">Vazgeç</button>
+                <button onclick="executeDeleteAccount()" class="w-1/2 py-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-sm transition">Evet, Hesabı Sil</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 5: YENİ SAHA EKLEME -->
+    <div id="add-pitch-modal" class="fixed inset-0 z-50 hidden bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-slate-800 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-800 mb-5">
+                <h3 class="text-xl font-bold text-white"><i class="fa-solid fa-futbol text-pitch-400 mr-2"></i>İşletmenize Yeni Saha Ekleyin</h3>
+                <button onclick="closeAddPitchModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="add-pitch-form" onsubmit="handleCreatePitch(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Halı Saha Adı *</label>
+                    <input type="text" id="new-pitch-name" required placeholder="Örn: Selçuklu Prestij Arena" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-pitch-500 outline-none">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Konya İlçesi *</label>
+                        <select id="new-pitch-district" required class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-pitch-500 outline-none">
+                            <option value="Selçuklu">Selçuklu</option>
+                            <option value="Meram">Meram</option>
+                            <option value="Karatay">Karatay</option>
+                            <option value="Ereğli">Ereğli</option>
+                            <option value="Akşehir">Akşehir</option>
+                            <option value="Beyşehir">Beyşehir</option>
+                            <option value="Çumra">Çumra</option>
+                            <option value="Seydişehir">Seydişehir</option>
+                            <option value="Ilgın">Ilgın</option>
+                            <option value="Cihanbeyli">Cihanbeyli</option>
+                            <option value="Kulu">Kulu</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Saatlik Ücret (₺) *</label>
+                        <input type="number" id="new-pitch-price" required min="200" step="50" value="1400" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-pitch-500 outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Saha Tipi *</label>
+                    <select id="new-pitch-type" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-pitch-500 outline-none">
+                        <option value="Kapalı Saha">Kapalı Saha</option>
+                        <option value="Açık Saha">Açık Saha</option>
+                        <option value="Hibrit Çim">Hibrit Çim</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Tesis Özellikleri</label>
+                    <div class="flex flex-wrap gap-2">
+                        <label class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-300 cursor-pointer">
+                            <input type="checkbox" value="7v7" checked class="pitch-feat accent-pitch-500"> 7v7 / 8v8
+                        </label>
+                        <label class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-300 cursor-pointer">
+                            <input type="checkbox" value="Duş & Soyunma" checked class="pitch-feat accent-pitch-500"> Duş & Soyunma
+                        </label>
+                        <label class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-300 cursor-pointer">
+                            <input type="checkbox" value="Ücretsiz Otopark" checked class="pitch-feat accent-pitch-500"> Otopark
+                        </label>
+                        <label class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-300 cursor-pointer">
+                            <input type="checkbox" value="Kafeterya" class="pitch-feat accent-pitch-500"> Kafeterya
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Adres Bilgisi</label>
+                    <input type="text" id="new-pitch-address" placeholder="Mahalle, Cadde..." class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-pitch-500 outline-none">
+                </div>
+
+                <div class="pt-3 flex gap-3">
+                    <button type="button" onclick="closeAddPitchModal()" class="w-1/3 py-3 rounded-xl border border-slate-700 text-slate-300 font-bold text-sm hover:bg-slate-800">İptal</button>
+                    <button type="submit" class="w-2/3 py-3 rounded-xl bg-pitch-600 hover:bg-pitch-500 text-white font-bold text-sm shadow-lg transition">Sahayı Yayınla</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT & FIREBASE ENTEGRASYONU -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            onAuthStateChanged,
+            signOut,
+            GoogleAuthProvider, 
+            signInWithPopup 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            doc, 
+            setDoc, 
+            deleteDoc, 
+            onSnapshot 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase Yapılandırması (top-oyna-d33f3)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCX6MRO684KJ2_T5c26mGerAG47-gHIQ-8",
+            authDomain: "top-oyna-d33f3.firebaseapp.com",
+            projectId: "top-oyna-d33f3",
+            storageBucket: "top-oyna-d33f3.firebasestorage.app",
+            messagingSenderId: "103343310464",
+            appId: "1:103343310464:web:d457e8458f73e95f70f365",
+            measurementId: "G-P2Z29QFFWD"
+        };
+
+        const TIME_SLOTS = [
+            "15:00", "16:00", "17:00", "18:00", "19:00", 
+            "20:00", "21:00", "22:00", "23:00", "00:00"
+        ];
+
+        const STORAGE_KEYS = {
+            USERS: "topoyna_users_v2",
+            SESSION: "topoyna_session_uid_v2",
+            PITCHES: "topoyna_pitches_v2",
+            BOOKINGS: "topoyna_bookings_v2"
+        };
+
+        function getTodayStr() {
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const d = String(now.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        const TODAY_DATE = getTodayStr();
+
+        function loadFromStorage(key, fallback) {
+            try {
+                const raw = localStorage.getItem(key);
+                return raw ? JSON.parse(raw) : fallback;
+            } catch (e) {
+                return fallback;
+            }
+        }
+
+        function saveToStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(appState.registeredUsers));
+                localStorage.setItem(STORAGE_KEYS.PITCHES, JSON.stringify(appState.pitches));
+                localStorage.setItem(STORAGE_KEYS.BOOKINGS, JSON.stringify(appState.bookings));
+                if (appState.currentUser) {
+                    localStorage.setItem(STORAGE_KEYS.SESSION, appState.currentUser.uid);
+                } else {
+                    localStorage.removeItem(STORAGE_KEYS.SESSION);
+                }
+            } catch (e) {
+                console.warn("Yerel depolama yazma hatası:", e);
+            }
+        }
+
+        let appState = {
+            currentUser: null,
+            registeredUsers: loadFromStorage(STORAGE_KEYS.USERS, []),
+            pitches: loadFromStorage(STORAGE_KEYS.PITCHES, []),
+            bookings: loadFromStorage(STORAGE_KEYS.BOOKINGS, []),
+            pendingBooking: null,
+            legalTimerInterval: null,
+            useFirestore: false
+        };
+
+        let db = null;
+        let auth = null;
+        let firebaseUser = null;
+        const appId = 'top-oyna-konya-v1';
+
+        function initFirebaseBackend() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                onAuthStateChanged(auth, (gUser) => {
+                    if (gUser) {
+                        firebaseUser = gUser;
+                        appState.useFirestore = true;
+                        document.getElementById('db-mode-badge').textContent = "Canlı Bulut & Yerel Senkronizasyon";
+                        setupFirestoreListeners();
+
+                     //Eğer giriş sayfasından (index.html) Google ile giriş yapılıp yönlendirildiyse otomatik oturumu aç
+                        if (!appState.currentUser) {
+                            syncGoogleUserToProfile(gUser);
+                        }
+                    }
+                });
+            } catch (err) {
+                console.warn("Firebase başlatma uyarısı:", err);
+                appState.useFirestore = false;
+            }
+        }
+
+        function syncGoogleUserToProfile(gUser) {
+            let existing = appState.registeredUsers.find(u => 
+                (gUser.email && u.email.toLowerCase() === gUser.email.toLowerCase()) || u.uid === gUser.uid
+            );
+
+            if (!existing) {
+                const baseUsername = (gUser.email ? gUser.email.split('@')[0] : 'oyuncu').replace(/[^a-zA-Z0-9_]/g, '').toLowerCase() || 'oyuncu';
+                existing = {
+                    uid: gUser.uid,
+                    fullName: gUser.displayName || "Top Oyna Kullanıcısı",
+                    username: `${baseUsername}42`,
+                    email: gUser.email || "",
+                    phone: "05XX XXX XX XX",
+                    password: "",
+                    role: "player",
+                    points: 100,
+                    pointHistory: [{ title: "Google İle Katılım Bonusu", pts: "+100 Puan", date: formatDateTR(TODAY_DATE) }],
+                    photo: gUser.photoURL || `https://placehold.co/64x64/16a34a/ffffff?text=${(gUser.displayName || 'G')[0].toUpperCase()}`
+                };
+                appState.registeredUsers.push(existing);
+            }
+            setLoggedInUser(existing);
+        }
+
+        function setupFirestoreListeners() {
+            if (!db || !firebaseUser) return;
+
+            const pitchesCol = collection(db, 'artifacts', appId, 'public', 'data', 'pitches');
+            const bookingsCol = collection(db, 'artifacts', appId, 'public', 'data', 'bookings');
+
+            onSnapshot(pitchesCol, (snapshot) => {
+                const loadedPitches = [];
+                snapshot.forEach(docSnap => loadedPitches.push({ id: docSnap.id, ...docSnap.data() }));
+                if (loadedPitches.length > 0 || appState.pitches.length === 0) {
+                    appState.pitches = loadedPitches;
+                    saveToStorage();
+                    applyFilters();
+                    renderOwnerPanel();
+                }
+            }, () => {});
+
+            onSnapshot(bookingsCol, (snapshot) => {
+                const loadedBookings = [];
+                snapshot.forEach(docSnap => loadedBookings.push({ id: docSnap.id, ...docSnap.data() }));
+                if (loadedBookings.length > 0 || appState.bookings.length === 0) {
+                    appState.bookings = loadedBookings;
+                    saveToStorage();
+                    applyFilters();
+                    renderProfileBookings();
+                    renderOwnerPanel();
+                }
+            }, () => {});
+        }
+
+        window.openAuthModal = (defaultMode = 'login') => {
+            switchAuthMode(defaultMode);
+            document.getElementById('auth-modal').classList.remove('hidden');
+        };
+
+        window.closeAuthModal = () => {
+            document.getElementById('auth-modal').classList.add('hidden');
+        };
+
+        window.switchAuthMode = (mode) => {
+            const loginTab = document.getElementById('auth-tab-login');
+            const regTab = document.getElementById('auth-tab-register');
+            const loginForm = document.getElementById('auth-form-login');
+            const regForm = document.getElementById('auth-form-register');
+
+            if (mode === 'login') {
+                loginTab.className = "py-2.5 rounded-xl text-xs font-extrabold bg-pitch-500 text-slate-950 transition";
+                regTab.className = "py-2.5 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition";
+                loginForm.classList.remove('hidden');
+                regForm.classList.add('hidden');
+            } else {
+                regTab.className = "py-2.5 rounded-xl text-xs font-extrabold bg-pitch-500 text-slate-950 transition";
+                loginTab.className = "py-2.5 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition";
+                regForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+            }
+        };
+
+        window.loginWithGoogle = async () => {
+            if (auth) {
+                try {
+                    const provider = new GoogleAuthProvider();
+                    const result = await signInWithPopup(auth, provider);
+                    const gUser = result.user;
+                    firebaseUser = gUser;
+                    syncGoogleUserToProfile(gUser);
+                    closeAuthModal();
+                    showToast(`Hoş geldin, ${gUser.displayName || 'Kullanıcı'}!`, "success");
+                } catch (err) {
+                    showToast("Google girişi tamamlanamadı: " + err.message, "warning");
+                }
+            }
+        };
+
+        window.handleStandardLogin = (e) => {
+            e.preventDefault();
+            const idInput = document.getElementById('login-identifier').value.trim().toLowerCase().replace('@', '');
+            const passInput = document.getElementById('login-password').value;
+
+            const found = appState.registeredUsers.find(u => 
+                u.username.toLowerCase() === idInput || u.email.toLowerCase() === idInput
+            );
+
+            if (!found) {
+                showToast("Bu e-posta veya kullanıcı adına ait kayıt bulunamadı. Lütfen 'Yeni Kayıt Ol' sekmesinden hesap oluşturun.", "error");
+                return;
+            }
+
+            if (found.password && found.password !== passInput) {
+                showToast("Girdiğiniz şifre hatalı. Lütfen tekrar deneyin.", "error");
+                return;
+            }
+
+            setLoggedInUser(found);
+            document.getElementById('login-identifier').value = "";
+            document.getElementById('login-password').value = "";
+            closeAuthModal();
+            showToast(`Hoş geldin, ${found.fullName}!`, "success");
+        };
+
+        window.handleRegisterSubmit = (e) => {
+            e.preventDefault();
+            const fullName = document.getElementById('reg-fullname').value.trim();
+            const rawUsername = document.getElementById('reg-username').value.trim().replace('@', '').toLowerCase();
+            const phone = document.getElementById('reg-phone').value.trim();
+            const email = document.getElementById('reg-email').value.trim().toLowerCase();
+            const password = document.getElementById('reg-password').value;
+            const isOwner = document.getElementById('reg-is-owner').checked;
+
+            const duplicate = appState.registeredUsers.find(u => 
+                u.username.toLowerCase() === rawUsername || u.email.toLowerCase() === email
+            );
+
+            if (duplicate) {
+                showToast("Bu kullanıcı adı veya e-posta adresi zaten kayıtlı!", "error");
+                return;
+            }
+
+            const newUser = {
+                uid: `usr-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+                fullName,
+                username: rawUsername,
+                phone,
+                email,
+                password,
+                role: isOwner ? "owner" : "player",
+                points: 100,
+                pointHistory: [
+                    { title: isOwner ? "Tesis Sahibi Kayıt Bonusu" : "Yeni Üye Hoş Geldin Bonusu", pts: "+100 Puan", date: formatDateTR(TODAY_DATE) }
+                ],
+                photo: `https://placehold.co/64x64/${isOwner ? 'd97706' : '16a34a'}/ffffff?text=${fullName[0].toUpperCase()}`
+            };
+
+            appState.registeredUsers.push(newUser);
+            setLoggedInUser(newUser);
+            document.getElementById('auth-form-register').reset();
+            closeAuthModal();
+
+            showToast(`Kaydınız başarıyla oluşturuldu! Hoş geldin ${fullName}.`, "success");
+        };
+
+        function setLoggedInUser(userObj) {
+            appState.currentUser = userObj;
+            saveToStorage();
+
+            document.getElementById('auth-logged-out').classList.add('hidden');
+            document.getElementById('auth-logged-in').classList.remove('hidden');
+            document.getElementById('header-user-name').textContent = userObj.fullName;
+            document.getElementById('header-user-username').textContent = `@${userObj.username}`;
+            document.getElementById('header-user-avatar').src = userObj.photo;
+
+            document.getElementById('drawer-fullname').textContent = userObj.fullName;
+            document.getElementById('drawer-username').textContent = `@${userObj.username}`;
+            document.getElementById('drawer-avatar').src = userObj.photo;
+            document.getElementById('settings-phone-input').value = userObj.phone || "";
+
+            const roleBadge = document.getElementById('drawer-role-badge');
+            const headerOwnerPill = document.getElementById('header-owner-pill');
+            const navOwner = document.getElementById('nav-owner-panel');
+            const heroOwnerActions = document.getElementById('hero-owner-actions');
+            const drawerOwnerBtn = document.getElementById('drawer-owner-btn');
+            const navExploreLabel = document.getElementById('nav-explore-label');
+            const profRandTabText = document.getElementById('prof-tab-randevularim-text');
+
+            if (userObj.role === 'owner') {
+                roleBadge.textContent = "Tesis Sahibi";
+                roleBadge.className = "text-[11px] font-extrabold px-2.5 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/40";
+                headerOwnerPill.classList.remove('hidden');
+                navOwner.classList.remove('hidden');
+                heroOwnerActions.classList.remove('hidden');
+                drawerOwnerBtn.classList.remove('hidden');
+                navExploreLabel.textContent = "İşletmem";
+                profRandTabText.textContent = "İşletme Randevuları";
+
+                document.getElementById('hero-badge-text').textContent = "Tesis Sahibi İşletme Görünümü • Sadece Kendi Sahalarınız";
+                document.getElementById('hero-title').innerHTML = `Hoş Geldin <span class="text-pitch-400">${userObj.fullName}</span> • İşletme Paneli`;
+                document.getElementById('hero-subtitle').textContent = "Burada yalnızca kendi işletmenize ait halı sahaları görüntülersiniz. Yeni saha ekleyebilir, saatlik dolulukları ve gelen randevuları yönetebilirsiniz.";
+                document.getElementById('list-section-title').textContent = "İşletmenize Ait Halı Sahalar";
+                document.getElementById('list-section-subtitle').textContent = "Sadece sizin eklediğiniz tesis sahaları listelenmektedir. Saatlere tıklayarak doluluk durumunu güncelleyebilirsiniz.";
+            } else {
+                roleBadge.textContent = "Oyuncu Üye";
+                roleBadge.className = "text-[11px] font-extrabold px-2.5 py-0.5 rounded-md bg-pitch-500/20 text-pitch-300 border border-pitch-500/30";
+                headerOwnerPill.classList.add('hidden');
+                navOwner.classList.add('hidden');
+                heroOwnerActions.classList.add('hidden');
+                drawerOwnerBtn.classList.add('hidden');
+                navExploreLabel.textContent = "Ana Sayfa";
+                profRandTabText.textContent = "Randevularım";
+
+                resetHeroToPublic();
+            }
+
+            renderProfileBookings();
+            renderProfilePoints();
+            renderOwnerPanel();
+            applyFilters();
+        }
+
+        function resetHeroToPublic() {
+            document.getElementById('hero-badge-text').textContent = "Konya Anlaşmalı Halı Sahalar • %0 Komisyon";
+            document.getElementById('hero-title').innerHTML = `Konya'da Maç Heyecanı <span class="text-pitch-400">Top Oyna</span> İle Başlar`;
+            document.getElementById('hero-subtitle').textContent = "Konya ilçelerindeki anlaşmalı sahaların canlı boş ve dolu saatlerini inceleyin, yerinizi saniyeler içinde ayırtın ve ödemenizi doğrudan tesiste yapın.";
+            document.getElementById('list-section-title').textContent = "Anlaşmalı Konya Halı Sahaları";
+            document.getElementById('list-section-subtitle').textContent = "Tüm kullanıcılar için boş ve dolu saatler anlık gösterilir. Ücretler doğrudan tesiste ödenir.";
+        }
+
+        window.logoutUser = async () => {
+            appState.currentUser = null;
+            saveToStorage();
+            if (auth) {
+                try { await signOut(auth); } catch (e) {}
+            }
+            closeProfileDrawer();
+            document.getElementById('auth-logged-out').classList.remove('hidden');
+            document.getElementById('auth-logged-in').classList.add('hidden');
+            document.getElementById('nav-owner-panel').classList.add('hidden');
+            document.getElementById('hero-owner-actions').classList.add('hidden');
+            document.getElementById('nav-explore-label').textContent = "Ana Sayfa";
+            resetHeroToPublic();
+            switchTab('explore');
+            applyFilters();
+            showToast("Oturumunuz kapatıldı.", "info");
+        };
+
+        window.openProfileDrawer = () => {
+            if (!appState.currentUser) return;
+            renderProfileBookings();
+            renderProfilePoints();
+            switchProfileSection('randevularim');
+            document.getElementById('profile-drawer-backdrop').classList.remove('hidden');
+            document.getElementById('profile-drawer').classList.remove('-translate-x-full');
+        };
+
+        window.closeProfileDrawer = () => {
+            document.getElementById('profile-drawer-backdrop').classList.add('hidden');
+            document.getElementById('profile-drawer').classList.add('-translate-x-full');
+        };
+
+        window.switchProfileSection = (secName) => {
+            ['randevularim', 'ayarlar', 'puanlarim'].forEach(s => {
+                document.getElementById(`prof-sec-${s}`).classList.add('hidden');
+                const btn = document.getElementById(`prof-tab-${s}`);
+                btn.className = "py-2.5 px-2 rounded-xl text-xs font-bold bg-slate-800/80 text-slate-300 hover:bg-slate-800 transition flex flex-col items-center gap-1";
+            });
+
+            document.getElementById(`prof-sec-${secName}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`prof-tab-${secName}`);
+            activeBtn.className = "py-2.5 px-2 rounded-xl text-xs font-extrabold bg-pitch-500 text-slate-950 shadow-md transition flex flex-col items-center gap-1";
+        };
+
+        function getHoursUntilMatch(dateStr, hourStr) {
+            const [y, m, d] = dateStr.split('-').map(Number);
+            const [hh, mm] = hourStr.split(':').map(Number);
+            const matchDate = new Date(y, m - 1, d, hh, mm, 0);
+            if (hh === 0) matchDate.setDate(matchDate.getDate() + 1);
+            return (matchDate - new Date()) / (1000 * 60 * 60);
+        }
+
+        function renderProfileBookings() {
+            const listEl = document.getElementById('drawer-bookings-list');
+            const countEl = document.getElementById('prof-booking-count');
+            const headingEl = document.getElementById('prof-bookings-heading');
+            if (!appState.currentUser) return;
+
+            let relevantBookings = [];
+            if (appState.currentUser.role === 'owner') {
+                headingEl.textContent = "İşletme Randevuları / Randevularım";
+                const myPitchIds = appState.pitches
+                    .filter(p => p.ownerId === appState.currentUser.uid)
+                    .map(p => p.id);
+                relevantBookings = appState.bookings
+                    .filter(b => b.status === 'confirmed' && (myPitchIds.includes(b.pitchId) || b.userId === appState.currentUser.uid))
+                    .sort((a, b) => (a.date + a.hour).localeCompare(b.date + b.hour));
+            } else {
+                headingEl.textContent = "Oluşturduğum Randevular";
+                relevantBookings = appState.bookings
+                    .filter(b => b.userId === appState.currentUser.uid && b.status === 'confirmed')
+                    .sort((a, b) => (a.date + a.hour).localeCompare(b.date + b.hour));
+            }
+
+            countEl.textContent = `${relevantBookings.length} Maç`;
+
+            if (relevantBookings.length === 0) {
+                listEl.innerHTML = `
+                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 text-center">
+                        <p class="text-xs text-slate-400 mb-3">${appState.currentUser.role === 'owner' ? 'İşletmenize ait sahalarda henüz oluşturulmuş bir randevu bulunmuyor.' : 'Henüz oluşturulmuş aktif bir randevunuz yok.'}</p>
+                        <button onclick="closeProfileDrawer(); switchTab('explore');" class="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-white font-bold rounded-xl text-xs transition">
+                            ${appState.currentUser.role === 'owner' ? 'Sahalarıma Git' : 'Hemen Saha Seç'}
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            listEl.innerHTML = relevantBookings.map(bk => {
+                const hoursLeft = getHoursUntilMatch(bk.date, bk.hour);
+                const isUnder3Hours = hoursLeft < 3;
+
+                return `
+                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-3">
+                        <div class="flex items-start justify-between gap-2">
+                            <div>
+                                <div class="font-bold text-white text-sm">${bk.pitchName}</div>
+                                <div class="text-xs text-slate-400 mt-0.5">
+                                    <i class="fa-solid fa-location-dot text-pitch-400 mr-1"></i>${bk.city} / ${bk.district}
+                                </div>
+                                ${appState.currentUser.role === 'owner' ? `<div class="text-[11px] text-amber-300 mt-1"><i class="fa-solid fa-user mr-1"></i>Rezervasyon: ${bk.userName}</div>` : ''}
+                            </div>
+                            <span class="text-sm font-extrabold text-pitch-400">${bk.price.toLocaleString('tr-TR')} ₺</span>
+                        </div>
+
+                        <div class="flex items-center justify-between text-xs bg-slate-900 px-3 py-2 rounded-xl border border-slate-800">
+                            <span class="text-slate-300"><i class="fa-regular fa-calendar text-pitch-400 mr-1"></i>${formatDateTR(bk.date)}</span>
+                            <span class="font-bold text-white"><i class="fa-regular fa-clock text-pitch-400 mr-1"></i>${bk.hour} - ${getNextHourLabel(bk.hour)}</span>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-1">
+                            <span class="text-[11px] ${isUnder3Hours ? 'text-rose-400 font-bold' : 'text-emerald-400'}">
+                                ${isUnder3Hours ? '3 saatten az kaldı (%100 tediye)' : '3 saatten fazla var (Ücretsiz iptal)'}
+                            </span>
+                            <button onclick="askCancelBooking('${bk.id}', ${isUnder3Hours}, ${bk.price})" 
+                                class="px-3.5 py-1.5 rounded-xl bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/40 font-bold text-xs transition">
+                                İptal Et
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.askCancelBooking = (bookingId, isUnder3Hours, fullPrice) => {
+            const modal = document.getElementById('cancel-confirm-modal');
+            const msgEl = document.getElementById('cancel-modal-message');
+            const execBtn = document.getElementById('btn-execute-cancel');
+
+            if (isUnder3Hours) {
+                msgEl.innerHTML = `
+                    <p class="mb-2 text-rose-400 font-bold"><i class="fa-solid fa-circle-exclamation mr-1"></i> Dikkat: Maç Saatine 3 Saatten Az Kaldı!</p>
+                    <p>3 saat kuralı gereği; maç saatinize 3 saatten fazla süre varsa ücretsiz iptal edebilirsiniz, ancak <strong>3 saatten az süre kaldığı için</strong> iptal durumunda maç ücretinin <strong>TAMAMININ (%100 - ${fullPrice.toLocaleString('tr-TR')} ₺)</strong> nakit veya banka aracılığıyla tediye edilmesi gerekmektedir. Ödeme yapılmadığı takdirde adli işlem başlatılır.</p>
+                `;
+            } else {
+                msgEl.innerHTML = `
+                    <p class="mb-2 text-emerald-400 font-bold"><i class="fa-solid fa-circle-check mr-1"></i> 3 Saat Kuralı Hatırlatması</p>
+                    <p>Maç saatinize <strong>3 saatten fazla</strong> süre olduğu için randevunuzu şu an <strong>ücretsiz</strong> olarak iptal edebilirsiniz. (Maça 3 saatten az süre kalsaydı maç ücretinin tamamının tediye edilmesi gerekecekti.)</p>
+                `;
+            }
+
+            execBtn.onclick = () => executeCancelBooking(bookingId);
+            modal.classList.remove('hidden');
+        };
+
+        window.closeCancelModal = () => {
+            document.getElementById('cancel-confirm-modal').classList.add('hidden');
+        };
+
+        async function executeCancelBooking(bookingId) {
+            if (appState.useFirestore && db && firebaseUser) {
+                try {
+                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'bookings', bookingId));
+                } catch (e) {}
+            }
+            appState.bookings = appState.bookings.filter(b => b.id !== bookingId);
+            saveToStorage();
+            closeCancelModal();
+            applyFilters();
+            renderProfileBookings();
+            renderOwnerPanel();
+            showToast("Randevu iptal edildi ve saat tekrar BOŞ olarak güncellendi.", "info");
+        }
+
+        window.handleUpdatePhone = (e) => {
+            e.preventDefault();
+            if (!appState.currentUser) return;
+            const newPhone = document.getElementById('settings-phone-input').value.trim();
+            appState.currentUser.phone = newPhone;
+            const idx = appState.registeredUsers.findIndex(u => u.uid === appState.currentUser.uid);
+            if (idx !== -1) appState.registeredUsers[idx].phone = newPhone;
+            saveToStorage();
+            showToast("Telefon numaranız başarıyla güncellendi!", "success");
+        };
+
+        window.handleUpdatePassword = (e) => {
+            e.preventDefault();
+            if (!appState.currentUser) return;
+            const oldPass = document.getElementById('settings-old-pass').value;
+            const newPass = document.getElementById('settings-new-pass').value;
+
+            if (appState.currentUser.password && appState.currentUser.password !== oldPass) {
+                showToast("Mevcut şifreniz uyuşmuyor!", "error");
+                return;
+            }
+
+            appState.currentUser.password = newPass;
+            const idx = appState.registeredUsers.findIndex(u => u.uid === appState.currentUser.uid);
+            if (idx !== -1) appState.registeredUsers[idx].password = newPass;
+            saveToStorage();
+
+            document.getElementById('settings-old-pass').value = "";
+            document.getElementById('settings-new-pass').value = "";
+            showToast("Şifreniz başarıyla değiştirildi!", "success");
+        };
+
+        window.openDeleteAccountModal = () => {
+            document.getElementById('delete-account-modal').classList.remove('hidden');
+        };
+
+        window.closeDeleteAccountModal = () => {
+            document.getElementById('delete-account-modal').classList.add('hidden');
+        };
+
+        window.executeDeleteAccount = () => {
+            if (!appState.currentUser) return;
+            const uidToDelete = appState.currentUser.uid;
+            appState.registeredUsers = appState.registeredUsers.filter(u => u.uid !== uidToDelete);
+            appState.pitches = appState.pitches.filter(p => p.ownerId !== uidToDelete);
+            closeDeleteAccountModal();
+            logoutUser();
+            showToast("Hesabınız kalıcı olarak silindi.", "warning");
+        };
+
+        function renderProfilePoints() {
+            if (!appState.currentUser) return;
+            document.getElementById('user-points-total').textContent = `${appState.currentUser.points || 100} PUAN`;
+            const histEl = document.getElementById('points-history-list');
+            const history = appState.currentUser.pointHistory || [];
+
+            histEl.innerHTML = history.map(item => `
+                <div class="flex items-center justify-between py-2 border-b border-slate-800/80 last:border-0">
+                    <div>
+                        <div class="text-slate-200 font-semibold">${item.title}</div>
+                        <div class="text-[10px] text-slate-500">${item.date}</div>
+                    </div>
+                    <span class="font-extrabold text-amber-400">${item.pts}</span>
+                </div>
+            `).join('');
+        }
+
+        window.switchTab = (tabName) => {
+            ['explore', 'owner-panel'].forEach(t => {
+                document.getElementById(`view-${t}`).classList.add('hidden');
+            });
+            document.getElementById(`view-${tabName}`).classList.remove('hidden');
+
+            const navExplore = document.getElementById('nav-explore');
+            const navOwner = document.getElementById('nav-owner-panel');
+
+            if (tabName === 'explore') {
+                navExplore.className = "px-4 py-2.5 rounded-xl text-sm font-bold bg-pitch-600 text-white shadow-md transition flex items-center gap-2";
+                navOwner.className = "px-4 py-2.5 rounded-xl text-sm font-bold text-amber-300 bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 transition flex items-center gap-2";
+            } else {
+                navExplore.className = "px-4 py-2.5 rounded-xl text-sm font-bold bg-slate-800 text-slate-300 hover:text-white transition flex items-center gap-2";
+                navOwner.className = "px-4 py-2.5 rounded-xl text-sm font-bold bg-amber-500 text-slate-950 shadow-md transition flex items-center gap-2";
+            }
+
+            if (tabName === 'owner-panel') renderOwnerPanel();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        function initFilterControls() {
+            const hourSelect = document.getElementById('filter-hour');
+            const dateInput = document.getElementById('filter-date');
+            const ownerDateInput = document.getElementById('owner-date-picker');
+
+            TIME_SLOTS.forEach(slot => {
+                const nextHour = getNextHourLabel(slot);
+                hourSelect.innerHTML += `<option value="${slot}">${slot} - ${nextHour} (Boş)</option>`;
+            });
+
+            dateInput.value = TODAY_DATE;
+            dateInput.min = TODAY_DATE;
+            ownerDateInput.value = TODAY_DATE;
+        }
+
+        function getNextHourLabel(hourStr) {
+            const h = parseInt(hourStr.split(':')[0], 10);
+            const next = (h + 1) % 24;
+            return `${String(next).padStart(2, '0')}:00`;
+        }
+
+        window.resetFilters = () => {
+            document.getElementById('filter-search').value = "";
+            document.getElementById('filter-district').value = "";
+            document.getElementById('filter-date').value = TODAY_DATE;
+            document.getElementById('filter-hour').value = "";
+            applyFilters();
+        };
+
+        function isSlotBooked(pitchId, date, hour) {
+            return appState.bookings.some(b => 
+                b.pitchId === pitchId && 
+                b.date === date && 
+                b.hour === hour && 
+                b.status === 'confirmed'
+            );
+        }
+
+        window.applyFilters = () => {
+            const searchQuery = document.getElementById('filter-search').value.trim().toLowerCase();
+            const districtFilter = document.getElementById('filter-district').value;
+            const dateFilter = document.getElementById('filter-date').value || TODAY_DATE;
+            const hourFilter = document.getElementById('filter-hour').value;
+
+            let basePitches = appState.pitches;
+            const isOwnerView = appState.currentUser && appState.currentUser.role === 'owner';
+            if (isOwnerView) {
+                basePitches = appState.pitches.filter(p => p.ownerId === appState.currentUser.uid);
+            }
+
+            const filtered = basePitches.filter(pitch => {
+                const matchesName = !searchQuery || 
+                    pitch.name.toLowerCase().includes(searchQuery) || 
+                    pitch.district.toLowerCase().includes(searchQuery);
+
+                const matchesDistrict = !districtFilter || pitch.district === districtFilter;
+
+                let matchesAvailableHour = true;
+                if (hourFilter) {
+                    matchesAvailableHour = !isSlotBooked(pitch.id, dateFilter, hourFilter);
+                }
+
+                return matchesName && matchesDistrict && matchesAvailableHour;
+            });
+
+            const summaryEl = document.getElementById('active-filter-summary');
+            if (isOwnerView) {
+                summaryEl.textContent = `• İşletmenize ait ${filtered.length} saha gösteriliyor (${formatDateTR(dateFilter)})`;
+            } else if (hourFilter) {
+                summaryEl.textContent = `• ${formatDateTR(dateFilter)} saat ${hourFilter} için BOŞ sahalar (${filtered.length} tesis)`;
+            } else {
+                summaryEl.textContent = `• ${formatDateTR(dateFilter)} için ${filtered.length} kayıtlı tesis`;
+            }
+
+            renderPitchesGrid(filtered, dateFilter, hourFilter, isOwnerView);
+        };
+
+        function renderPitchesGrid(pitchesList, selectedDate, highlightedHour, isOwnerView) {
+            const grid = document.getElementById('pitches-grid');
+            const emptyBox = document.getElementById('empty-state-box');
+
+            if (pitchesList.length === 0) {
+                grid.innerHTML = "";
+                emptyBox.classList.remove('hidden');
+
+                const titleEl = document.getElementById('empty-state-title');
+                const descEl = document.getElementById('empty-state-desc');
+                const actionsEl = document.getElementById('empty-state-actions');
+
+                if (isOwnerView) {
+                    titleEl.textContent = "Henüz işletmenize kayıtlı bir halı saha eklemediniz";
+                    descEl.textContent = "Tesisinizdeki halı sahaları ekleyerek müşterilerin saatlik dolulukları görmesini ve rezervasyon oluşturmasını sağlayabilirsiniz.";
+                    actionsEl.innerHTML = `
+                        <button onclick="openAddPitchModal()" class="px-6 py-3 bg-pitch-500 hover:bg-pitch-400 text-slate-950 font-extrabold rounded-2xl text-sm transition shadow-lg shadow-pitch-500/20 flex items-center gap-2">
+                            <i class="fa-solid fa-plus-circle"></i> İlk Halı Sahanızı Ekleyin
+                        </button>
+                    `;
+                } else if (appState.pitches.length === 0) {
+                    titleEl.textContent = "Henüz kayıtlı halı saha bulunmuyor";
+                    descEl.textContent = "Sistemde şu an listelenecek aktif bir halı saha kaydı bulunmamaktadır. Tesis sahibi olarak kayıt olup işletmenize ait sahaları hemen ekleyebilirsiniz.";
+                    actionsEl.innerHTML = appState.currentUser ? '' : `
+                        <button onclick="openAuthModal('register')" class="px-6 py-3 bg-pitch-500 hover:bg-pitch-400 text-slate-950 font-extrabold rounded-2xl text-sm transition shadow-lg shadow-pitch-500/20 flex items-center gap-2">
+                            <i class="fa-solid fa-store"></i> Tesis Sahibi Olarak Kayıt Ol
+                        </button>
+                    `;
+                } else {
+                    titleEl.textContent = "Aradığınız Kriterlere Uygun Boş Saha Bulunamadı";
+                    descEl.textContent = "Farklı bir saat dilimi, ilçe veya tarih seçerek tekrar arayabilirsiniz.";
+                    actionsEl.innerHTML = `
+                        <button onclick="resetFilters()" class="px-5 py-2.5 bg-pitch-600 hover:bg-pitch-500 text-white font-bold rounded-xl text-sm transition">
+                            Tüm Sahaları Göster
+                        </button>
+                    `;
+                }
+                return;
+            }
+
+            emptyBox.classList.add('hidden');
+            grid.innerHTML = pitchesList.map(pitch => {
+                const freeCount = TIME_SLOTS.filter(h => !isSlotBooked(pitch.id, selectedDate, h)).length;
+
+                const slotsHtml = TIME_SLOTS.map(hour => {
+                    const booking = appState.bookings.find(b => b.pitchId === pitch.id && b.date === selectedDate && b.hour === hour && b.status === 'confirmed');
+                    const booked = Boolean(booking);
+                    const isHighlighted = highlightedHour === hour && !booked;
+
+                    if (isOwnerView) {
+                        if (booked) {
+                            return `
+                                <button onclick="toggleOwnerSlot('${pitch.id}', '${selectedDate}', '${hour}')" title="Dolu (${booking.userName}) - Boşa çıkarmak için tıkla"
+                                    class="slot-btn py-2 px-1 rounded-xl bg-rose-950/80 hover:bg-rose-800 border border-rose-500/50 text-rose-300 text-xs font-bold flex flex-col items-center justify-center cursor-pointer">
+                                    <span>${hour}</span>
+                                    <span class="text-[9px] uppercase tracking-wider font-extrabold text-rose-400 truncate max-w-full px-1">${booking.userName.split(' ')[0]}</span>
+                                </button>
+                            `;
+                        } else {
+                            return `
+                                <button onclick="toggleOwnerSlot('${pitch.id}', '${selectedDate}', '${hour}')" title="Boş - Telefon kaydı eklemek için tıkla"
+                                    class="slot-btn py-2 px-1 rounded-xl bg-emerald-950/70 hover:bg-amber-500 text-emerald-300 hover:text-slate-950 border border-emerald-500/40 text-xs font-bold flex flex-col items-center justify-center cursor-pointer group">
+                                    <span>${hour}</span>
+                                    <span class="text-[9px] uppercase tracking-wider font-extrabold text-emerald-400 group-hover:text-slate-900">Boş</span>
+                                </button>
+                            `;
+                        }
+                    }
+
+                    if (booked) {
+                        return `
+                            <button disabled title="Bu saat dolu" 
+                                class="slot-btn py-2 px-1 rounded-xl bg-rose-950/70 border border-rose-500/40 text-rose-400 text-xs font-bold flex flex-col items-center justify-center cursor-not-allowed">
+                                <span>${hour}</span>
+                                <span class="text-[9px] uppercase tracking-wider font-extrabold text-rose-500">Dolu</span>
+                            </button>
+                        `;
+                    } else {
+                        return `
+                            <button onclick="initiateBooking('${pitch.id}', '${selectedDate}', '${hour}')" 
+                                class="slot-btn py-2 px-1 rounded-xl ${isHighlighted ? 'bg-pitch-500 text-slate-950 ring-2 ring-pitch-300 shadow-lg shadow-pitch-500/30' : 'bg-emerald-950/70 hover:bg-pitch-500 text-emerald-300 hover:text-slate-950 border border-emerald-500/40 hover:border-pitch-400'} text-xs font-bold flex flex-col items-center justify-center cursor-pointer group">
+                                <span>${hour}</span>
+                                <span class="text-[9px] uppercase tracking-wider font-extrabold ${isHighlighted ? 'text-slate-900' : 'text-emerald-400 group-hover:text-slate-900'}">Boş</span>
+                            </button>
+                        `;
+                    }
+                }).join('');
+
+                const featuresHtml = (pitch.features || []).map(f => 
+                    `<span class="px-2.5 py-1 bg-slate-800/90 text-slate-300 rounded-lg text-[11px] font-medium border border-slate-700/70">${f}</span>`
+                ).join('');
+
+                return `
+                    <article class="bg-slate-900/90 backdrop-blur-sm rounded-3xl border border-slate-800 shadow-xl hover:border-slate-700 transition duration-300 overflow-hidden flex flex-col">
+                        <div class="relative h-44 bg-pitch-950 overflow-hidden">
+                            <img src="${pitch.image}" alt="${pitch.name}" onerror="this.src='https://placehold.co/600x320/052e16/4ade80?text=Konya+Hali+Saha'" class="w-full h-full object-cover opacity-80">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+                            
+                            <div class="absolute top-3 left-3 flex gap-2">
+                                <span class="px-3 py-1 rounded-full bg-pitch-600/90 backdrop-blur-sm text-white text-xs font-bold shadow">
+                                    ${pitch.type}
+                                </span>
+                                <span class="px-3 py-1 rounded-full bg-slate-950/85 backdrop-blur-sm text-emerald-400 border border-emerald-500/30 text-xs font-bold">
+                                    ${freeCount} Boş Saat
+                                </span>
+                            </div>
+
+                            <div class="absolute top-3 right-3 bg-slate-950/90 backdrop-blur-sm border border-slate-700 px-3.5 py-1.5 rounded-2xl shadow-lg text-right">
+                                <div class="text-base font-extrabold text-pitch-400 leading-none">${pitch.price.toLocaleString('tr-TR')} ₺</div>
+                                <div class="text-[10px] font-semibold text-slate-400 mt-0.5">Tesiste Ödeme</div>
+                            </div>
+
+                            <div class="absolute bottom-3 left-4 right-4 text-white">
+                                <h3 class="text-lg sm:text-xl font-bold leading-snug">${pitch.name}</h3>
+                                <div class="flex items-center gap-1.5 text-xs text-slate-300 mt-0.5">
+                                    <i class="fa-solid fa-location-dot text-pitch-400"></i>
+                                    <span class="font-semibold">Konya / ${pitch.district}</span>
+                                    <span class="text-slate-500">•</span>
+                                    <span class="truncate text-slate-400">${pitch.address || ''}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-5 flex-grow flex flex-col justify-between">
+                            <div class="flex flex-wrap gap-1.5 mb-4">
+                                ${featuresHtml}
+                            </div>
+
+                            <div>
+                                <div class="flex items-center justify-between mb-2.5">
+                                    <span class="text-xs font-bold text-slate-300 uppercase tracking-wide">
+                                        <i class="fa-regular fa-clock text-pitch-400 mr-1"></i> ${formatDateTR(selectedDate)} Saat Durumu
+                                    </span>
+                                    <span class="text-[11px] text-pitch-400 font-semibold">${isOwnerView ? 'Durum değiştirmek için tıkla' : 'Boş saate tıkla'}</span>
+                                </div>
+
+                                <div class="grid grid-cols-5 gap-2">
+                                    ${slotsHtml}
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+        }
+
+        window.initiateBooking = (pitchId, date, hour) => {
+            if (!appState.currentUser) {
+                showToast("Saha kiralamak için lütfen sol üstten giriş yapın.", "warning");
+                openAuthModal('login');
+                return;
+            }
+
+            if (isSlotBooked(pitchId, date, hour)) {
+                showToast("Bu saat az önce başka bir kullanıcı tarafından kiralandı.", "error");
+                applyFilters();
+                return;
+            }
+
+            const pitch = appState.pitches.find(p => p.id === pitchId);
+            if (!pitch) return;
+
+            appState.pendingBooking = { pitch, date, hour };
+
+            document.getElementById('modal-pitch-name').textContent = pitch.name;
+            document.getElementById('modal-pitch-loc').textContent = `Konya / ${pitch.district}`;
+            document.getElementById('modal-booking-datetime').textContent = `${formatDateTR(date)} • ${hour} - ${getNextHourLabel(hour)}`;
+            document.getElementById('modal-booking-price').textContent = `${pitch.price.toLocaleString('tr-TR')} ₺ (Tesiste)`;
+
+            document.getElementById('legal-booking-modal').classList.remove('hidden');
+            startLegalCountdown();
+        };
+
+        function startLegalCountdown() {
+            if (appState.legalTimerInterval) {
+                clearInterval(appState.legalTimerInterval);
+            }
+
+            let secondsLeft = 10;
+            const confirmBtn = document.getElementById('btn-confirm-legal');
+
+            confirmBtn.disabled = true;
+            confirmBtn.className = "w-full sm:w-2/3 py-3.5 px-4 rounded-xl font-extrabold text-sm transition flex items-center justify-center gap-2 bg-slate-800 text-slate-500 cursor-not-allowed";
+            confirmBtn.innerHTML = `<i class="fa-solid fa-hourglass-half animate-spin"></i> <span>Anladım ve Onaylıyorum (${secondsLeft} sn)</span>`;
+
+            appState.legalTimerInterval = setInterval(() => {
+                secondsLeft -= 1;
+                if (secondsLeft > 0) {
+                    confirmBtn.innerHTML = `<i class="fa-solid fa-hourglass-half animate-spin"></i> <span>Anladım ve Onaylıyorum (${secondsLeft} sn)</span>`;
+                } else {
+                    clearInterval(appState.legalTimerInterval);
+                    appState.legalTimerInterval = null;
+
+                    confirmBtn.disabled = false;
+                    confirmBtn.className = "w-full sm:w-2/3 py-3.5 px-4 rounded-xl font-extrabold text-sm transition flex items-center justify-center gap-2 bg-pitch-500 hover:bg-pitch-400 text-slate-950 shadow-lg shadow-pitch-500/30 cursor-pointer";
+                    confirmBtn.innerHTML = `<i class="fa-solid fa-check-circle"></i> <span>Anladım ve Onaylıyorum</span>`;
+                }
+            }, 1000);
+        }
+
+        window.closeLegalModal = () => {
+            if (appState.legalTimerInterval) {
+                clearInterval(appState.legalTimerInterval);
+                appState.legalTimerInterval = null;
+            }
+            appState.pendingBooking = null;
+            document.getElementById('legal-booking-modal').classList.add('hidden');
+        };
+
+        window.finalizeBooking = async () => {
+            if (!appState.pendingBooking || !appState.currentUser) return;
+
+            const { pitch, date, hour } = appState.pendingBooking;
+
+            if (isSlotBooked(pitch.id, date, hour)) {
+                closeLegalModal();
+                showToast("Bu saat dilimi dolu görünüyor.", "error");
+                return;
+            }
+
+            const bookingId = `bk-${Date.now()}`;
+            const newBooking = {
+                id: bookingId,
+                pitchId: pitch.id,
+                pitchName: pitch.name,
+                city: "Konya",
+                district: pitch.district,
+                date: date,
+                hour: hour,
+                price: pitch.price,
+                userId: appState.currentUser.uid,
+                userName: appState.currentUser.fullName,
+                status: "confirmed",
+                createdAt: new Date().toISOString()
+            };
+
+            if (appState.useFirestore && db && firebaseUser) {
+                try {
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'bookings', bookingId), newBooking);
+                } catch (e) {}
+            }
+            appState.bookings.push(newBooking);
+
+            appState.currentUser.points = (appState.currentUser.points || 100) + 50;
+            appState.currentUser.pointHistory.unshift({
+                title: `${pitch.name} Maç Rezervasyonu`,
+                pts: "+50 Puan",
+                date: formatDateTR(date)
+            });
+
+            const uIdx = appState.registeredUsers.findIndex(u => u.uid === appState.currentUser.uid);
+            if (uIdx !== -1) appState.registeredUsers[uIdx] = appState.currentUser;
+
+            saveToStorage();
+            closeLegalModal();
+            applyFilters();
+            renderProfileBookings();
+            renderProfilePoints();
+            renderOwnerPanel();
+
+            showToast(`${pitch.name} (${formatDateTR(date)} • ${hour}) randevunuz oluşturuldu! (+50 Puan)`, "success");
+        };
+
+        window.openAddPitchModal = () => {
+            if (!appState.currentUser || appState.currentUser.role !== 'owner') {
+                showToast("Sadece Tesis Sahibi hesapları yeni saha ekleyebilir.", "warning");
+                return;
+            }
+            document.getElementById('add-pitch-modal').classList.remove('hidden');
+        };
+
+        window.closeAddPitchModal = () => {
+            document.getElementById('add-pitch-modal').classList.add('hidden');
+        };
+
+        window.handleCreatePitch = async (e) => {
+            e.preventDefault();
+            if (!appState.currentUser || appState.currentUser.role !== 'owner') return;
+
+            const name = document.getElementById('new-pitch-name').value.trim();
+            const district = document.getElementById('new-pitch-district').value;
+            const price = parseInt(document.getElementById('new-pitch-price').value, 10) || 1400;
+            const type = document.getElementById('new-pitch-type').value;
+            const address = document.getElementById('new-pitch-address').value.trim() || `${district} Merkez / Konya`;
+            const features = Array.from(document.querySelectorAll('.pitch-feat:checked')).map(cb => cb.value);
+
+            const newPitch = {
+                id: `pitch-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+                name,
+                city: "Konya",
+                district,
+                price,
+                type,
+                features,
+                address,
+                ownerId: appState.currentUser.uid,
+                ownerName: appState.currentUser.fullName,
+                image: `https://placehold.co/600x320/052e16/4ade80?text=${encodeURIComponent(name)}`
+            };
+
+            if (appState.useFirestore && db && firebaseUser) {
+                try {
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'pitches', newPitch.id), newPitch);
+                } catch (err) {}
+            }
+            appState.pitches.unshift(newPitch);
+            saveToStorage();
+
+            document.getElementById('add-pitch-form').reset();
+            closeAddPitchModal();
+            applyFilters();
+            renderOwnerPanel();
+            showToast(`"${name}" işletmenize başarıyla eklendi!`, "success");
+        };
+
+        window.renderOwnerPanel = () => {
+            const container = document.getElementById('owner-pitches-container');
+            if (!appState.currentUser || appState.currentUser.role !== 'owner') return;
+
+            const selectedDate = document.getElementById('owner-date-picker').value || TODAY_DATE;
+            const ownedPitches = appState.pitches.filter(p => p.ownerId === appState.currentUser.uid);
+
+            if (ownedPitches.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-slate-900/90 rounded-3xl border border-slate-800 p-10 text-center">
+                        <div class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mx-auto mb-4 text-2xl">
+                            <i class="fa-solid fa-store"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-1">İşletmenize Ait Saha Bulunmuyor</h3>
+                        <p class="text-sm text-slate-400 mb-5">Yukarıdaki <strong>Yeni Saha Ekle</strong> butonuna tıklayarak tesisinizin ilk halı sahasını sisteme ekleyin.</p>
+                        <button onclick="openAddPitchModal()" class="px-5 py-2.5 bg-pitch-500 hover:bg-pitch-400 text-slate-950 font-extrabold rounded-xl text-sm transition">
+                            + Yeni Saha Ekle
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = ownedPitches.map(pitch => {
+                const slotsHtml = TIME_SLOTS.map(hour => {
+                    const booking = appState.bookings.find(b => b.pitchId === pitch.id && b.date === selectedDate && b.hour === hour && b.status === 'confirmed');
+                    if (booking) {
+                        return `
+                            <button onclick="toggleOwnerSlot('${pitch.id}', '${selectedDate}', '${hour}')" 
+                                title="Müşteri: ${booking.userName} - Boşa çıkarmak için tıkla"
+                                class="p-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold flex flex-col items-center justify-center transition shadow-md">
+                                <span>${hour}</span>
+                                <span class="text-[10px] truncate max-w-full mt-0.5 text-rose-100">${booking.userName.split(' ')[0]}</span>
+                            </button>
+                        `;
+                    } else {
+                        return `
+                            <button onclick="toggleOwnerSlot('${pitch.id}', '${selectedDate}', '${hour}')" 
+                                title="Dışarıdan (Telefonla) Rezervasyon Olarak İşaretle"
+                                class="p-2.5 rounded-xl bg-emerald-950/70 hover:bg-amber-500 text-emerald-300 hover:text-slate-950 border border-emerald-500/40 hover:border-amber-400 text-xs font-bold flex flex-col items-center justify-center transition">
+                                <span>${hour}</span>
+                                <span class="text-[10px] mt-0.5">Boş</span>
+                            </button>
+                        `;
+                    }
+                }).join('');
+
+                const dayBookings = appState.bookings.filter(b => b.pitchId === pitch.id && b.date === selectedDate && b.status === 'confirmed');
+
+                return `
+                    <div class="bg-slate-900/90 rounded-3xl border border-slate-800 p-6">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-slate-800 mb-5">
+                            <div>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <h3 class="text-xl font-bold text-white">${pitch.name}</h3>
+                                    <span class="px-2.5 py-0.5 bg-pitch-500/20 text-pitch-300 border border-pitch-500/30 rounded-full text-xs font-bold">Konya / ${pitch.district}</span>
+                                </div>
+                                <p class="text-xs text-slate-400 mt-1">Saatlik Ücret: <strong class="text-white">${pitch.price.toLocaleString('tr-TR')} ₺</strong> (Tesiste Ödeme) • ${pitch.type}</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="text-xs font-semibold px-3.5 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-300">
+                                    ${formatDateTR(selectedDate)} Doluluk: <strong class="text-pitch-400">${dayBookings.length} / ${TIME_SLOTS.length} Saat</strong>
+                                </div>
+                                <button onclick="deleteOwnedPitch('${pitch.id}')" title="Sahayı İşletmeden Kaldır" class="w-9 h-9 rounded-xl bg-rose-950/60 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-500/30 flex items-center justify-center transition">
+                                    <i class="fa-solid fa-trash-can text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="text-xs font-bold uppercase text-slate-400 mb-3">Saatlik Doluluk Kontrolü (Tıklayarak Durumu Değiştirin):</div>
+                            <div class="grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-10 gap-2.5">
+                                ${slotsHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        };
+
+        window.deleteOwnedPitch = async (pitchId) => {
+            if (!appState.currentUser || appState.currentUser.role !== 'owner') return;
+            appState.pitches = appState.pitches.filter(p => !(p.id === pitchId && p.ownerId === appState.currentUser.uid));
+            appState.bookings = appState.bookings.filter(b => b.pitchId !== pitchId);
+            if (appState.useFirestore && db && firebaseUser) {
+                try {
+                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'pitches', pitchId));
+                } catch (e) {}
+            }
+            saveToStorage();
+            applyFilters();
+            renderOwnerPanel();
+            renderProfileBookings();
+            showToast("Saha işletmenizden kaldırıldı.", "info");
+        };
+
+        window.toggleOwnerSlot = async (pitchId, date, hour) => {
+            const existing = appState.bookings.find(b => b.pitchId === pitchId && b.date === date && b.hour === hour && b.status === 'confirmed');
+            const pitch = appState.pitches.find(p => p.id === pitchId);
+            if (!pitch) return;
+
+            if (existing) {
+                if (appState.useFirestore && db && firebaseUser) {
+                    try {
+                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'bookings', existing.id));
+                    } catch (e) {}
+                }
+                appState.bookings = appState.bookings.filter(b => b.id !== existing.id);
+                showToast(`${hour} saati tekrar BOŞ olarak güncellendi.`, "info");
+            } else {
+                const manualId = `bk-owner-${Date.now()}`;
+                const manualBooking = {
+                    id: manualId,
+                    pitchId: pitch.id,
+                    pitchName: pitch.name,
+                    city: "Konya",
+                    district: pitch.district,
+                    date: date,
+                    hour: hour,
+                    price: pitch.price,
+                    userId: appState.currentUser.uid,
+                    userName: "Telefon Kaydı",
+                    status: "confirmed"
+                };
+                if (appState.useFirestore && db && firebaseUser) {
+                    try {
+                        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'bookings', manualId), manualBooking);
+                    } catch (e) {}
+                }
+                appState.bookings.push(manualBooking);
+                showToast(`${hour} saati tesis kaydı olarak DOLU işaretlendi.`, "success");
+            }
+
+            saveToStorage();
+            applyFilters();
+            renderProfileBookings();
+            renderOwnerPanel();
+        };
+
+        function formatDateTR(dateStr) {
+            if (!dateStr) return "";
+            const [y, m, d] = dateStr.split('-');
+            return `${d}.${m}.${y}`;
+        }
+
+        window.showToast = (message, type = "info") => {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+
+            const styles = {
+                success: "bg-slate-900 border-pitch-500 text-white",
+                error: "bg-slate-900 border-rose-500 text-white",
+                warning: "bg-slate-900 border-amber-500 text-white",
+                info: "bg-slate-900 border-sky-500 text-white"
+            };
+
+            const icons = {
+                success: "fa-circle-check text-pitch-400",
+                error: "fa-circle-xmark text-rose-400",
+                warning: "fa-triangle-exclamation text-amber-400",
+                info: "fa-circle-info text-sky-400"
+            };
+
+            toast.className = `${styles[type] || styles.info} border-l-4 px-4 py-3.5 rounded-2xl shadow-2xl border border-slate-800 flex items-start gap-3 text-xs sm:text-sm font-medium pointer-events-auto transition-all duration-300`;
+            toast.innerHTML = `
+                <i class="fa-solid ${icons[type] || icons.info} text-base mt-0.5"></i>
+                <div class="flex-grow leading-snug">${message}</div>
+            `;
+
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(20px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        };
+
+        function restoreSavedSession() {
+            try {
+                const savedUid = localStorage.getItem(STORAGE_KEYS.SESSION);
+                if (savedUid) {
+                    const userObj = appState.registeredUsers.find(u => u.uid === savedUid);
+                    if (userObj) {
+                        setLoggedInUser(userObj);
+                    }
+                }
+            } catch (e) {}
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initFilterControls();
+            restoreSavedSession();
+            applyFilters();
+            initFirebaseBackend();
+        });
+    </script>
+</body>
+</html>
