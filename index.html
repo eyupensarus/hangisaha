@@ -130,8 +130,7 @@
         googleBtn.addEventListener('click', () => {
             auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(() => { window.location.href = 'ana-sayfa.html'; });
             // Firebase Auth Google signInWithPopup/signInWithRedirect eklenecek nokta
-            showStatus('Google ile giriş modülü henüz bağlanmadı. Firebase yapılandırmasını ekleyebiliriz.', 'info');
-        });
+            window.location.href = NEXT_PAGE;
 
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
