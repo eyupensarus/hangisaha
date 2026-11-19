@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giriş Yap - Top Oyna Konya</title>
+    <title>Top Oyna - Giriş ve Kayıt | Konya Halı Saha Platformu</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Oswald:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script>
         tailwind.config = {
@@ -21,7 +21,8 @@
                             400: '#4ade80',
                             500: '#22c55e',
                             600: '#16a34a',
-                            950: '#020617',
+                            900: '#14532d',
+                            950: '#052e16',
                         }
                     }
                 }
@@ -29,137 +30,90 @@
         }
     </script>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex items-center justify-center p-4 selection:bg-pitch-500 selection:text-slate-950">
 
-    <!-- Arka Plan Efekti -->
-    <div class="fixed inset-0 pointer-events-none flex items-center justify-center opacity-10">
-        <div class="w-[500px] h-[500px] bg-pitch-500 rounded-full blur-[150px]"></div>
-    </div>
-
-    <div class="w-full max-w-md bg-slate-900/90 backdrop-blur-xl p-8 rounded-3xl border border-slate-800 shadow-2xl relative z-10">
-
-        <!-- Logo ve Başlık -->
-        <div class="text-center mb-8">
-            <div class="w-16 h-16 bg-gradient-to-tr from-pitch-600 to-emerald-400 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-pitch-500/30">
-                <i class="fa-solid fa-futbol text-2xl text-slate-950"></i>
+    <div class="w-full max-w-md bg-slate-900/95 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
+        <div class="text-center mb-7">
+            <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-pitch-500/15 border border-pitch-500/40 text-pitch-400 text-2xl mb-3">
+                <i class="fa-solid fa-futbol"></i>
             </div>
-            <h1 class="font-sport text-3xl font-bold tracking-wider uppercase text-white">TOP <span class="text-pitch-500">OYNA</span></h1>
-            <p class="text-xs text-slate-400 mt-1">Konya Halı Saha Rezervasyon Platformu</p>
+            <h1 class="font-sport text-4xl font-bold tracking-wider uppercase text-white">
+                TOP <span class="text-pitch-400">OYNA</span>
+            </h1>
+            <p class="text-xs font-bold uppercase tracking-[0.2em] text-amber-400 mt-1">
+                Konya Halı Saha Platformu
+            </p>
+            <p id="auth-subtitle" class="text-xs text-slate-400 mt-2">
+                Hesabınıza giriş yaparak sahaları ve randevularınızı görüntüleyin.
+            </p>
         </div>
 
-        <!-- Bildirim Mesajı -->
-        <div id="statusBox" class="hidden mb-4 p-3 rounded-xl text-xs font-medium border"></div>
+        <div id="auth-error-box" class="hidden mb-4 p-3.5 rounded-2xl bg-rose-950/60 border border-rose-500/50 text-rose-200 text-xs font-medium"></div>
 
-        <!-- Google ile Giriş -->
-        <button type="button" id="googleLoginBtn" class="w-full py-3 px-4 bg-white hover:bg-slate-100 text-slate-900 font-bold rounded-2xl shadow-lg transition flex items-center justify-center gap-3 text-sm mb-6">
-            <i class="fa-brands fa-google text-red-500 text-lg"></i>
-            <span>Google ile Devam Et</span>
-        </button>
-
-        <div class="relative flex py-2 items-center mb-6">
-            <div class="flex-grow border-t border-slate-800"></div>
-            <span class="flex-shrink mx-4 text-xs text-slate-500 uppercase">veya</span>
-            <div class="flex-grow border-t border-slate-800"></div>
-        </div>
-
-        <!-- Standart Giriş Formu -->
-        <form id="loginForm" class="space-y-4">
+        <!-- GİRİŞ FORMU -->
+        <form id="login-form" class="space-y-4">
             <div>
-                <label class="block text-xs font-semibold text-slate-400 mb-1.5">E-posta Adresi</label>
-                <div class="relative">
-                    <i class="fa-solid fa-envelope absolute left-4 top-3.5 text-slate-500 text-sm"></i>
-                    <input type="email" id="loginUser" required placeholder="ornek@mail.com" class="w-full pl-11 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-pitch-500 outline-none transition text-white">
-                </div>
+                <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">E-posta Adresi</label>
+                <input type="email" id="login-email" required placeholder="ornek@gmail.com"
+                    class="w-full px-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-pitch-500 outline-none">
             </div>
 
             <div>
-                <div class="flex items-center justify-between mb-1.5">
-                    <label class="block text-xs font-semibold text-slate-400">Şifre</label>
-                    <a href="sifre-sifirlama.html" class="text-xs text-pitch-400 hover:underline font-medium">Şifremi Unuttum?</a>
-                </div>
-                <div class="relative">
-                    <i class="fa-solid fa-lock absolute left-4 top-3.5 text-slate-500 text-sm"></i>
-                    <input type="password" id="loginPass" required placeholder="••••••••" class="w-full pl-11 pr-11 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-pitch-500 outline-none transition text-white">
-                    <button type="button" id="togglePass" aria-label="Şifreyi göster veya gizle" class="absolute right-3.5 top-3 text-slate-500 hover:text-slate-300 text-sm">
-                        <i class="fa-solid fa-eye"></i>
-                    </button>
-                </div>
+                <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Şifre</label>
+                <input type="password" id="login-password" required placeholder="••••••••"
+                    class="w-full px-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-pitch-500 outline-none">
             </div>
 
-            <button type="submit" id="submitLoginBtn" class="w-full py-3.5 bg-pitch-600 hover:bg-pitch-500 text-slate-950 font-extrabold rounded-xl shadow-lg shadow-pitch-500/25 transition mt-2 text-sm">
-                Giriş Yap
+            <button type="submit" id="login-submit-btn"
+                class="w-full py-3.5 rounded-xl bg-pitch-600 hover:bg-pitch-500 text-white font-extrabold text-sm shadow-lg shadow-pitch-500/20 transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-right-to-bracket"></i>
+                <span>Giriş Yap</span>
             </button>
         </form>
 
-        <!-- Kayıt Ol Linki -->
-        <div class="mt-8 pt-6 border-t border-slate-800 text-center">
-            <span class="text-xs text-slate-400">Hesabınız yok mu? </span>
-            <a href="kayit-ol.html" class="text-xs text-pitch-400 font-bold hover:underline">Hemen Kayıt Olun</a>
-        </div>
+        <!-- KAYIT FORMU -->
+        <form id="register-form" class="hidden space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Ad Soyad</label>
+                <input type="text" id="register-name" required placeholder="Adınız Soyadınız"
+                    class="w-full px-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-pitch-500 outline-none">
+            </div>
 
+            <div>
+                <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">E-posta Adresi</label>
+                <input type="email" id="register-email" required placeholder="ornek@gmail.com"
+                    class="w-full px-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-pitch-500 outline-none">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Şifre (En az 6 karakter)</label>
+                <input type="password" id="register-password" required minlength="6" placeholder="••••••••"
+                    class="w-full px-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-pitch-500 outline-none">
+            </div>
+
+            <button type="submit" id="register-submit-btn"
+                class="w-full py-3.5 rounded-xl bg-pitch-600 hover:bg-pitch-500 text-white font-extrabold text-sm shadow-lg shadow-pitch-500/20 transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-user-plus"></i>
+                <span>Kayıt Ol ve Giriş Yap</span>
+            </button>
+        </form>
+
+        <div class="mt-6 pt-4 border-t border-slate-800 text-center text-xs text-slate-400">
+            <button type="button" id="toggle-auth-mode" class="text-pitch-400 hover:text-pitch-300 font-bold transition">
+                Hesabınız yok mu? Hemen Kayıt Olun
+            </button>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import {
             getAuth,
-            GoogleAuthProvider,
-            signInWithPopup,
+            onAuthStateChanged,
             signInWithEmailAndPassword,
-            onAuthStateChanged
+            createUserWithEmailAndPassword,
+            updateProfile
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-        const statusBox = document.getElementById('statusBox');
-        const togglePassBtn = document.getElementById('togglePass');
-        const passInput = document.getElementById('loginPass');
-        const googleBtn = document.getElementById('googleLoginBtn');
-        const loginForm = document.getElementById('loginForm');
-        const submitLoginBtn = document.getElementById('submitLoginBtn');
-
-        const NEXT_PAGE = 'ana-sayfa.html';
-        let isRedirecting = false;
-
-        function showStatus(message, type = 'info') {
-            statusBox.classList.remove(
-                'hidden',
-                'bg-emerald-950/60', 'text-emerald-300', 'border-emerald-800',
-                'bg-amber-950/60', 'text-amber-300', 'border-amber-800'
-            );
-            if (type === 'success') {
-                statusBox.classList.add('bg-emerald-950/60', 'text-emerald-300', 'border-emerald-800');
-            } else {
-                statusBox.classList.add('bg-amber-950/60', 'text-amber-300', 'border-amber-800');
-            }
-            statusBox.textContent = message;
-        }
-
-        function getAuthErrorMessage(err) {
-            switch (err?.code) {
-                case 'auth/invalid-credential':
-                case 'auth/user-not-found':
-                case 'auth/wrong-password':
-                    return 'E-posta adresi veya şifre hatalı. Kayıtlı değilseniz önce kayıt olun.';
-                case 'auth/invalid-email':
-                    return 'Geçerli bir e-posta adresi girin.';
-                case 'auth/too-many-requests':
-                    return 'Çok fazla başarısız deneme yapıldı. Lütfen bir süre sonra tekrar deneyin.';
-                case 'auth/popup-closed-by-user':
-                    return 'Google giriş penceresi kapatıldı.';
-                case 'auth/network-request-failed':
-                    return 'Ağ bağlantısı hatası oluştu. İnternetinizi kontrol edin.';
-                default:
-                    return err?.message || 'Giriş sırasında bir hata oluştu.';
-            }
-        }
-
-        function goToHome() {
-            if (isRedirecting) return;
-            isRedirecting = true;
-            setTimeout(() => {
-                if (window.location.pathname.endsWith('/' + NEXT_PAGE)) return;
-                window.location.href = NEXT_PAGE;
-            }, 500);
-        }
 
         const firebaseConfig = {
             apiKey: "AIzaSyCKYARoGK8ADJ2_T5c2GomrAG47-gHtQ-8",
@@ -173,47 +127,99 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
+
+        const loginForm = document.getElementById("login-form");
+        const registerForm = document.getElementById("register-form");
+        const toggleBtn = document.getElementById("toggle-auth-mode");
+        const subtitleEl = document.getElementById("auth-subtitle");
+        const errorBox = document.getElementById("auth-error-box");
+
+        let isRegisterMode = false;
+        let isSubmitting = false;
+
+        function showError(msg) {
+            errorBox.textContent = msg;
+            errorBox.classList.remove("hidden");
+        }
+
+        function clearError() {
+            errorBox.textContent = "";
+            errorBox.classList.add("hidden");
+        }
+
+        toggleBtn.addEventListener("click", () => {
+            clearError();
+            isRegisterMode = !isRegisterMode;
+            if (isRegisterMode) {
+                loginForm.classList.add("hidden");
+                registerForm.classList.remove("hidden");
+                subtitleEl.textContent = "Yeni oyuncu veya tesis hesabı oluşturun.";
+                toggleBtn.textContent = "Zaten hesabınız var mı? Giriş Yapın";
+            } else {
+                registerForm.classList.add("hidden");
+                loginForm.classList.remove("hidden");
+                subtitleEl.textContent = "Hesabınıza giriş yaparak sahaları ve randevularınızı görüntüleyin.";
+                toggleBtn.textContent = "Hesabınız yok mu? Hemen Kayıt Olun";
+            }
+        });
 
         onAuthStateChanged(auth, (user) => {
-            if (user && !isRedirecting) {
-                showStatus('Oturum açık, yönlendiriliyor...', 'success');
-                goToHome();
+            if (user && !isSubmitting) {
+                window.location.replace("ana-sayfa.html");
             }
         });
 
-        togglePassBtn.addEventListener('click', () => {
-            const isPassword = passInput.type === 'password';
-            passInput.type = isPassword ? 'text' : 'password';
-            togglePassBtn.innerHTML = isPassword
-                ? '<i class="fa-solid fa-eye-slash"></i>'
-                : '<i class="fa-solid fa-eye"></i>';
-        });
-
-        googleBtn.addEventListener('click', async () => {
-            showStatus('Google girişi açılıyor...', 'info');
-            try {
-                await signInWithPopup(auth, provider);
-                showStatus('Giriş başarılı! Yönlendiriliyor...', 'success');
-                goToHome();
-            } catch (err) {
-                isRedirecting = false;
-                showStatus(getAuthErrorMessage(err), 'info');
-                console.error(err);
-            }
-        });
-
-        loginForm.addEventListener('submit', async (e) => {
+        loginForm.addEventListener("submit", async (e) => {
             e.preventDefault();
-            const email = document.getElementById('loginUser').value.trim();
-            const password = passInput.value;
+            clearError();
+            const email = document.getElementById("login-email").value.trim();
+            const password = document.getElementById("login-password").value;
+            const btn = document.getElementById("login-submit-btn");
 
-            if (!email || !password) {
-                showStatus('Lütfen e-posta ve şifre girin.', 'info');
-                return;
+            isSubmitting = true;
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Giriş yapılıyor...</span>`;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                window.location.replace("ana-sayfa.html");
+            } catch (err) {
+                isSubmitting = false;
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> <span>Giriş Yap</span>`;
+                showError("Giriş başarısız. E-posta veya şifrenizi kontrol edin.");
             }
+        });
 
-            submitLoginBtn.disabled = true;
+        registerForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            clearError();
+            const fullName = document.getElementById("register-name").value.trim();
+            const email = document.getElementById("register-email").value.trim();
+            const password = document.getElementById("register-password").value;
+            const btn = document.getElementById("register-submit-btn");
+
+            isSubmitting = true;
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Hesap oluşturuluyor...</span>`;
+
+            try {
+                const cred = await createUserWithEmailAndPassword(auth, email, password);
+                if (fullName) {
+                    await updateProfile(cred.user, { displayName: fullName });
+                }
+                window.location.replace("ana-sayfa.html");
+            } catch (err) {
+                isSubmitting = false;
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-user-plus"></i> <span>Kayıt Ol ve Giriş Yap</span>`;
+                showError("Kayıt sırasında bir hata oluştu. E-posta kayıtlı olabilir veya şifre en az 6 karakter olmalıdır.");
+            }
+        });
+    </script>
+</body>
+</html>
+           submitLoginBtn.disabled = true;
             showStatus('Hesap doğrulanıyor...', 'info');
 
             try {
