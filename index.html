@@ -65,10 +65,10 @@
         <!-- Standart Giriş Formu -->
         <form id="loginForm" class="space-y-4">
             <div>
-                <label class="block text-xs font-semibold text-slate-400 mb-1.5">E-posta veya Kullanıcı Adı</label>
+                <label class="block text-xs font-semibold text-slate-400 mb-1.5">E-posta Adresi</label>
                 <div class="relative">
-                    <i class="fa-solid fa-user absolute left-4 top-3.5 text-slate-500 text-sm"></i>
-                    <input type="text" id="loginUser" required placeholder="ornek@mail.com" class="w-full pl-11 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-pitch-500 outline-none transition text-white">
+                    <i class="fa-solid fa-envelope absolute left-4 top-3.5 text-slate-500 text-sm"></i>
+                    <input type="email" id="loginUser" required placeholder="ornek@mail.com" class="w-full pl-11 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-pitch-500 outline-none transition text-white">
                 </div>
             </div>
 
@@ -86,7 +86,7 @@
                 </div>
             </div>
 
-            <button type="submit" class="w-full py-3.5 bg-pitch-600 hover:bg-pitch-500 text-slate-950 font-extrabold rounded-xl shadow-lg shadow-pitch-500/25 transition mt-2 text-sm">
+            <button type="submit" id="submitLoginBtn" class="w-full py-3.5 bg-pitch-600 hover:bg-pitch-500 text-slate-950 font-extrabold rounded-xl shadow-lg shadow-pitch-500/25 transition mt-2 text-sm">
                 Giriş Yap
             </button>
         </form>
@@ -101,15 +101,23 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import {
+            getAuth,
+            GoogleAuthProvider,
+            signInWithPopup,
+            signInWithEmailAndPassword,
+            onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         const statusBox = document.getElementById('statusBox');
         const togglePassBtn = document.getElementById('togglePass');
         const passInput = document.getElementById('loginPass');
         const googleBtn = document.getElementById('googleLoginBtn');
         const loginForm = document.getElementById('loginForm');
+        const submitLoginBtn = document.getElementById('submitLoginBtn');
 
         const NEXT_PAGE = 'ana-sayfa.html';
+        let isRedirecting = false;
 
         function showStatus(message, type = 'info') {
             statusBox.classList.remove(
@@ -123,6 +131,34 @@
                 statusBox.classList.add('bg-amber-950/60', 'text-amber-300', 'border-amber-800');
             }
             statusBox.textContent = message;
+        }
+
+        function getAuthErrorMessage(err) {
+            switch (err?.code) {
+                case 'auth/invalid-credential':
+                case 'auth/user-not-found':
+                case 'auth/wrong-password':
+                    return 'E-posta adresi veya şifre hatalı. Kayıtlı değilseniz önce kayıt olun.';
+                case 'auth/invalid-email':
+                    return 'Geçerli bir e-posta adresi girin.';
+                case 'auth/too-many-requests':
+                    return 'Çok fazla başarısız deneme yapıldı. Lütfen bir süre sonra tekrar deneyin.';
+                case 'auth/popup-closed-by-user':
+                    return 'Google giriş penceresi kapatıldı.';
+                case 'auth/network-request-failed':
+                    return 'Ağ bağlantısı hatası oluştu. İnternetinizi kontrol edin.';
+                default:
+                    return err?.message || 'Giriş sırasında bir hata oluştu.';
+            }
+        }
+
+        function goToHome() {
+            if (isRedirecting) return;
+            isRedirecting = true;
+            setTimeout(() => {
+                if (window.location.pathname.endsWith('/' + NEXT_PAGE)) return;
+                window.location.href = NEXT_PAGE;
+            }, 500);
         }
 
         const firebaseConfig = {
@@ -139,6 +175,13 @@
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
+        onAuthStateChanged(auth, (user) => {
+            if (user && !isRedirecting) {
+                showStatus('Oturum açık, yönlendiriliyor...', 'success');
+                goToHome();
+            }
+        });
+
         togglePassBtn.addEventListener('click', () => {
             const isPassword = passInput.type === 'password';
             passInput.type = isPassword ? 'text' : 'password';
@@ -152,25 +195,38 @@
             try {
                 await signInWithPopup(auth, provider);
                 showStatus('Giriş başarılı! Yönlendiriliyor...', 'success');
-                setTimeout(() => {
-                    window.location.href = NEXT_PAGE;
-                }, 500);
+                goToHome();
             } catch (err) {
-                showStatus(`Hata: ${err.code} - ${err.message}`, 'info');
+                isRedirecting = false;
+                showStatus(getAuthErrorMessage(err), 'info');
                 console.error(err);
             }
         });
 
-        loginForm.addEventListener('submit', (e) => {
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const userVal = document.getElementById('loginUser').value.trim();
-            if (!userVal) return;
+            const email = document.getElementById('loginUser').value.trim();
+            const password = passInput.value;
 
-            showStatus(`Giriş doğrulandı (${userVal}). Yönlendiriliyor...`, 'success');
-            setTimeout(() => {
-                if (window.location.pathname.endsWith('/' + NEXT_PAGE)) return;
-                window.location.href = NEXT_PAGE;
-            }, 600);
+            if (!email || !password) {
+                showStatus('Lütfen e-posta ve şifre girin.', 'info');
+                return;
+            }
+
+            submitLoginBtn.disabled = true;
+            showStatus('Hesap doğrulanıyor...', 'info');
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                showStatus('Giriş doğrulandı! Yönlendiriliyor...', 'success');
+                goToHome();
+            } catch (err) {
+                isRedirecting = false;
+                showStatus(getAuthErrorMessage(err), 'info');
+                console.error(err);
+            } finally {
+                submitLoginBtn.disabled = false;
+            }
         });
     </script>
 </body>
