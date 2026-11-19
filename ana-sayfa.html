@@ -12,8 +12,9 @@
     <!-- ÜST BAR -->
     <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-30">
         <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2.5">
                 <span class="text-lg font-extrabold text-emerald-400 tracking-wide">TOP OYNA</span>
+                <img id="user-avatar" src="" alt="" referrerpolicy="no-referrer" class="hidden w-7 h-7 rounded-full object-cover border border-emerald-500">
                 <span id="user-badge" class="text-xs text-slate-300 bg-slate-800 px-2.5 py-1 rounded-lg">Yükleniyor...</span>
             </div>
 
@@ -57,7 +58,7 @@
             </div>
         </div>
 
-        <!-- SAHA EKLEME FORMU (AÇIKSA GÖRÜNÜR) -->
+        <!-- SAHA EKLEME FORMU -->
         <form id="add-pitch-form" onsubmit="addPitch(event)" class="hidden bg-slate-900 border border-emerald-500/40 rounded-2xl p-4 grid grid-cols-1 sm:grid-cols-4 gap-3 items-end">
             <div>
                 <label class="block text-xs text-slate-400 mb-1">Saha Adı</label>
@@ -83,7 +84,7 @@
         <!-- SAHALAR LİSTESİ -->
         <div id="pitches-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
 
-        <!-- KİRALADIĞIM MAÇLAR -->
+        <!-- KİRALANAN MAÇLAR -->
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
             <h2 class="text-sm font-bold text-white mb-3">Kiralanan Maç Saatleri</h2>
             <div id="bookings-list" class="space-y-2 text-xs"></div>
@@ -138,12 +139,25 @@
                 window.location.replace(LOGIN_PAGE);
                 return;
             }
+            const googleInfo = Array.isArray(user.providerData)
+                ? user.providerData.find(p => p && p.providerId === "google.com")
+                : null;
+            const displayName = (googleInfo && googleInfo.displayName) || user.displayName || (user.email || "Kullanıcı").split("@")[0];
+            const photoURL = (googleInfo && googleInfo.photoURL) || user.photoURL || "";
+
             currentUser = {
                 uid: user.uid,
-                name: user.displayName || (user.email || "Kullanıcı").split("@")[0],
-                email: user.email || ""
+                name: displayName,
+                email: (googleInfo && googleInfo.email) || user.email || "",
+                photo: photoURL
             };
+
             document.getElementById("user-badge").textContent = currentUser.name;
+            const avatarEl = document.getElementById("user-avatar");
+            if (currentUser.photo) {
+                avatarEl.src = currentUser.photo;
+                avatarEl.classList.remove("hidden");
+            }
             startRealtimeSync();
         });
 
@@ -218,7 +232,6 @@
             }
         };
 
-        // 1000 kişinin aynı anda tıklamasında çakışmayı önleyen atomik kiralama
         window.rentSlot = async (pitchId, pitchName, district, price, date, hour) => {
             if (!currentUser) return;
             const slotDocId = `${pitchId}_${date}_${hour.replace(":", "")}`;
