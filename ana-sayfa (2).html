@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Oyna - Halı Saha</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+
+    <!-- ÜST BAR -->
+    <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-30">
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-2 flex-wrap">
+            <div class="flex items-center gap-2.5">
+                <span class="text-lg font-extrabold text-emerald-400 tracking-wide">TOP OYNA</span>
+                <img id="user-avatar" src="" alt="" referrerpolicy="no-referrer" class="hidden w-7 h-7 rounded-full object-cover border border-emerald-500">
+                <span id="user-badge" class="text-xs text-slate-300 bg-slate-800 px-2.5 py-1 rounded-lg">Üye</span>
+                <span id="role-badge" class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">Üye</span>
+            </div>
+
+            <div class="flex items-center gap-2 flex-wrap">
+                <button id="toggle-notif-btn" onclick="toggleNotificationsPanel()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-bell"></i>
+                    <span>Bildirimler (<span id="notif-count">0</span>)</span>
+                </button>
+                <button id="toggle-users-btn" onclick="toggleUsersPanel()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-sky-500/20 text-sky-300 border border-sky-500/40 hover:bg-sky-500/30 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Kullanıcılar (<span id="users-count">0</span>)</span>
+                </button>
+                <button id="toggle-owner-btn" onclick="toggleOwnerMode()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition">
+                    Saha Ekle/Sil: Kapalı
+                </button>
+                <a href="index.html" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
+                    Giriş Sayfası
+                </a>
+                <button onclick="logout()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-right-from-bracket"></i> Çıkış Yap
+                </button>
+                <button onclick="deleteOwnAccountRecord()" title="Hesabı Sil (Arşiv Kaydı Kalır)" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-800 hover:bg-rose-900/70 text-slate-300 hover:text-rose-200 border border-slate-700 transition">
+                    <i class="fa-solid fa-user-slash"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+
+        <!-- ENGEL UYARISI -->
+        <div id="blocked-banner" class="hidden p-4 rounded-2xl bg-rose-950/80 border border-rose-500 text-rose-200 text-xs font-semibold">
+            <i class="fa-solid fa-ban text-rose-400 mr-1.5"></i>
+            Hesabınız kötü amaçlı kullanım nedeniyle kısıtlanmıştır. Saha kiralama ve ekleme işlemleri devre dışı bırakıldı.
+        </div>
+
+        <!-- DURUM MESAJI -->
+        <div id="status-banner" class="text-xs px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 flex items-center justify-between flex-wrap gap-2">
+            <span id="db-status"><i class="fa-solid fa-circle text-emerald-400 text-[10px] mr-1.5"></i> Canlı Alan Aktif</span>
+            <span id="sync-count" class="text-emerald-400 font-semibold"></span>
+        </div>
+
+        <!-- ANA YÖNETİCİ BİLDİRİM & ONAY MERKEZİ -->
+        <section id="notifications-panel" class="hidden bg-slate-900 border border-amber-500/40 rounded-2xl p-4 space-y-4">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+                <h2 class="text-sm font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-bell text-amber-400"></i> Ana Sayfa Bildirim & Onay Merkezi
+                </h2>
+                <button onclick="requestManagerRoleSelf()" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30 hover:bg-amber-500/25">
+                    Yönetici Giriş Talebi Gönder
+                </button>
+            </div>
+
+            <div>
+                <h3 class="text-xs font-bold text-amber-300 mb-2">Yönetici Giriş Talepleri</h3>
+                <div id="manager-requests-list" class="space-y-2 text-xs"></div>
+            </div>
+
+            <div>
+                <h3 class="text-xs font-bold text-sky-300 mb-2">Yönetici İşlem Onay Kuyruğu (Saha Oluşturma / Silme / Fiyat / İptal)</h3>
+                <div id="action-approvals-list" class="space-y-2 text-xs"></div>
+            </div>
+        </section>
+
+        <!-- GİRİŞ YAPAN KULLANICILAR PANELİ -->
+        <section id="users-panel" class="hidden bg-slate-900 border border-sky-500/40 rounded-2xl p-4 space-y-3">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+                <h2 class="text-sm font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-user-shield text-sky-400"></i> Kayıtlı ve Giriş Yapmış Kullanıcılar (Çıkış/Silme Dahil Arşivli)
+                </h2>
+                <span class="text-[11px] text-slate-400">Yönetici onayı ve engelleme buradan yönetilir</span>
+            </div>
+            <div id="users-list" class="space-y-2 text-xs"></div>
+        </section>
+
+        <!-- FİLTRE VE TARİH -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+                <label class="block text-xs text-slate-400 mb-1">Tarih</label>
+                <input type="date" id="match-date" onchange="renderAll()" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white outline-none focus:border-emerald-500">
+            </div>
+            <div>
+                <label class="block text-xs text-slate-400 mb-1">İlçe</label>
+                <select id="filter-district" onchange="renderAll()" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white outline-none focus:border-emerald-500">
+                    <option value="">Tümü</option>
+                    <option value="Selçuklu">Selçuklu</option>
+                    <option value="Meram">Meram</option>
+                    <option value="Karatay">Karatay</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs text-slate-400 mb-1">Saha Ara</label>
+                <input type="text" id="filter-search" oninput="renderAll()" placeholder="Saha adı..." class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white outline-none focus:border-emerald-500">
+            </div>
+        </div>
+
+        <!-- SAHA EKLEME FORMU -->
+        <form id="add-pitch-form" onsubmit="addPitch(event)" class="hidden bg-slate-900 border border-emerald-500/40 rounded-2xl p-4 grid grid-cols-1 sm:grid-cols-4 gap-3 items-end">
+            <div>
+                <label class="block text-xs text-slate-400 mb-1">Saha Adı</label>
+                <input type="text" id="pitch-name" required placeholder="Örn: Arena Halı Saha" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white outline-none focus:border-emerald-500">
+            </div>
+            <div>
+                <label class="block text-xs text-slate-400 mb-1">İlçe</label>
+                <select id="pitch-district" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white outline-none focus:border-emerald-500">
+                    <option value="Selçuklu">Selçuklu</option>
+                    <option value="Meram">Meram</option>
+                    <option value="Karatay">Karatay</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs text-slate-400 mb-1">Saatlik Ücret (₺)</label>
+                <input type="number" id="pitch-price" required min="100" value="1200" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white outline-none focus:border-emerald-500">
+            </div>
+            <button type="submit" id="add-pitch-btn" class="w-full py-2.5 px-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold rounded-xl text-sm transition">
+                + Sahayı Kaydet
+            </button>
+        </form>
+
+        <!-- RENK LEJANDI -->
+        <div class="flex items-center gap-4 text-xs text-slate-400 flex-wrap">
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-emerald-500/40 border border-emerald-500 inline-block"></span> Müsait</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-rose-600/80 border border-rose-400 inline-block"></span> Senin Seçtiğin (Kırmızı)</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-slate-600/70 border border-slate-400 inline-block"></span> Başkası Seçti (Gri)</span>
+        </div>
+
+        <!-- SAHALAR LİSTESİ -->
+        <div id="pitches-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+
+        <!-- KİRALANAN MAÇLAR -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+            <h2 class="text-sm font-bold text-white mb-3">Kiralanan Maç Saatleri</h2>
+            <div id="bookings-list" class="space-y-2 text-xs"></div>
+        </div>
+
+    </main>
+
+    <!-- SEÇİLEN SAHA AYRINTI / TEYİT PENCERESİ (MODAL) -->
+    <div id="pitch-confirm-modal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="w-full max-w-md bg-slate-900 border border-slate-700 rounded-2xl p-5 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-base font-extrabold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-circle-check text-rose-400"></i> Saha Seçim Teyidi
+                </h3>
+                <button onclick="closeConfirmModal()" class="text-slate-400 hover:text-white text-sm">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="pitch-confirm-body" class="space-y-2 text-xs text-slate-300"></div>
+            <div class="flex items-center justify-end gap-2 pt-2">
+                <button onclick="closeConfirmModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs">
+                    Tamam
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import {
+            getFirestore,
+            collection,
+            doc,
+            setDoc,
+            getDoc,
+            updateDoc,
+            deleteDoc,
+            addDoc,
+            onSnapshot,
+            runTransaction
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const HOURS = ["16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"];
+        const LOGIN_PAGE = "index.html";
+        const FOUNDER_EMAIL = "eyupensarus@gmail.com";
+        const ARCHIVE_STORAGE_KEY = "top_oyna_archived_users_v1";
+        const PITCHES_STORAGE_KEY = "top_oyna_pitches_v1";
+        const BOOKINGS_STORAGE_KEY = "top_oyna_bookings_v1";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCKYARoGK8ADJ2_T5c2GomrAG47-gHtQ-8",
+            authDomain: "top-oyna-d33f3.firebaseapp.com",
+            projectId: "top-oyna-d33f3",
+            storageBucket: "top-oyna-d33f3.firebasestorage.app",
+            messagingSenderId: "1033043310464",
+            appId: "1:1033043310464:web:d467e84b68f73e99f0f365",
+            measurementId: "G-P2ZRQQFFMD"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = {
+            uid: "guest_user",
+            name: "Misafir Oyuncu",
+            email: "",
+            phone: "",
+            photo: "",
+            blocked: false,
+            role: "user",
+            managerStatus: "none"
+        };
+
+        let pitches = [];
+        let bookings = [];
+        let users = [];
+        let archivedUsers = [];
+        let notifications = [];
+        let approvalRequests = [];
+        let ownerMode = false;
+        let usersPanelOpen = false;
+        let notifPanelOpen = false;
+
+        function getToday() {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+        }
+
+        function formatTimeTR(ts) {
+            if (!ts) return "-";
+            return new Date(ts).toLocaleString("tr-TR", {
+                day: "2-digit",
+                month: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+        }
+
+        function readLocalList(key, fallback = []) {
+            try {
+                const raw = localStorage.getItem(key);
+                return raw ? JSON.parse(raw) : fallback;
+            } catch (_) {
+                return fallback;
+            }
+        }
+
+        function writeLocalList(key, list) {
+            try {
+                localStorage.setItem(key, JSON.stringify(list));
+            } catch (_) {}
+        }
+
+        function saveLocalArchive(record) {
+            const list = readLocalList(ARCHIVE_STORAGE_KEY, []);
+            const idx = list.findIndex(item => item.uid === record.uid || (record.email && item.email === record.email));
+            if (idx >= 0) {
+                list[idx] = { ...list[idx], ...record, updatedAt: Date.now() };
+            } else {
+                list.unshift({ ...record, updatedAt: Date.now() });
+            }
+            writeLocalList(ARCHIVE_STORAGE_KEY, list);
+            archivedUsers = list;
+        }
+
+        document.getElementById("match-date").value = getToday();
+        archivedUsers = readLocalList(ARCHIVE_STORAGE_KEY, []);
+        pitches = readLocalList(PITCHES_STORAGE_KEY, [
+            { id: "pitch_selcuklu_1", name: "Selçuklu Arena Halı Saha", district: "Selçuklu", price: 1400, ownerId: "system", ownerName: "Ana Yönetim" },
+            { id: "pitch_meram_1", name: "Meram Yıldız Spor Tesisleri", district: "Meram", price: 1300, ownerId: "system", ownerName: "Ana Yönetim" }
+        ]);
+        bookings = readLocalList(BOOKINGS_STORAGE_KEY, []);
+
+        function isFounder() {
+            return Boolean(currentUser && currentUser.email && currentUser.email.toLowerCase() === FOUNDER_EMAIL.toLowerCase());
+        }
+
+        function canManagePitch(pitch) {
+            if (!currentUser) return false;
+            if (isFounder()) return true;
+            if (currentUser.role === "manager") {
+                return !pitch.ownerId || pitch.ownerId === "system" || pitch.ownerId === currentUser.uid;
+            }
+            return true;
+        }
+
+        function updateRoleBadge() {
+            const badge = document.getElementById("role-badge");
+            if (!badge) return;
+            if (isFounder()) {
+                badge.textContent = "Site Kurucusu";
+                badge.className = "text-[11px] font-bold px-2 py-0.5 rounded-md bg-amber-500/25 text-amber-300 border border-amber-500/50";
+            } else if (currentUser && currentUser.role === "manager") {
+                badge.textContent = "Saha Yöneticisi";
+                badge.className = "text-[11px] font-bold px-2 py-0.5 rounded-md bg-sky-500/25 text-sky-300 border border-sky-500/50";
+            } else {
+                badge.textContent = "Üye";
+                badge.className = "text-[11px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
+            }
+        }
+
+        async function registerLoginUser(user) {
+            const googleInfo = Array.isArray(user.providerData)
+                ? user.providerData.find(p => p && p.providerId === "google.com")
+                : null;
+            const displayName = (googleInfo && googleInfo.displayName) || user.displayName || (user.email || "Kullanıcı").split("@")[0];
+            const email = (googleInfo && googleInfo.email) || user.email || "";
+            const photoURL = (googleInfo && googleInfo.photoURL) || user.photoURL || "";
+
+            const userRef = doc(db, "users", user.uid);
+            const archiveRef = doc(db, "archived_users", user.uid);
+            let existing = {};
+            try {
+                const snap = await getDoc(userRef);
+                if (snap.exists()) existing = snap.data();
+            } catch (_) {}
+
+            const existingBlocked = existing.blocked === true;
+            const role = existing.role === "manager" ? "manager" : "user";
+            const managerStatus = existing.role === "manager" ? "approved" : (existing.managerStatus || "none");
+
+            const record = {
+                uid: user.uid,
+                name: displayName,
+                email,
+                phone: existing.phone || "",
+                photo: photoURL || existing.photo || "",
+                blocked: existingBlocked,
+                role,
+                managerStatus,
+                lastLoginAt: Date.now(),
+                updatedAt: Date.now(),
+                deletedOrSignedOut: false
+            };
+
+            try {
+                await setDoc(userRef, record, { merge: true });
+                await setDoc(archiveRef, { ...record, archivedAt: Date.now() }, { merge: true });
+            } catch (_) {}
+
+            saveLocalArchive(record);
+            currentUser = { ...record };
+
+            document.getElementById("user-badge").textContent = currentUser.name;
+            const avatarEl = document.getElementById("user-avatar");
+            if (currentUser.photo) {
+                avatarEl.src = currentUser.photo;
+                avatarEl.classList.remove("hidden");
+            }
+            updateRoleBadge();
+            applyBlockedState();
+        }
+
+        function applyBlockedState() {
+            const blocked = Boolean(currentUser && currentUser.blocked);
+            document.getElementById("blocked-banner").classList.toggle("hidden", !blocked);
+            if (blocked && ownerMode) {
+                ownerMode = false;
+                document.getElementById("toggle-owner-btn").textContent = "Saha Ekle/Sil: Kapalı";
+                document.getElementById("add-pitch-form").classList.add("hidden");
+            }
+            renderAll();
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                await registerLoginUser(user);
+            } else {
+                document.getElementById("user-badge").textContent = currentUser.name;
+                updateRoleBadge();
+                renderAll();
+            }
+            startRealtimeSync();
+        });
+
+        function startRealtimeSync() {
+            const updateStatus = () => {
+                const mergedUsers = getMergedUsers();
+                document.getElementById("db-status").innerHTML = `<i class="fa-solid fa-circle text-emerald-400 text-[10px] mr-1.5"></i> Canlı Alan Aktif`;
+                document.getElementById("sync-count").textContent = `${pitches.length} Saha • ${bookings.length} Kiralama • ${mergedUsers.length} Kayıtlı Kullanıcı`;
+            };
+
+            updateStatus();
+            renderAll();
+            renderMergedUsersList();
+            renderNotificationsAndApprovals();
+
+            onSnapshot(collection(db, "pitches"), (snap) => {
+                if (!snap.empty) {
+                    pitches = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    writeLocalList(PITCHES_STORAGE_KEY, pitches);
+                }
+                updateStatus();
+                renderAll();
+            }, () => {});
+
+            onSnapshot(collection(db, "bookings"), (snap) => {
+                if (!snap.empty) {
+                    bookings = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    writeLocalList(BOOKINGS_STORAGE_KEY, bookings);
+                }
+                updateStatus();
+                renderAll();
+            }, () => {});
+
+            onSnapshot(collection(db, "users"), (snap) => {
+                users = snap.docs.map(d => ({ id: d.id, uid: d.id, ...d.data() }));
+                users.forEach(u => saveLocalArchive(u));
+                if (currentUser && currentUser.uid !== "guest_user") {
+                    const me = users.find(u => u.uid === currentUser.uid || u.id === currentUser.uid);
+                    if (me) {
+                        currentUser.blocked = Boolean(me.blocked);
+                        currentUser.role = me.role === "manager" ? "manager" : "user";
+                        currentUser.managerStatus = me.managerStatus || "none";
+                        updateRoleBadge();
+                        applyBlockedState();
+                    }
+                }
+                renderMergedUsersList();
+                updateStatus();
+            }, () => {});
+
+            onSnapshot(collection(db, "archived_users"), (snap) => {
+                const remoteArch = snap.docs.map(d => ({ id: d.id, uid: d.id, ...d.data() }));
+                const localList = readLocalList(ARCHIVE_STORAGE_KEY, []);
+                const map = new Map();
+                [...localList, ...remoteArch].forEach(item => {
+                    const key = item.uid || item.id || item.email;
+                    if (!key) return;
+                    const prev = map.get(key) || {};
+                    map.set(key, { ...prev, ...item, updatedAt: Math.max(prev.updatedAt || 0, item.updatedAt || 0) });
+                });
+                archivedUsers = Array.from(map.values());
+                writeLocalList(ARCHIVE_STORAGE_KEY, archivedUsers);
+                renderMergedUsersList();
+                updateStatus();
+            }, () => {});
+
+            onSnapshot(collection(db, "notifications"), (snap) => {
+                notifications = snap.docs
+                    .map(d => ({ id: d.id, ...d.data() }))
+                    .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                renderNotificationsAndApprovals();
+            }, () => {});
+
+            onSnapshot(collection(db, "approval_requests"), (snap) => {
+                approvalRequests = snap.docs
+                    .map(d => ({ id: d.id, ...d.data() }))
+                    .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                renderNotificationsAndApprovals();
+            }, () => {});
+        }
+
+        function getMergedUsers() {
+            const map = new Map();
+            [...archivedUsers, ...users].forEach(u => {
+                const key = u.uid || u.id || u.email;
+                if (!key) return;
+                const prev = map.get(key) || {};
+                map.set(key, {
+                    ...prev,
+                    ...u,
+                    uid: u.uid || u.id || prev.uid,
+                    lastLoginAt: Math.max(prev.lastLoginAt || 0, u.lastLoginAt || 0)
+                });
+            });
+            return Array.from(map.values()).sort((a, b) => (b.lastLoginAt || 0) - (a.lastLoginAt || 0));
+        }
+
+        window.toggleNotificationsPanel = () => {
+            notifPanelOpen = !notifPanelOpen;
+            document.getElementById("notifications-panel").classList.toggle("hidden", !notifPanelOpen);
+            renderNotificationsAndApprovals();
+        };
+
+        window.toggleUsersPanel = () => {
+            usersPanelOpen = !usersPanelOpen;
+            document.getElementById("users-panel").classList.toggle("hidden", !usersPanelOpen);
+            renderMergedUsersList();
+        };
+
+        function buildFounderMailto(subject, bodyText) {
+            return `mailto:${encodeURIComponent(FOUNDER_EMAIL)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyText)}`;
+        }
+
+        window.requestManagerRoleSelf = async () => {
+            if (!currentUser) return;
+            if (isFounder()) {
+                alert("Zaten site kurucusu hesabıyla (eyupensarus@gmail.com) giriş yaptınız.");
+                return;
+            }
+            const reqNotif = {
+                id: "notif_" + Date.now(),
+                type: "manager_request",
+                targetFounderEmail: FOUNDER_EMAIL,
+                title: "Yönetici Giriş Onay Talebi",
+                message: `${currentUser.name} (${currentUser.email || currentUser.uid}) saha yöneticisi olarak giriş yapmak için ${FOUNDER_EMAIL} onayını bekliyor.`,
+                requesterUid: currentUser.uid,
+                requesterName: currentUser.name,
+                requesterEmail: currentUser.email || "",
+                status: "pending",
+                createdAt: Date.now()
+            };
+            notifications = [reqNotif, ...notifications];
+            renderNotificationsAndApprovals();
+            try {
+                await addDoc(collection(db, "notifications"), reqNotif);
+            } catch (_) {}
+            const mailHref = buildFounderMailto(
+                "Top Oyna - Saha Yöneticisi Giriş Onayı",
+                `Kullanıcı: ${currentUser.name} (${currentUser.email || currentUser.uid}) saha yöneticisi olarak giriş yapmak için onayınızı bekliyor.`
+            );
+            alert(`Yönetici giriş talebiniz ${FOUNDER_EMAIL} sayfasına ve e-posta bildirimine iletildi.`);
+            if (confirm(`${FOUNDER_EMAIL} adresine onay e-postası taslağı açılsın mı?`)) {
+                window.location.href = mailHref;
+            }
+        };
+
+        window.approveManagerRequest = async (notifId, targetUid, approve) => {
+            notifications = notifications.map(n => n.id === notifId ? { ...n, status: approve ? "approved" : "rejected" } : n);
+            if (targetUid) {
+                const nextRole = approve ? "manager" : "user";
+                const nextStatus = approve ? "approved" : "rejected";
+                if (currentUser && currentUser.uid === targetUid) {
+                    currentUser.role = nextRole;
+                    currentUser.managerStatus = nextStatus;
+                    updateRoleBadge();
+                }
+                const list = readLocalList(ARCHIVE_STORAGE_KEY, []).map(u =>
+                    (u.uid === targetUid || u.id === targetUid) ? { ...u, role: nextRole, managerStatus: nextStatus } : u
+                );
+                writeLocalList(ARCHIVE_STORAGE_KEY, list);
+                archivedUsers = list;
+                try {
+                    await setDoc(doc(db, "users", targetUid), { role: nextRole, managerStatus: nextStatus }, { merge: true });
+                    await setDoc(doc(db, "archived_users", targetUid), { role: nextRole, managerStatus: nextStatus }, { merge: true });
+                } catch (_) {}
+            }
+            try {
+                await updateDoc(doc(db, "notifications", notifId), { status: approve ? "approved" : "rejected", resolvedAt: Date.now() });
+            } catch (_) {}
+            renderMergedUsersList();
+            renderNotificationsAndApprovals();
+            renderAll();
+        };
+
+        window.setUserManagerRole = async (targetUid, makeManager) => {
+            const role = makeManager ? "manager" : "user";
+            const managerStatus = makeManager ? "approved" : "none";
+            if (currentUser && currentUser.uid === targetUid) {
+                currentUser.role = role;
+                currentUser.managerStatus = managerStatus;
+                updateRoleBadge();
+            }
+            const list = readLocalList(ARCHIVE_STORAGE_KEY, []).map(u =>
+                (u.uid === targetUid || u.id === targetUid) ? { ...u, role, managerStatus } : u
+            );
+            writeLocalList(ARCHIVE_STORAGE_KEY, list);
+            archivedUsers = list;
+            try {
+                await setDoc(doc(db, "users", targetUid), { role, managerStatus }, { merge: true });
+                await setDoc(doc(db, "archived_users", targetUid), { role, managerStatus }, { merge: true });
+            } catch (_) {}
+            renderMergedUsersList();
+            renderAll();
+        };
+
+        window.toggleBlockUser = async (targetUid, nextBlocked) => {
+            if (currentUser && currentUser.uid === targetUid) {
+                currentUser.blocked = Boolean(nextBlocked);
+                applyBlockedState();
+            }
+            const list = readLocalList(ARCHIVE_STORAGE_KEY, []).map(u =>
+                (u.uid === targetUid || u.id === targetUid) ? { ...u, blocked: Boolean(nextBlocked) } : u
+            );
+            writeLocalList(ARCHIVE_STORAGE_KEY, list);
+            archivedUsers = list;
+            try {
+                await setDoc(doc(db, "users", targetUid), { blocked: Boolean(nextBlocked) }, { merge: true });
+                await setDoc(doc(db, "archived_users", targetUid), { blocked: Boolean(nextBlocked) }, { merge: true });
+            } catch (_) {}
+            renderMergedUsersList();
+        };
+
+        function renderNotificationsAndApprovals() {
+            const pendingMgr = notifications.filter(n => n.type === "manager_request" && n.status === "pending");
+            const pendingAct = approvalRequests.filter(r => r.status === "pending");
+            const totalPending = pendingMgr.length + pendingAct.length;
+            const countEl = document.getElementById("notif-count");
+            if (countEl) countEl.textContent = String(totalPending);
+
+            const mgrEl = document.getElementById("manager-requests-list");
+            const actEl = document.getElementById("action-approvals-list");
+            if (!mgrEl || !actEl) return;
+
+            const founderView = isFounder();
+
+            if (pendingMgr.length === 0) {
+                mgrEl.innerHTML = `<div class="text-slate-500">Bekleyen yönetici giriş bildirimi yok (${FOUNDER_EMAIL}).</div>`;
+            } else {
+                mgrEl.innerHTML = pendingMgr.map(n => {
+                    const mailLink = buildFounderMailto(
+                        `Top Oyna Onay: ${n.requesterName || "Yönetici Girişi"}`,
+                        `Talep: ${n.message || ""}
+Onaylamak veya reddetmek için ana sayfadaki bildirim panelini kullanın.`
+                    );
+                    return `
+                        <div class="flex items-center justify-between gap-2 bg-slate-950 border border-amber-500/30 px-3 py-2.5 rounded-xl flex-wrap">
+                            <div>
+                                <div class="font-bold text-amber-300">${n.title || "Yönetici Talebi"} → ${FOUNDER_EMAIL}</div>
+                                <div class="text-slate-300">${n.message || ""}</div>
+                                <div class="text-[11px] text-slate-500">${formatTimeTR(n.createdAt)}</div>
+                            </div>
+                            ${founderView ? `
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <button onclick="approveManagerRequest('${n.id}', '${n.requesterUid || ""}', true)" class="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold">Onayla</button>
+                                    <button onclick="approveManagerRequest('${n.id}', '${n.requesterUid || ""}', false)" class="px-3 py-1 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold">Reddet</button>
+                                    <a href="${mailLink}" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold">E-posta</a>
+                                </div>
+                            ` : `
+                                <span class="text-[11px] text-amber-300 font-semibold">${FOUNDER_EMAIL} onayı bekleniyor</span>
+                            `}
+                        </div>
+                    `;
+                }).join("");
+            }
+
+            if (pendingAct.length === 0) {
+                actEl.innerHTML = `<div class="text-slate-500">Onay bekleyen yönetici işlemi yok.</div>`;
+            } else {
+                actEl.innerHTML = pendingAct.map(r => {
+                    const mailLink = buildFounderMailto(
+                        `Top Oyna İşlem Onayı: ${r.actionLabel || r.actionType}`,
+                        `Yönetici: ${r.requesterName || ""}
+Detay: ${r.summary || ""}`
+                    );
+                    return `
+                        <div class="flex items-center justify-between gap-2 bg-slate-950 border border-sky-500/30 px-3 py-2.5 rounded-xl flex-wrap">
+                            <div>
+                                <div class="font-bold text-sky-300">${r.actionLabel || r.actionType} • ${r.requesterName || "Yönetici"}</div>
+                                <div class="text-slate-300">${r.summary || ""}</div>
+                                <div class="text-[11px] text-slate-500">${formatTimeTR(r.createdAt)}</div>
+                            </div>
+                            ${founderView ? `
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <button onclick="executeApprovedAction('${r.id}')" class="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold">Onayla ve Uygula</button>
+                                    <button onclick="rejectActionRequest('${r.id}')" class="px-3 py-1 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold">Reddet</button>
+                                    <a href="${mailLink}" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-sky-300 font-bold">E-posta</a>
+                                </div>
+                            ` : `
+                                <span class="text-[11px] text-sky-300 font-semibold">${FOUNDER_EMAIL} onayı bekleniyor</span>
+                            `}
+                        </div>
+                    `;
+                }).join("");
+            }
+        }
+
+        async function queueManagerApproval(actionType, actionLabel, summary, payload) {
+            const reqItem = {
+                id: "req_" + Date.now() + "_" + Math.random().toString(36).slice(2, 5),
+                targetFounderEmail: FOUNDER_EMAIL,
+                actionType,
+                actionLabel,
+                summary,
+                payload,
+                requesterUid: currentUser ? currentUser.uid : "",
+                requesterName: currentUser ? currentUser.name : "Yönetici",
+                requesterEmail: currentUser ? currentUser.email : "",
+                status: "pending",
+                createdAt: Date.now()
+            };
+            approvalRequests = [reqItem, ...approvalRequests];
+            renderNotificationsAndApprovals();
+            try {
+                await addDoc(collection(db, "approval_requests"), reqItem);
+            } catch (_) {}
+            alert(`İşlem ${FOUNDER_EMAIL} onay ekranına gönderildi. Onaylanmadan uygulanmaz.`);
+        }
+
+        window.executeApprovedAction = async (reqId) => {
+            const req = approvalRequests.find(r => r.id === reqId);
+            if (!req) return;
+            const p = req.payload || {};
+            try {
+                if (req.actionType === "create_pitch") {
+                    const id = p.id || `pitch_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+                    const newPitch = { id, name: p.name, district: p.district, price: Number(p.price) || 1200, ownerId: p.ownerId, ownerName: p.ownerName, createdAt: Date.now() };
+                    pitches = [newPitch, ...pitches];
+                    writeLocalList(PITCHES_STORAGE_KEY, pitches);
+                    await setDoc(doc(db, "pitches", id), newPitch);
+                } else if (req.actionType === "delete_pitch") {
+                    pitches = pitches.filter(item => item.id !== p.pitchId);
+                    writeLocalList(PITCHES_STORAGE_KEY, pitches);
+                    await deleteDoc(doc(db, "pitches", p.pitchId));
+                } else if (req.actionType === "update_pitch") {
+                    pitches = pitches.map(item => item.id === p.pitchId ? { ...item, name: p.name, price: Number(p.price) } : item);
+                    writeLocalList(PITCHES_STORAGE_KEY, pitches);
+                    await updateDoc(doc(db, "pitches", p.pitchId), { name: p.name, price: Number(p.price) });
+                } else if (req.actionType === "cancel_booking") {
+                    bookings = bookings.filter(item => item.id !== p.bookingId);
+                    writeLocalList(BOOKINGS_STORAGE_KEY, bookings);
+                    await deleteDoc(doc(db, "bookings", p.bookingId));
+                }
+            } catch (_) {}
+            approvalRequests = approvalRequests.map(r => r.id === reqId ? { ...r, status: "approved" } : r);
+            try {
+                await updateDoc(doc(db, "approval_requests", reqId), { status: "approved", resolvedAt: Date.now() });
+            } catch (_) {}
+            renderAll();
+            renderNotificationsAndApprovals();
+        };
+
+        window.rejectActionRequest = async (reqId) => {
+            approvalRequests = approvalRequests.map(r => r.id === reqId ? { ...r, status: "rejected" } : r);
+            try {
+                await updateDoc(doc(db, "approval_requests", reqId), { status: "rejected", resolvedAt: Date.now() });
+            } catch (_) {}
+            renderNotificationsAndApprovals();
+        };
+
+        function renderMergedUsersList() {
+            const listEl = document.getElementById("users-list");
+            const merged = getMergedUsers();
+            document.getElementById("users-count").textContent = String(merged.length);
+            if (!listEl) return;
+
+            if (merged.length === 0) {
+                listEl.innerHTML = `<div class="text-slate-500">Henüz giriş yapan kullanıcı kaydı yok.</div>`;
+                return;
+            }
+
+            listEl.innerHTML = merged.map(u => {
+                const uid = u.uid || u.id;
+                const isMe = currentUser && uid === currentUser.uid;
+                const isBlocked = Boolean(u.blocked);
+                const isMgr = u.role === "manager";
+                const isLeft = Boolean(u.deletedOrSignedOut);
+
+                return `
+                    <div class="flex items-center justify-between gap-3 bg-slate-950 border border-slate-800 px-3 py-2.5 rounded-xl flex-wrap">
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="font-bold text-white truncate">${u.name || "İsimsiz"}</span>
+                                <span class="text-slate-400 truncate">${u.email || ""}</span>
+                                ${isMe ? `<span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">Sen</span>` : ""}
+                                ${isMgr ? `<span class="px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-300 text-[10px] font-bold">Saha Yöneticisi</span>` : `<span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px]">Üye</span>`}
+                                ${u.managerStatus === "pending" && !isMgr ? `<span class="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-bold">Yönetici Onayı Bekliyor</span>` : ""}
+                                ${isBlocked ? `<span class="px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 text-[10px] font-bold">Engelli</span>` : ""}
+                                ${isLeft ? `<span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 text-[10px]">Çıkış/Silinmiş Kayıt</span>` : ""}
+                            </div>
+                            <div class="text-[11px] text-slate-500 mt-0.5">Son giriş: ${formatTimeTR(u.lastLoginAt)}</div>
+                        </div>
+
+                        ${isFounder() ? `
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <button onclick="setUserManagerRole('${uid}', ${!isMgr})" class="px-2.5 py-1 rounded-lg font-bold text-[11px] transition ${
+                                    isMgr
+                                        ? "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                                        : "bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30"
+                                }">
+                                    ${isMgr ? "Yöneticiliği Al" : "Yönetici Onayla"}
+                                </button>
+                                ${!isMe ? `
+                                    <button onclick="toggleBlockUser('${uid}', ${!isBlocked})" class="px-2.5 py-1 rounded-lg font-bold text-[11px] transition ${
+                                        isBlocked
+                                            ? "bg-emerald-600 hover:bg-emerald-500 text-white"
+                                            : "bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/40"
+                                    }">
+                                        ${isBlocked ? "Engeli Kaldır" : "Engelle"}
+                                    </button>
+                                ` : ""}
+                            </div>
+                        ` : `<span class="text-[11px] text-slate-500">Yalnızca ${FOUNDER_EMAIL}</span>`}
+                    </div>
+                `;
+            }).join("");
+        }
+
+        window.toggleOwnerMode = () => {
+            if (currentUser && currentUser.blocked) {
+                alert("Engelli hesaplar saha ekleyemez.");
+                return;
+            }
+            ownerMode = !ownerMode;
+            const btn = document.getElementById("toggle-owner-btn");
+            const form = document.getElementById("add-pitch-form");
+            btn.textContent = ownerMode ? "Saha Ekle/Sil: Açık" : "Saha Ekle/Sil: Kapalı";
+            form.classList.toggle("hidden", !ownerMode);
+        };
+
+        window.addPitch = async (e) => {
+            e.preventDefault();
+            if (!currentUser) return;
+            if (currentUser.blocked) {
+                alert("Engelli hesaplar saha ekleyemez.");
+                return;
+            }
+
+            const name = document.getElementById("pitch-name").value.trim();
+            const district = document.getElementById("pitch-district").value;
+            const price = Number(document.getElementById("pitch-price").value) || 1200;
+            const btn = document.getElementById("add-pitch-btn");
+
+            if (!name) return;
+            btn.disabled = true;
+            btn.textContent = "Kaydediliyor...";
+
+            const pitchPayload = {
+                name,
+                district,
+                price,
+                ownerId: currentUser.uid,
+                ownerName: currentUser.name
+            };
+
+            if (currentUser.role === "manager") {
+                await queueManagerApproval(
+                    "create_pitch",
+                    "Saha Oluşturma",
+                    `${name} (${district}) - ${price} ₺ sahası oluşturmak istiyor.`,
+                    pitchPayload
+                );
+                document.getElementById("pitch-name").value = "";
+                btn.disabled = false;
+                btn.textContent = "+ Sahayı Kaydet";
+                return;
+            }
+
+            const id = `pitch_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+            const fullPitch = { ...pitchPayload, id, createdAt: Date.now() };
+            pitches = [fullPitch, ...pitches];
+            writeLocalList(PITCHES_STORAGE_KEY, pitches);
+            try {
+                await setDoc(doc(db, "pitches", id), fullPitch);
+            } catch (_) {}
+            document.getElementById("pitch-name").value = "";
+            btn.disabled = false;
+            btn.textContent = "+ Sahayı Kaydet";
+            renderAll();
+            alert("Saha eklendi!");
+        };
+
+        window.deletePitchAction = async (pitchId, pitchName) => {
+            const pitch = pitches.find(p => p.id === pitchId);
+            if (!pitch) return;
+            if (!canManagePitch(pitch)) {
+                alert("Bu saha başka bir yöneticiye ait.");
+                return;
+            }
+            if (currentUser && currentUser.role === "manager") {
+                await queueManagerApproval(
+                    "delete_pitch",
+                    "Saha Silme",
+                    `"${pitchName}" sahasını silmek istiyor.`,
+                    { pitchId, pitchName }
+                );
+                return;
+            }
+            if (!confirm(`"${pitchName}" sahasını silmek istiyor musun?`)) return;
+            pitches = pitches.filter(p => p.id !== pitchId);
+            writeLocalList(PITCHES_STORAGE_KEY, pitches);
+            try {
+                await deleteDoc(doc(db, "pitches", pitchId));
+            } catch (_) {}
+            renderAll();
+        };
+
+        window.editPitchAction = async (pitchId) => {
+            const pitch = pitches.find(p => p.id === pitchId);
+            if (!pitch) return;
+            if (!canManagePitch(pitch)) {
+                alert("Bu sahada değişiklik yetkiniz yok.");
+                return;
+            }
+            const nextName = prompt("Yeni saha adı:", pitch.name);
+            if (!nextName || !nextName.trim()) return;
+            const nextPrice = Number(prompt("Yeni saatlik ücret (₺):", pitch.price || 1200));
+            if (!nextPrice || nextPrice < 50) return;
+
+            if (currentUser && currentUser.role === "manager") {
+                await queueManagerApproval(
+                    "update_pitch",
+                    "Saha Bilgisi / Fiyat Değişikliği",
+                    `"${pitch.name}" -> "${nextName.trim()}" / ${nextPrice} ₺ olarak güncellenecek.`,
+                    { pitchId, name: nextName.trim(), price: nextPrice }
+                );
+                return;
+            }
+
+            pitches = pitches.map(p => p.id === pitchId ? { ...p, name: nextName.trim(), price: nextPrice } : p);
+            writeLocalList(PITCHES_STORAGE_KEY, pitches);
+            try {
+                await updateDoc(doc(db, "pitches", pitchId), { name: nextName.trim(), price: nextPrice });
+            } catch (_) {}
+            renderAll();
+        };
+
+        function openConfirmModal(bookingData) {
+            const modal = document.getElementById("pitch-confirm-modal");
+            const body = document.getElementById("pitch-confirm-body");
+            if (!modal || !body) return;
+
+            body.innerHTML = `
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 space-y-1.5">
+                    <div><span class="text-slate-400">Saha Adı:</span> <span class="font-bold text-white">${bookingData.pitchName}</span></div>
+                    <div><span class="text-slate-400">İlçe:</span> <span class="font-semibold text-slate-200">${bookingData.district}</span></div>
+                    <div><span class="text-slate-400">Tarih & Saat:</span> <span class="font-bold text-rose-400">${bookingData.date} • ${bookingData.hour}</span></div>
+                    <div><span class="text-slate-400">Saatlik Ücret:</span> <span class="font-bold text-emerald-400">${Number(bookingData.price || 0).toLocaleString("tr-TR")} ₺</span></div>
+                    <div><span class="text-slate-400">Kiralayan:</span> <span class="text-slate-200">${bookingData.userName}</span></div>
+                </div>
+                <p class="text-[11px] text-rose-300">Bu saat sizin seçiminiz olarak kırmızı renkle işaretlendi. Aynı gün içinde başka saat seçemezsiniz.</p>
+            `;
+            modal.classList.remove("hidden");
+        }
+
+        window.closeConfirmModal = () => {
+            document.getElementById("pitch-confirm-modal").classList.add("hidden");
+        };
+
+        window.rentSlot = async (pitchId, pitchName, district, price, date, hour) => {
+            if (!currentUser) return;
+            if (currentUser.blocked) {
+                alert("Engelli hesaplar saha kiralayamaz.");
+                return;
+            }
+
+            const alreadyBookedSameDay = bookings.some(b => b.userId === currentUser.uid && b.date === date);
+            if (alreadyBookedSameDay) {
+                alert(`${date} tarihi için zaten bir saha seçtiniz. Aynı gün birden fazla saha/saat seçemezsiniz.`);
+                return;
+            }
+
+            const slotDocId = `${pitchId}_${date}_${hour.replace(":", "")}`;
+            if (bookings.some(b => b.id === slotDocId)) {
+                alert("Bu saat dolu!");
+                return;
+            }
+
+            const createdRecord = {
+                id: slotDocId,
+                pitchId,
+                pitchName,
+                district,
+                price,
+                date,
+                hour,
+                userId: currentUser.uid,
+                userName: currentUser.name,
+                userEmail: currentUser.email,
+                userPhone: currentUser.phone || "",
+                createdAt: Date.now()
+            };
+
+            bookings = [createdRecord, ...bookings];
+            writeLocalList(BOOKINGS_STORAGE_KEY, bookings);
+
+            try {
+                const slotRef = doc(db, "bookings", slotDocId);
+                await runTransaction(db, async (tx) => {
+                    const snap = await tx.get(slotRef);
+                    if (!snap.exists()) {
+                        tx.set(slotRef, createdRecord);
+                    }
+                });
+            } catch (_) {}
+
+            renderAll();
+            openConfirmModal(createdRecord);
+        };
+
+        window.cancelSlot = async (bookingId) => {
+            const bk = bookings.find(b => b.id === bookingId);
+            if (!bk) return;
+
+            if (currentUser && currentUser.role === "manager" && bk.userId !== currentUser.uid) {
+                await queueManagerApproval(
+                    "cancel_booking",
+                    "Rezervasyon İptali",
+                    `${bk.pitchName} (${bk.date} ${bk.hour} - ${bk.userName}) rezervasyonunu iptal etmek istiyor.`,
+                    { bookingId }
+                );
+                return;
+            }
+
+            bookings = bookings.filter(b => b.id !== bookingId);
+            writeLocalList(BOOKINGS_STORAGE_KEY, bookings);
+            try {
+                await deleteDoc(doc(db, "bookings", bookingId));
+            } catch (_) {}
+            renderAll();
+        };
+
+        window.renderAll = () => {
+            const date = document.getElementById("match-date").value || getToday();
+            const district = document.getElementById("filter-district").value;
+            const search = document.getElementById("filter-search").value.trim().toLowerCase();
+            const isBlocked = Boolean(currentUser && currentUser.blocked);
+            const hasBookingOnDate = Boolean(currentUser && bookings.some(b => b.userId === currentUser.uid && b.date === date));
+
+            const filtered = pitches.filter(p => {
+                const okDist = !district || p.district === district;
+                const okSearch = !search || (p.name || "").toLowerCase().includes(search);
+                return okDist && okSearch;
+            });
+
+            const listEl = document.getElementById("pitches-list");
+            if (filtered.length === 0) {
+                listEl.innerHTML = `<div class="col-span-full bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center text-sm text-slate-400">Henüz kayıtlı saha yok. Sağ üstten <b>Saha Ekle/Sil</b> butonunu açıp saha ekleyebilirsin.</div>`;
+            } else {
+                listEl.innerHTML = filtered.map(p => {
+                    const buttons = HOURS.map(h => {
+                        const slotId = `${p.id}_${date}_${h.replace(":", "")}`;
+                        const taken = bookings.find(b => b.id === slotId);
+                        if (taken) {
+                            const isMine = currentUser && taken.userId === currentUser.uid;
+                            if (isMine) {
+                                return `<button disabled class="py-2 rounded-xl bg-rose-600/80 border border-rose-400 text-white text-xs font-bold cursor-not-allowed">${h}<br><span class="text-[10px] font-semibold">Senin Seçimin</span></button>`;
+                            }
+                            return `<button disabled class="py-2 rounded-xl bg-slate-700/70 border border-slate-500 text-slate-200 text-xs font-bold cursor-not-allowed">${h}<br><span class="text-[10px] font-normal">Dolu</span></button>`;
+                        }
+                        if (isBlocked) {
+                            return `<button disabled class="py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-600 text-xs font-bold cursor-not-allowed">${h}<br><span class="text-[10px] font-normal">Kısıtlı</span></button>`;
+                        }
+                        if (hasBookingOnDate) {
+                            return `<button disabled title="Aynı gün birden fazla saha seçemezsiniz" class="py-2 rounded-xl bg-slate-900/80 border border-slate-800 text-slate-500 text-xs font-bold cursor-not-allowed">${h}<br><span class="text-[10px] font-normal">Gün Limiti</span></button>`;
+                        }
+                        return `<button onclick="rentSlot('${p.id}', '${p.name.replace(/'/g, "")}', '${p.district}', ${p.price || 0}, '${date}', '${h}')" class="py-2 rounded-xl bg-emerald-950/70 hover:bg-emerald-500 text-emerald-300 hover:text-slate-950 border border-emerald-500/40 text-xs font-bold transition">${h}<br><span class="text-[10px] font-normal">Kirala</span></button>`;
+                    }).join("");
+
+                    return `
+                        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+                            <div class="flex items-start justify-between gap-2">
+                                <div>
+                                    <h3 class="font-bold text-white text-base">${p.name}</h3>
+                                    <p class="text-xs text-slate-400">${p.district} • ${Number(p.price || 0).toLocaleString("tr-TR")} ₺</p>
+                                    ${p.ownerName ? `<p class="text-[11px] text-slate-500">Saha Sahibi: ${p.ownerName}</p>` : ""}
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <button onclick="editPitchAction('${p.id}')" title="Düzenle / Fiyat" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-sky-300 text-[11px] font-bold">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </button>
+                                    <button onclick="deletePitchAction('${p.id}', '${p.name.replace(/'/g, "")}')" title="Sahayı Sil" class="px-2 py-1 rounded-lg bg-rose-950/80 hover:bg-rose-600 text-rose-300 hover:text-white text-[11px] font-bold">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                    <span class="text-[11px] text-slate-400">${date}</span>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-4 gap-2">${buttons}</div>
+                        </div>
+                    `;
+                }).join("");
+            }
+
+            const bookingsEl = document.getElementById("bookings-list");
+            const canSeeHolderDetails = Boolean(currentUser && (isFounder() || currentUser.role === "manager"));
+
+            if (bookings.length === 0) {
+                bookingsEl.innerHTML = `<div class="text-slate-500">Henüz kiralanmış saat yok.</div>`;
+            } else {
+                bookingsEl.innerHTML = bookings
+                    .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+                    .map(b => {
+                        const isMine = currentUser && b.userId === currentUser.uid;
+                        const holderInfo = canSeeHolderDetails
+                            ? ` (${b.userName || "Üye"}${b.userEmail ? " • " + b.userEmail : ""}${b.userPhone ? " • " + b.userPhone : ""})`
+                            : (isMine ? ` (${b.userName || "Sen"})` : "");
+
+                        return `
+                            <div class="flex items-center justify-between bg-slate-950 border border-slate-800 px-3 py-2 rounded-xl gap-2 flex-wrap">
+                                <div>
+                                    <span class="font-bold text-white">${b.pitchName}</span>
+                                    <span class="text-slate-400"> • ${b.date} • </span>
+                                    <span class="${isMine ? "text-rose-400" : "text-slate-300"} font-bold">${b.hour}</span>
+                                    <span class="text-slate-400">${holderInfo}</span>
+                                </div>
+                                ${(isMine && !isBlocked) || canSeeHolderDetails
+                                    ? `<button onclick="cancelSlot('${b.id}')" class="text-rose-400 hover:text-rose-300 font-bold">İptal</button>`
+                                    : `<span class="text-slate-500">Dolu</span>`
+                                }
+                            </div>
+                        `;
+                    }).join("");
+            }
+        };
+
+        window.logout = async () => {
+            if (currentUser && currentUser.uid !== "guest_user") {
+                const leftRecord = { ...currentUser, deletedOrSignedOut: true, signedOutAt: Date.now() };
+                saveLocalArchive(leftRecord);
+                try {
+                    await setDoc(doc(db, "archived_users", currentUser.uid), leftRecord, { merge: true });
+                } catch (_) {}
+            }
+            try { await signOut(auth); } catch (_) {}
+            window.location.replace(LOGIN_PAGE);
+        };
+
+        window.deleteOwnAccountRecord = async () => {
+            if (!currentUser || currentUser.uid === "guest_user") return;
+            if (!confirm("Hesabınızı silmek istiyor musunuz? Kullanıcı bilgileriniz kayıt arşivinde saklanmaya devam eder.")) return;
+            const deletedRecord = { ...currentUser, deletedOrSignedOut: true, deletedAt: Date.now() };
+            saveLocalArchive(deletedRecord);
+            try {
+                await setDoc(doc(db, "archived_users", currentUser.uid), deletedRecord, { merge: true });
+                await deleteDoc(doc(db, "users", currentUser.uid));
+            } catch (_) {}
+            try {
+                if (auth.currentUser) await deleteUser(auth.currentUser);
+            } catch (_) {
+                try { await signOut(auth); } catch (_) {}
+            }
+            window.location.replace(LOGIN_PAGE);
+        };
+    </script>
+</body>
+</html>
