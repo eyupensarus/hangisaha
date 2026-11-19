@@ -128,7 +128,7 @@
         });
 
         googleBtn.addEventListener('click', () => {
-            auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(() => { window.location.href = 'ana-sayfa.html'; });
+            auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(() => { window.location.href = 'ana-sayfa.html'; });.catch(err => console.log(err));
             // Firebase Auth Google signInWithPopup/signInWithRedirect eklenecek nokta
             window.location.href = NEXT_PAGE;
 
