@@ -11,7 +11,7 @@
 
     <!-- ÜST BAR -->
     <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-30">
-        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-2 flex-wrap">
             <div class="flex items-center gap-2.5">
                 <span class="text-lg font-extrabold text-emerald-400 tracking-wide">TOP OYNA</span>
                 <img id="user-avatar" src="" alt="" referrerpolicy="no-referrer" class="hidden w-7 h-7 rounded-full object-cover border border-emerald-500">
@@ -19,6 +19,10 @@
             </div>
 
             <div class="flex items-center gap-2">
+                <button id="toggle-users-btn" onclick="toggleUsersPanel()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-sky-500/20 text-sky-300 border border-sky-500/40 hover:bg-sky-500/30 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Kullanıcılar (<span id="users-count">0</span>)</span>
+                </button>
                 <button id="toggle-owner-btn" onclick="toggleOwnerMode()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition">
                     Saha Ekleme Modu: Kapalı
                 </button>
@@ -31,11 +35,28 @@
 
     <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
 
+        <!-- ENGEL UYARISI -->
+        <div id="blocked-banner" class="hidden p-4 rounded-2xl bg-rose-950/80 border border-rose-500 text-rose-200 text-xs font-semibold">
+            <i class="fa-solid fa-ban text-rose-400 mr-1.5"></i>
+            Hesabınız kötü amaçlı kullanım nedeniyle kısıtlanmıştır. Saha kiralama ve ekleme işlemleri devre dışı bırakıldı.
+        </div>
+
         <!-- DURUM MESAJI -->
         <div id="status-banner" class="text-xs px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 flex items-center justify-between">
             <span id="db-status"><i class="fa-solid fa-circle-notch fa-spin text-emerald-400 mr-1.5"></i> Veritabanına bağlanılıyor...</span>
             <span id="sync-count" class="text-emerald-400 font-semibold"></span>
         </div>
+
+        <!-- GİRİŞ YAPAN KULLANICILAR PANELİ -->
+        <section id="users-panel" class="hidden bg-slate-900 border border-sky-500/40 rounded-2xl p-4 space-y-3">
+            <div class="flex items-center justify-between">
+                <h2 class="text-sm font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-user-shield text-sky-400"></i> Giriş Yapan Kullanıcılar
+                </h2>
+                <span class="text-[11px] text-slate-400">Kötü amaçlı hesapları buradan engelleyebilirsin</span>
+            </div>
+            <div id="users-list" class="space-y-2 text-xs"></div>
+        </section>
 
         <!-- FİLTRE VE TARİH -->
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -100,6 +121,8 @@
             collection,
             doc,
             setDoc,
+            getDoc,
+            updateDoc,
             deleteDoc,
             onSnapshot,
             runTransaction
@@ -125,31 +148,58 @@
         let currentUser = null;
         let pitches = [];
         let bookings = [];
+        let users = [];
         let ownerMode = false;
+        let usersPanelOpen = false;
 
         function getToday() {
             const d = new Date();
             return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
         }
 
+        function formatTimeTR(ts) {
+            if (!ts) return "-";
+            return new Date(ts).toLocaleString("tr-TR", {
+                day: "2-digit",
+                month: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+        }
+
         document.getElementById("match-date").value = getToday();
 
-        onAuthStateChanged(auth, (user) => {
-            if (!user) {
-                window.location.replace(LOGIN_PAGE);
-                return;
-            }
+        async function registerLoginUser(user) {
             const googleInfo = Array.isArray(user.providerData)
                 ? user.providerData.find(p => p && p.providerId === "google.com")
                 : null;
             const displayName = (googleInfo && googleInfo.displayName) || user.displayName || (user.email || "Kullanıcı").split("@")[0];
+            const email = (googleInfo && googleInfo.email) || user.email || "";
             const photoURL = (googleInfo && googleInfo.photoURL) || user.photoURL || "";
+
+            const userRef = doc(db, "users", user.uid);
+            let existingBlocked = false;
+            try {
+                const snap = await getDoc(userRef);
+                if (snap.exists() && snap.data().blocked === true) {
+                    existingBlocked = true;
+                }
+                await setDoc(userRef, {
+                    uid: user.uid,
+                    name: displayName,
+                    email,
+                    photo: photoURL,
+                    blocked: existingBlocked,
+                    lastLoginAt: Date.now()
+                }, { merge: true });
+            } catch (_) {}
 
             currentUser = {
                 uid: user.uid,
                 name: displayName,
-                email: (googleInfo && googleInfo.email) || user.email || "",
-                photo: photoURL
+                email,
+                photo: photoURL,
+                blocked: existingBlocked
             };
 
             document.getElementById("user-badge").textContent = currentUser.name;
@@ -158,6 +208,26 @@
                 avatarEl.src = currentUser.photo;
                 avatarEl.classList.remove("hidden");
             }
+            applyBlockedState();
+        }
+
+        function applyBlockedState() {
+            const blocked = Boolean(currentUser && currentUser.blocked);
+            document.getElementById("blocked-banner").classList.toggle("hidden", !blocked);
+            if (blocked && ownerMode) {
+                ownerMode = false;
+                document.getElementById("toggle-owner-btn").textContent = "Saha Ekleme Modu: Kapalı";
+                document.getElementById("add-pitch-form").classList.add("hidden");
+            }
+            renderAll();
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.replace(LOGIN_PAGE);
+                return;
+            }
+            await registerLoginUser(user);
             startRealtimeSync();
         });
 
@@ -168,7 +238,7 @@
             const updateStatus = () => {
                 if (pitchesReady && bookingsReady) {
                     document.getElementById("db-status").innerHTML = `<i class="fa-solid fa-circle text-emerald-400 text-[10px] mr-1.5"></i> Canlı Veritabanı Aktif`;
-                    document.getElementById("sync-count").textContent = `${pitches.length} Saha • ${bookings.length} Kiralama`;
+                    document.getElementById("sync-count").textContent = `${pitches.length} Saha • ${bookings.length} Kiralama • ${users.length} Kullanıcı`;
                 }
             };
 
@@ -189,9 +259,83 @@
             }, (err) => {
                 document.getElementById("db-status").innerHTML = `<i class="fa-solid fa-triangle-exclamation text-rose-400 mr-1.5"></i> Kiralama Okuma Hatası: ${err.message}`;
             });
+
+            onSnapshot(collection(db, "users"), (snap) => {
+                users = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+                    .sort((a, b) => (b.lastLoginAt || 0) - (a.lastLoginAt || 0));
+                document.getElementById("users-count").textContent = String(users.length);
+
+                if (currentUser) {
+                    const me = users.find(u => u.id === currentUser.uid);
+                    if (me) {
+                        currentUser.blocked = Boolean(me.blocked);
+                        applyBlockedState();
+                    }
+                }
+                updateStatus();
+                renderUsersList();
+            }, () => {});
+        }
+
+        window.toggleUsersPanel = () => {
+            usersPanelOpen = !usersPanelOpen;
+            document.getElementById("users-panel").classList.toggle("hidden", !usersPanelOpen);
+            renderUsersList();
+        };
+
+        window.toggleBlockUser = async (targetUid, nextBlocked) => {
+            try {
+                await updateDoc(doc(db, "users", targetUid), {
+                    blocked: Boolean(nextBlocked)
+                });
+            } catch (err) {
+                alert("Kullanıcı durumu güncellenemedi: " + err.message);
+            }
+        };
+
+        function renderUsersList() {
+            const listEl = document.getElementById("users-list");
+            if (!listEl) return;
+
+            if (users.length === 0) {
+                listEl.innerHTML = `<div class="text-slate-500">Henüz giriş yapan kullanıcı kaydı yok.</div>`;
+                return;
+            }
+
+            listEl.innerHTML = users.map(u => {
+                const isMe = currentUser && u.id === currentUser.uid;
+                const isBlocked = Boolean(u.blocked);
+                return `
+                    <div class="flex items-center justify-between gap-3 bg-slate-950 border border-slate-800 px-3 py-2.5 rounded-xl">
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="font-bold text-white truncate">${u.name || "İsimsiz"}</span>
+                                <span class="text-slate-400 truncate">${u.email || ""}</span>
+                                ${isMe ? `<span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">Sen</span>` : ""}
+                                ${isBlocked ? `<span class="px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 text-[10px] font-bold">Engelli</span>` : `<span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px]">Aktif</span>`}
+                            </div>
+                            <div class="text-[11px] text-slate-500 mt-0.5">Son giriş: ${formatTimeTR(u.lastLoginAt)}</div>
+                        </div>
+
+                        ${!isMe ? `
+                            <button onclick="toggleBlockUser('${u.id}', ${!isBlocked})" class="px-3 py-1.5 rounded-lg font-bold text-xs shrink-0 transition ${
+                                isBlocked
+                                    ? "bg-emerald-600 hover:bg-emerald-500 text-white"
+                                    : "bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/40"
+                            }">
+                                ${isBlocked ? "Engeli Kaldır" : "Engelle"}
+                            </button>
+                        ` : ""}
+                    </div>
+                `;
+            }).join("");
         }
 
         window.toggleOwnerMode = () => {
+            if (currentUser && currentUser.blocked) {
+                alert("Engelli hesaplar saha ekleyemez.");
+                return;
+            }
             ownerMode = !ownerMode;
             const btn = document.getElementById("toggle-owner-btn");
             const form = document.getElementById("add-pitch-form");
@@ -202,6 +346,10 @@
         window.addPitch = async (e) => {
             e.preventDefault();
             if (!currentUser) return;
+            if (currentUser.blocked) {
+                alert("Engelli hesaplar saha ekleyemez.");
+                return;
+            }
 
             const name = document.getElementById("pitch-name").value.trim();
             const district = document.getElementById("pitch-district").value;
@@ -234,6 +382,10 @@
 
         window.rentSlot = async (pitchId, pitchName, district, price, date, hour) => {
             if (!currentUser) return;
+            if (currentUser.blocked) {
+                alert("Engelli hesaplar saha kiralayamaz.");
+                return;
+            }
             const slotDocId = `${pitchId}_${date}_${hour.replace(":", "")}`;
             const slotRef = doc(db, "bookings", slotDocId);
 
@@ -252,6 +404,7 @@
                         hour,
                         userId: currentUser.uid,
                         userName: currentUser.name,
+                        userEmail: currentUser.email,
                         createdAt: Date.now()
                     });
                 });
@@ -272,6 +425,7 @@
             const date = document.getElementById("match-date").value || getToday();
             const district = document.getElementById("filter-district").value;
             const search = document.getElementById("filter-search").value.trim().toLowerCase();
+            const isBlocked = Boolean(currentUser && currentUser.blocked);
 
             const filtered = pitches.filter(p => {
                 const okDist = !district || p.district === district;
@@ -289,6 +443,9 @@
                         const taken = bookings.find(b => b.id === slotId);
                         if (taken) {
                             return `<button disabled class="py-2 rounded-xl bg-rose-950/80 border border-rose-500/40 text-rose-300 text-xs font-bold cursor-not-allowed">${h}<br><span class="text-[10px] font-normal">Dolu</span></button>`;
+                        }
+                        if (isBlocked) {
+                            return `<button disabled class="py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-600 text-xs font-bold cursor-not-allowed">${h}<br><span class="text-[10px] font-normal">Kısıtlı</span></button>`;
                         }
                         return `<button onclick="rentSlot('${p.id}', '${p.name.replace(/'/g, "")}', '${p.district}', ${p.price || 0}, '${date}', '${h}')" class="py-2 rounded-xl bg-emerald-950/70 hover:bg-emerald-500 text-emerald-300 hover:text-slate-950 border border-emerald-500/40 text-xs font-bold transition">${h}<br><span class="text-[10px] font-normal">Kirala</span></button>`;
                     }).join("");
@@ -322,7 +479,7 @@
                                 <span class="text-emerald-400 font-bold">${b.hour}</span>
                                 <span class="text-slate-400"> (${b.userName || "Üye"})</span>
                             </div>
-                            ${currentUser && b.userId === currentUser.uid
+                            ${currentUser && b.userId === currentUser.uid && !isBlocked
                                 ? `<button onclick="cancelSlot('${b.id}')" class="text-rose-400 hover:text-rose-300 font-bold">İptal</button>`
                                 : `<span class="text-slate-500">Dolu</span>`
                             }
