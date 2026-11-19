@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Oyna - Giriş ve Kayıt | Konya Halı Saha Platformu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Oswald:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        sport: ['Oswald', 'sans-serif'],
+                    },
+                    colors: {
+                        pitch: {
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            900: '#14532d',
+                            950: '#052e16',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex items-center justify-center p-4 selection:bg-pitch-500 selection:text-slate-950">
+
+    <div class="w-full max-w-md bg-slate-900/95 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
+        <div class="text-center mb-7">
+            <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-pitch-500/15 border border-pitch-500/40 text-pitch-400 text-2xl mb-3">
+                <i class="fa-solid fa-futbol"></i>
+            </div>
+            <h1 class="font-sport text-4xl font-bold tracking-wider uppercase text-white">
+                TOP <span class="text-pitch-400">OYNA</span>
+            </h1>
+            <p class="text-xs font-bold uppercase tracking-[0.2em] text-amber-400 mt-1">
+                Konya Halı Saha Platformu
+            </p>
+            <p id="auth-subtitle" class="text-xs text-slate-400 mt-2">
+                Hesabınıza giriş yaparak sahaları ve randevularınızı görüntüleyin.
+            </p>
+        </div>
+
+        <div id="auth-error-box" class="hidden mb-4 p-3.5 rounded-2xl bg-rose-950/60 border border-rose-500/50 text-rose-200 text-xs font-medium"></div>
+
+        <!-- GİRİŞ FORMU -->
+        <form id="login-form" class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">E-posta Adresi</label>
+                <input type="email" id="login-email" required placeholder="ornek@gmail.com"
+                    class="w-full px-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-pitch-500 outline-none">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Şifre</label>
+                <input type="password" id="login-password" required placeholder="••••••••"
+                    class="w-full px-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-pitch-500 outline-none">
+            </div>
+
+            <button type="submit" id="login-submit-btn"
+                class="w-full py-3.5 rounded-xl bg-pitch-600 hover:bg-pitch-500 text-white font-extrabold text-sm shadow-lg shadow-pitch-500/20 transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-right-to-bracket"></i>
+                <span>Giriş Yap</span>
+            </button>
+        </form>
+
+        <!-- KAYIT FORMU -->
+        <form id="register-form" class="hidden space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Ad Soyad</label>
+                <input type="text" id="register-name" required placeholder="Adınız Soyadınız"
+                    class="w-full px-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-pitch-500 outline-none">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">E-posta Adresi</label>
+                <input type="email" id="register-email" required placeholder="ornek@gmail.com"
+                    class="w-full px-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-pitch-500 outline-none">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Şifre (En az 6 karakter)</label>
+                <input type="password" id="register-password" required minlength="6" placeholder="••••••••"
+                    class="w-full px-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-pitch-500 outline-none">
+            </div>
+
+            <button type="submit" id="register-submit-btn"
+                class="w-full py-3.5 rounded-xl bg-pitch-600 hover:bg-pitch-500 text-white font-extrabold text-sm shadow-lg shadow-pitch-500/20 transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-user-plus"></i>
+                <span>Kayıt Ol ve Giriş Yap</span>
+            </button>
+        </form>
+
+        <div class="mt-6 pt-4 border-t border-slate-800 text-center text-xs text-slate-400">
+            <button type="button" id="toggle-auth-mode" class="text-pitch-400 hover:text-pitch-300 font-bold transition">
+                Hesabınız yok mu? Hemen Kayıt Olun
+            </button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import {
+            getAuth,
+            onAuthStateChanged,
+            signInWithEmailAndPassword,
+            createUserWithEmailAndPassword,
+            updateProfile
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCKYARoGK8ADJ2_T5c2GomrAG47-gHtQ-8",
+            authDomain: "top-oyna-d33f3.firebaseapp.com",
+            projectId: "top-oyna-d33f3",
+            storageBucket: "top-oyna-d33f3.firebasestorage.app",
+            messagingSenderId: "1033043310464",
+            appId: "1:1033043310464:web:d467e84b68f73e99f0f365",
+            measurementId: "G-P2ZRQQFFMD"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const loginForm = document.getElementById("login-form");
+        const registerForm = document.getElementById("register-form");
+        const toggleBtn = document.getElementById("toggle-auth-mode");
+        const subtitleEl = document.getElementById("auth-subtitle");
+        const errorBox = document.getElementById("auth-error-box");
+
+        let isRegisterMode = false;
+        let isSubmitting = false;
+
+        function showError(msg) {
+            errorBox.textContent = msg;
+            errorBox.classList.remove("hidden");
+        }
+
+        function clearError() {
+            errorBox.textContent = "";
+            errorBox.classList.add("hidden");
+        }
+
+        toggleBtn.addEventListener("click", () => {
+            clearError();
+            isRegisterMode = !isRegisterMode;
+            if (isRegisterMode) {
+                loginForm.classList.add("hidden");
+                registerForm.classList.remove("hidden");
+                subtitleEl.textContent = "Yeni oyuncu veya tesis hesabı oluşturun.";
+                toggleBtn.textContent = "Zaten hesabınız var mı? Giriş Yapın";
+            } else {
+                registerForm.classList.add("hidden");
+                loginForm.classList.remove("hidden");
+                subtitleEl.textContent = "Hesabınıza giriş yaparak sahaları ve randevularınızı görüntüleyin.";
+                toggleBtn.textContent = "Hesabınız yok mu? Hemen Kayıt Olun";
+            }
+        });
+
+        onAuthStateChanged(auth, (user) => {
+            if (user && !isSubmitting) {
+                window.location.replace("ana-sayfa.html");
+            }
+        });
+
+        loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            clearError();
+            const email = document.getElementById("login-email").value.trim();
+            const password = document.getElementById("login-password").value;
+            const btn = document.getElementById("login-submit-btn");
+
+            isSubmitting = true;
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Giriş yapılıyor...</span>`;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                window.location.replace("ana-sayfa.html");
+            } catch (err) {
+                isSubmitting = false;
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> <span>Giriş Yap</span>`;
+                showError("Giriş başarısız. E-posta veya şifrenizi kontrol edin.");
+            }
+        });
+
+        registerForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            clearError();
+            const fullName = document.getElementById("register-name").value.trim();
+            const email = document.getElementById("register-email").value.trim();
+            const password = document.getElementById("register-password").value;
+            const btn = document.getElementById("register-submit-btn");
+
+            isSubmitting = true;
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Hesap oluşturuluyor...</span>`;
+
+            try {
+                const cred = await createUserWithEmailAndPassword(auth, email, password);
+                if (fullName) {
+                    await updateProfile(cred.user, { displayName: fullName });
+                }
+                window.location.replace("ana-sayfa.html");
+            } catch (err) {
+                isSubmitting = false;
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-user-plus"></i> <span>Kayıt Ol ve Giriş Yap</span>`;
+                showError("Kayıt sırasında bir hata oluştu. E-posta kayıtlı olabilir veya şifre en az 6 karakter olmalıdır.");
+            }
+        });
+    </script>
+</body>
+</html>
