@@ -99,18 +99,24 @@
 
     </div>
 
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
         const statusBox = document.getElementById('statusBox');
         const togglePassBtn = document.getElementById('togglePass');
         const passInput = document.getElementById('loginPass');
         const googleBtn = document.getElementById('googleLoginBtn');
         const loginForm = document.getElementById('loginForm');
 
-        // Giriş sonrası yönlendirilecek sayfa adını kendi ana sayfa dosyanla eşleştirebilirsin
         const NEXT_PAGE = 'ana-sayfa.html';
 
         function showStatus(message, type = 'info') {
-            statusBox.classList.remove('hidden', 'bg-emerald-950/60', 'text-emerald-300', 'border-emerald-800', 'bg-amber-950/60', 'text-amber-300', 'border-amber-800');
+            statusBox.classList.remove(
+                'hidden',
+                'bg-emerald-950/60', 'text-emerald-300', 'border-emerald-800',
+                'bg-amber-950/60', 'text-amber-300', 'border-amber-800'
+            );
             if (type === 'success') {
                 statusBox.classList.add('bg-emerald-950/60', 'text-emerald-300', 'border-emerald-800');
             } else {
@@ -118,6 +124,20 @@
             }
             statusBox.textContent = message;
         }
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCKYARoGK8ADJ2_T5c2GomrAG47-gHtQ-8",
+            authDomain: "top-oyna-d33f3.firebaseapp.com",
+            projectId: "top-oyna-d33f3",
+            storageBucket: "top-oyna-d33f3.firebasestorage.app",
+            messagingSenderId: "1033043310464",
+            appId: "1:1033043310464:web:d467e84b68f73e99f0f365",
+            measurementId: "G-P2ZRQQFFMD"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
 
         togglePassBtn.addEventListener('click', () => {
             const isPassword = passInput.type === 'password';
@@ -127,10 +147,19 @@
                 : '<i class="fa-solid fa-eye"></i>';
         });
 
-        googleBtn.addEventListener('click', () => {
-            auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(() => { window.location.href = 'ana-sayfa.html'; });.catch(err => console.log(err));
-            // Firebase Auth Google signInWithPopup/signInWithRedirect eklenecek nokta
-            window.location.href = NEXT_PAGE;
+        googleBtn.addEventListener('click', async () => {
+            showStatus('Google girişi açılıyor...', 'info');
+            try {
+                await signInWithPopup(auth, provider);
+                showStatus('Giriş başarılı! Yönlendiriliyor...', 'success');
+                setTimeout(() => {
+                    window.location.href = NEXT_PAGE;
+                }, 500);
+            } catch (err) {
+                showStatus(`Hata: ${err.code} - ${err.message}`, 'info');
+                console.error(err);
+            }
+        });
 
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -139,33 +168,10 @@
 
             showStatus(`Giriş doğrulandı (${userVal}). Yönlendiriliyor...`, 'success');
             setTimeout(() => {
-                // Hedef sayfa varsa yönlendirir; yoksa aynı sayfada kalır
                 if (window.location.pathname.endsWith('/' + NEXT_PAGE)) return;
                 window.location.href = NEXT_PAGE;
             }, 600);
         });
-    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyCKYARoGK8ADJ2_T5c2GomrAG47-gHtQ-8",
-  authDomain: "top-oyna-d33f3.firebaseapp.com",
-  projectId: "top-oyna-d33f3",
-  storageBucket: "top-oyna-d33f3.firebasestorage.app",
-  messagingSenderId: "1033043310464",
-  appId: "1:1033043310464:web:d467e84b68f73e99f0f365",
-  measurementId: "G-P2ZRQQFFMD"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
     </script>
 </body>
 </html>
