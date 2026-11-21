@@ -29,7 +29,7 @@
             <span class="border-t border-slate-800 w-full"></span>
         </div>
 
-        <!-- E-POSTA / ŞİFRE GİRİŞİ -->
+        <!-- E-POSTA / ŞİFRE GİRİŞİ VE KAYIT -->
         <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-3">
             <input type="email" id="email" required placeholder="E-posta adresi" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white outline-none focus:border-emerald-500">
             <input type="password" id="password" required minlength="6" placeholder="Şifre (en az 6 karakter)" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white outline-none focus:border-emerald-500">
@@ -96,7 +96,7 @@
         function goHome() {
             if (!navigating) {
                 navigating = true;
-                window.location.replace("ana-sayfa.html");
+                window.location.replace("anasayfa.html");
             }
         }
 
@@ -114,6 +114,23 @@
 
         function hasPasswordProvider(user) {
             return Boolean(user?.providerData?.some((p) => p.providerId === "password"));
+        }
+
+        function getFriendlyError(err) {
+            switch (err?.code) {
+                case "auth/email-already-in-use":
+                    return "Bu e-posta adresi zaten kayıtlı (muhtemelen Google ile giriş yapılmış). Önce Google ile giriş yapıp şifre bağlayabilir veya Giriş Yap ekranını kullanabilirsin.";
+                case "auth/invalid-credential":
+                case "auth/wrong-password":
+                case "auth/user-not-found":
+                    return "E-posta veya şifre hatalı ya da hesap Google ile açılmış.";
+                case "auth/operation-not-allowed":
+                    return "Bu giriş yöntemi Firebase konsolunda henüz aktif değil.";
+                case "auth/weak-password":
+                    return "Şifre en az 6 karakter olmalıdır.";
+                default:
+                    return err?.message || "İşlem sırasında bir hata oluştu.";
+            }
         }
 
         onAuthStateChanged(auth, (user) => {
@@ -134,7 +151,7 @@
 
                 if (user?.email && !hasPasswordProvider(user)) {
                     pendingGoogleUser = user;
-                    document.getElementById("link-email-info").textContent = `${user.email} hesabı için giriş şifresi oluşturabilirsin.`;
+                    document.getElementById("link-email-info").textContent = `${user.email} hesabı için sonradan şifreyle de girebilmek adına bir şifre belirleyebilirsin.`;
                     document.getElementById("link-password-box").classList.remove("hidden");
                     btn.disabled = false;
                     btn.innerHTML = `<i class="fa-brands fa-google text-rose-500 text-base"></i> <span>Google ile Giriş Yap</span>`;
@@ -146,7 +163,7 @@
                 navigating = false;
                 btn.disabled = false;
                 btn.innerHTML = `<i class="fa-brands fa-google text-rose-500 text-base"></i> <span>Google ile Giriş Yap</span>`;
-                showError("Google girişi tamamlanamadı: " + err.message);
+                showError("Google girişi tamamlanamadı: " + getFriendlyError(err));
             }
         };
 
@@ -168,7 +185,7 @@
             } catch (err) {
                 linkBtn.disabled = false;
                 linkBtn.textContent = "Şifreyi Bağla ve Devam Et";
-                showError("Şifre bağlanamadı: " + err.message);
+                showError("Şifre bağlanamadı: " + getFriendlyError(err));
             }
         };
 
@@ -206,7 +223,7 @@
                 navigating = false;
                 btn.disabled = false;
                 btn.textContent = isRegister ? "Kayıt Ol" : "Giriş Yap";
-                showError("Giriş/Kayıt hatası: " + err.message);
+                showError(getFriendlyError(err));
             }
         };
     </script>
