@@ -38,6 +38,23 @@
             </button>
         </form>
 
+        <!-- GOOGLE HESABINA ŞİFRE BELİRLEME PANELİ -->
+        <form id="link-password-box" onsubmit="handleLinkPassword(event)" class="hidden p-4 rounded-xl bg-slate-950 border border-emerald-500/40 space-y-3">
+            <div class="space-y-1">
+                <p class="text-xs font-bold text-emerald-400">E-posta ve şifreyle giriş için şifre belirle</p>
+                <p id="link-email-info" class="text-[11px] text-slate-400"></p>
+            </div>
+            <input type="password" id="new-password" required minlength="6" placeholder="Yeni uygulama şifresi (en az 6 karakter)" class="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white outline-none focus:border-emerald-500">
+            <div class="flex gap-2">
+                <button type="submit" id="link-submit-btn" class="flex-1 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs transition">
+                    Şifreyi Bağla ve Devam Et
+                </button>
+                <button type="button" onclick="skipLinkPassword()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition">
+                    Şimdilik Geç
+                </button>
+            </div>
+        </form>
+
         <div class="text-center">
             <button type="button" id="mode-toggle" onclick="toggleMode()" class="text-xs text-emerald-400 hover:text-emerald-300 font-semibold">
                 Hesabın yok mu? Kayıt Ol
@@ -51,9 +68,11 @@
             getAuth,
             onAuthStateChanged,
             GoogleAuthProvider,
+            EmailAuthProvider,
             signInWithPopup,
             signInWithEmailAndPassword,
-            createUserWithEmailAndPassword
+            createUserWithEmailAndPassword,
+            linkWithCredential
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         const firebaseConfig = {
@@ -72,6 +91,14 @@
 
         let isRegister = false;
         let navigating = false;
+        let pendingGoogleUser = null;
+
+        function goHome() {
+            if (!navigating) {
+                navigating = true;
+                window.location.replace("ana-sayfa.html");
+            }
+        }
 
         function showError(msg) {
             const box = document.getElementById("error-box");
@@ -85,10 +112,13 @@
             box.classList.add("hidden");
         }
 
+        function hasPasswordProvider(user) {
+            return Boolean(user?.providerData?.some((p) => p.providerId === "password"));
+        }
+
         onAuthStateChanged(auth, (user) => {
-            if (user && !navigating) {
-                navigating = true;
-                window.location.replace("ana-sayfa.html");
+            if (user && !pendingGoogleUser && !navigating) {
+                goHome();
             }
         });
 
@@ -99,15 +129,53 @@
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Google'a bağlanılıyor...</span>`;
 
             try {
-                navigating = true;
-                await signInWithPopup(auth, provider);
-                window.location.replace("ana-sayfa.html");
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+
+                if (user?.email && !hasPasswordProvider(user)) {
+                    pendingGoogleUser = user;
+                    document.getElementById("link-email-info").textContent = `${user.email} hesabı için giriş şifresi oluşturabilirsin.`;
+                    document.getElementById("link-password-box").classList.remove("hidden");
+                    btn.disabled = false;
+                    btn.innerHTML = `<i class="fa-brands fa-google text-rose-500 text-base"></i> <span>Google ile Giriş Yap</span>`;
+                    return;
+                }
+
+                goHome();
             } catch (err) {
                 navigating = false;
                 btn.disabled = false;
                 btn.innerHTML = `<i class="fa-brands fa-google text-rose-500 text-base"></i> <span>Google ile Giriş Yap</span>`;
                 showError("Google girişi tamamlanamadı: " + err.message);
             }
+        };
+
+        window.handleLinkPassword = async (e) => {
+            e.preventDefault();
+            clearError();
+            if (!pendingGoogleUser?.email) return;
+
+            const newPassword = document.getElementById("new-password").value;
+            const linkBtn = document.getElementById("link-submit-btn");
+            linkBtn.disabled = true;
+            linkBtn.textContent = "Bağlanıyor...";
+
+            try {
+                const credential = EmailAuthProvider.credential(pendingGoogleUser.email, newPassword);
+                await linkWithCredential(pendingGoogleUser, credential);
+                pendingGoogleUser = null;
+                goHome();
+            } catch (err) {
+                linkBtn.disabled = false;
+                linkBtn.textContent = "Şifreyi Bağla ve Devam Et";
+                showError("Şifre bağlanamadı: " + err.message);
+            }
+        };
+
+        window.skipLinkPassword = () => {
+            pendingGoogleUser = null;
+            document.getElementById("link-password-box").classList.add("hidden");
+            goHome();
         };
 
         window.toggleMode = () => {
@@ -128,13 +196,12 @@
             btn.textContent = "İşleniyor...";
 
             try {
-                navigating = true;
                 if (isRegister) {
                     await createUserWithEmailAndPassword(auth, email, password);
                 } else {
                     await signInWithEmailAndPassword(auth, email, password);
                 }
-                window.location.replace("ana-sayfa.html");
+                goHome();
             } catch (err) {
                 navigating = false;
                 btn.disabled = false;
