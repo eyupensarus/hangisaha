@@ -96,7 +96,7 @@
         function goHome() {
             if (!navigating) {
                 navigating = true;
-                window.location.replace("anasayfa.html");
+                window.location.replace("ana-sayfa.html");
             }
         }
 
@@ -232,7 +232,6 @@
             } catch (err) {
                 navigating = false;
 
-                // Hesap Google ile açılmışsa veya şifre/kayıt çakışması varsa uyarı vermek yerine doğrudan Google girişini başlat
                 const fallbackCodes = [
                     "auth/email-already-in-use",
                     "auth/invalid-credential",
