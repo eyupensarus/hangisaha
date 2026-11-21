@@ -89,6 +89,7 @@
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
+        const TARGET_PAGE = "ana-sayfa.html";
         let isRegister = false;
         let navigating = false;
         let pendingGoogleUser = null;
@@ -96,7 +97,7 @@
         function goHome() {
             if (!navigating) {
                 navigating = true;
-                window.location.replace("ana-sayfa.html");
+                window.location.replace(TARGET_PAGE);
             }
         }
 
