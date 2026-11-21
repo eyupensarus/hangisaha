@@ -6,42 +6,94 @@
     <title>Top Oyna - Giriş</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #020617;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.16) 0%, transparent 55%),
+                linear-gradient(to right, rgba(30, 41, 59, 0.25) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(30, 41, 59, 0.25) 1px, transparent 1px);
+            background-size: 100% 100%, 36px 36px, 36px 36px;
+        }
+    </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex items-center justify-center p-4">
+<body class="text-slate-100 min-h-screen flex items-center justify-center p-4 selection:bg-emerald-500 selection:text-slate-950">
 
-    <div class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-5 shadow-2xl">
-        <div class="text-center space-y-1">
-            <h1 class="text-2xl font-extrabold text-emerald-400 tracking-wide">TOP OYNA</h1>
-            <p class="text-xs text-slate-400">Google hesabın veya e-posta şifrenle giriş yap</p>
+    <!-- Ana Kart -->
+    <div class="w-full max-w-[410px] bg-slate-900/90 backdrop-blur-xl border border-slate-800/90 rounded-3xl p-7 sm:p-8 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8)] relative overflow-hidden">
+        
+        <!-- Üst İnce Neon Vurgu Çizgisi -->
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-80"></div>
+
+        <!-- Logo & Başlık -->
+        <div class="text-center space-y-2 mb-6">
+            <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 mb-1 shadow-inner">
+                <i class="fa-regular fa-futbol text-2xl"></i>
+            </div>
+            <h1 class="text-2xl font-extrabold tracking-tight text-white">
+                TOP <span class="text-emerald-400">OYNA</span>
+            </h1>
+            <p id="subtitle-text" class="text-xs text-slate-400 leading-relaxed">
+                Maçını organize et, kadronu kur. Devam etmek için giriş yap.
+            </p>
         </div>
 
-        <div id="error-box" class="hidden p-3 rounded-xl bg-rose-950/60 border border-rose-500/40 text-rose-200 text-xs"></div>
+        <!-- Hata Bildirim Kutusu -->
+        <div id="error-box" class="hidden mb-5 p-3.5 rounded-xl bg-rose-950/70 border border-rose-500/40 text-rose-200 text-xs flex items-start gap-2.5">
+            <i class="fa-solid fa-circle-exclamation text-rose-400 mt-0.5 shrink-0"></i>
+            <span id="error-text"></span>
+        </div>
 
-        <!-- GOOGLE İLE GİRİŞ -->
-        <button type="button" id="google-login-btn" onclick="loginWithGoogle()" class="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-sm transition flex items-center justify-center gap-2.5 shadow">
-            <i class="fa-brands fa-google text-rose-500 text-base"></i>
-            <span>Google ile Giriş Yap</span>
+        <!-- Google ile Giriş -->
+        <button type="button" id="google-login-btn" onclick="loginWithGoogle()" class="w-full py-3 px-4 rounded-xl bg-white hover:bg-slate-100 active:scale-[0.99] text-slate-900 font-bold text-sm transition-all flex items-center justify-center gap-3 shadow-md">
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+                <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.8C6.2 7.2 8.9 5 12 5z"/>
+                <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.7-.2-2.5H12v4.8h6.5c-.3 1.5-1.1 2.8-2.4 3.6l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/>
+                <path fill="#FBBC05" d="M5.3 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.6 7.4C.6 9.4 0 11.6 0 14s.6 4.6 1.6 6.6l3.7-2.8z"/>
+                <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.8-2.1-6.7-5l-3.7 2.8C3.5 20.4 7.4 23 12 23z"/>
+            </svg>
+            <span>Google ile Devam Et</span>
         </button>
 
-        <div class="relative flex items-center justify-center text-[11px] text-slate-500">
+        <!-- Ayırıcı -->
+        <div class="relative flex items-center justify-center my-5">
             <span class="border-t border-slate-800 w-full"></span>
-            <span class="px-3 bg-slate-900 shrink-0">veya</span>
+            <span class="px-3 text-[11px] font-medium uppercase tracking-wider text-slate-500 shrink-0">veya e-posta ile</span>
             <span class="border-t border-slate-800 w-full"></span>
         </div>
 
-        <!-- E-POSTA / ŞİFRE GİRİŞİ -->
-        <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-3">
-            <input type="email" id="email" required placeholder="E-posta adresi" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white outline-none focus:border-emerald-500">
-            <input type="password" id="password" required minlength="6" placeholder="Şifre (en az 6 karakter)" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white outline-none focus:border-emerald-500">
-            <button type="submit" id="submit-btn" class="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm transition">
+        <!-- E-posta / Şifre Formu -->
+        <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-3.5">
+            <div class="relative">
+                <i class="fa-regular fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
+                <input type="email" id="email" required placeholder="E-posta adresin" 
+                    class="w-full pl-10 pr-4 py-3 bg-slate-950/80 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition">
+            </div>
+
+            <div class="relative">
+                <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
+                <input type="password" id="password" required minlength="6" placeholder="Şifren (en az 6 karakter)" 
+                    class="w-full pl-10 pr-10 py-3 bg-slate-950/80 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition">
+                <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition">
+                    <i id="eye-icon" class="fa-regular fa-eye text-sm"></i>
+                </button>
+            </div>
+
+            <button type="submit" id="submit-btn" class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-[0.99] text-slate-950 font-extrabold text-sm transition-all shadow-lg shadow-emerald-500/20 mt-1">
                 Giriş Yap
             </button>
         </form>
 
-        <div class="text-center">
-            <button type="button" id="mode-toggle" onclick="toggleMode()" class="text-xs text-emerald-400 hover:text-emerald-300 font-semibold">
-                Hesabın yok mu? Kayıt Ol
-            </button>
+        <!-- Kayıt Ol / Giriş Yap Geçişi -->
+        <div class="mt-6 pt-5 border-t border-slate-800/80 text-center">
+            <p class="text-xs text-slate-400">
+                <span id="toggle-prompt">Hesabın yok mu?</span>
+                <button type="button" id="mode-toggle" onclick="toggleMode()" class="text-emerald-400 hover:text-emerald-300 font-bold ml-1 underline-offset-4 hover:underline">
+                    Hemen Kayıt Ol
+                </button>
+            </p>
         </div>
     </div>
 
@@ -73,15 +125,36 @@
         let isRegister = false;
         let navigating = false;
 
+        function getFriendlyError(err) {
+            const code = err?.code || "";
+            if (code === "auth/invalid-credential" || code === "auth/wrong-password" || code === "auth/user-not-found") {
+                return "E-posta adresi veya şifre hatalı. Kontrol edip tekrar dene.";
+            }
+            if (code === "auth/email-already-in-use") {
+                return "Bu e-posta adresi zaten kayıtlı. Giriş yapmayı deneyebilirsin.";
+            }
+            if (code === "auth/weak-password") {
+                return "Şifren en az 6 karakter uzunluğunda olmalıdır.";
+            }
+            if (code === "auth/invalid-email") {
+                return "Lütfen geçerli bir e-posta adresi gir.";
+            }
+            if (code === "auth/popup-closed-by-user") {
+                return "Google giriş penceresi kapatıldı.";
+            }
+            return "İşlem tamamlanamadı: " + (err?.message || "Bilinmeyen hata");
+        }
+
         function showError(msg) {
             const box = document.getElementById("error-box");
-            box.textContent = msg;
+            const text = document.getElementById("error-text");
+            text.textContent = msg;
             box.classList.remove("hidden");
         }
 
         function clearError() {
             const box = document.getElementById("error-box");
-            box.textContent = "";
+            document.getElementById("error-text").textContent = "";
             box.classList.add("hidden");
         }
 
@@ -92,11 +165,24 @@
             }
         });
 
+        window.togglePasswordVisibility = () => {
+            const pwd = document.getElementById("password");
+            const icon = document.getElementById("eye-icon");
+            if (pwd.type === "password") {
+                pwd.type = "text";
+                icon.classList.replace("fa-eye", "fa-eye-slash");
+            } else {
+                pwd.type = "password";
+                icon.classList.replace("fa-eye-slash", "fa-eye");
+            }
+        };
+
         window.loginWithGoogle = async () => {
             clearError();
             const btn = document.getElementById("google-login-btn");
+            const originalHTML = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Google'a bağlanılıyor...</span>`;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-emerald-600"></i> <span>Bağlanılıyor...</span>`;
 
             try {
                 navigating = true;
@@ -105,16 +191,20 @@
             } catch (err) {
                 navigating = false;
                 btn.disabled = false;
-                btn.innerHTML = `<i class="fa-brands fa-google text-rose-500 text-base"></i> <span>Google ile Giriş Yap</span>`;
-                showError("Google girişi tamamlanamadı: " + err.message);
+                btn.innerHTML = originalHTML;
+                showError(getFriendlyError(err));
             }
         };
 
         window.toggleMode = () => {
             clearError();
             isRegister = !isRegister;
-            document.getElementById("submit-btn").textContent = isRegister ? "Kayıt Ol" : "Giriş Yap";
-            document.getElementById("mode-toggle").textContent = isRegister ? "Zaten hesabın var mı? Giriş Yap" : "Hesabın yok mu? Kayıt Ol";
+            document.getElementById("submit-btn").textContent = isRegister ? "Hesap Oluştur" : "Giriş Yap";
+            document.getElementById("subtitle-text").textContent = isRegister 
+                ? "Yeni bir hesap oluştur ve hemen sahaya çık." 
+                : "Maçını organize et, kadronu kur. Devam etmek için giriş yap.";
+            document.getElementById("toggle-prompt").textContent = isRegister ? "Zaten hesabın var mı?" : "Hesabın yok mu?";
+            document.getElementById("mode-toggle").textContent = isRegister ? "Giriş Yap" : "Hemen Kayıt Ol";
         };
 
         window.handleAuth = async (e) => {
@@ -125,7 +215,7 @@
             const btn = document.getElementById("submit-btn");
 
             btn.disabled = true;
-            btn.textContent = "İşleniyor...";
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> İşleniyor...`;
 
             try {
                 navigating = true;
@@ -138,46 +228,7 @@
             } catch (err) {
                 navigating = false;
                 btn.disabled = false;
-                btn.textContent = isRegister ? "Kayıt Ol" : "Giriş Yap";
-                showError("Giriş/Kayıt hatası: " + err.message);
-            }
-        };
-    </script>
-</body>
-</html>
-sync (e) => {
-            e.preventDefault();
-            clearError();
-            const email = document.getElementById("email").value.trim();
-            const password = document.getElementById("password").value;
-            const btn = document.getElementById("submit-btn");
-
-            btn.disabled = true;
-            btn.textContent = "İşleniyor...";
-
-            try {
-                if (isRegister) {
-                    await createUserWithEmailAndPassword(auth, email, password);
-                } else {
-                    await signInWithEmailAndPassword(auth, email, password);
-                }
-                goHome();
-            } catch (err) {
-                navigating = false;
-
-                const fallbackCodes = [
-                    "auth/email-already-in-use",
-                    "auth/invalid-credential",
-                    "auth/wrong-password",
-                    "auth/user-not-found"
-                ];
-
-                if (fallbackCodes.includes(err?.code)) {
-                    await window.loginWithGoogle(email);
-                    return;
-                }
-
-                resetSubmitButton();
+                btn.textContent = isRegister ? "Hesap Oluştur" : "Giriş Yap";
                 showError(getFriendlyError(err));
             }
         };
