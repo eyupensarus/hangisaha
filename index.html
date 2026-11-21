@@ -116,18 +116,20 @@
             return Boolean(user?.providerData?.some((p) => p.providerId === "password"));
         }
 
+        function resetSubmitButton() {
+            const btn = document.getElementById("submit-btn");
+            btn.disabled = false;
+            btn.textContent = isRegister ? "Kayıt Ol" : "Giriş Yap";
+        }
+
         function getFriendlyError(err) {
             switch (err?.code) {
-                case "auth/email-already-in-use":
-                    return "Bu e-posta adresi zaten kayıtlı (muhtemelen Google ile giriş yapılmış). Önce Google ile giriş yapıp şifre bağlayabilir veya Giriş Yap ekranını kullanabilirsin.";
-                case "auth/invalid-credential":
-                case "auth/wrong-password":
-                case "auth/user-not-found":
-                    return "E-posta veya şifre hatalı ya da hesap Google ile açılmış.";
                 case "auth/operation-not-allowed":
                     return "Bu giriş yöntemi Firebase konsolunda henüz aktif değil.";
                 case "auth/weak-password":
                     return "Şifre en az 6 karakter olmalıdır.";
+                case "auth/popup-closed-by-user":
+                    return "Google giriş penceresi kapatıldı.";
                 default:
                     return err?.message || "İşlem sırasında bir hata oluştu.";
             }
@@ -139,11 +141,17 @@
             }
         });
 
-        window.loginWithGoogle = async () => {
+        window.loginWithGoogle = async (hintEmail = "") => {
             clearError();
             const btn = document.getElementById("google-login-btn");
             btn.disabled = true;
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Google'a bağlanılıyor...</span>`;
+
+            if (hintEmail) {
+                provider.setCustomParameters({ login_hint: hintEmail });
+            } else {
+                provider.setCustomParameters({});
+            }
 
             try {
                 const result = await signInWithPopup(auth, provider);
@@ -155,6 +163,7 @@
                     document.getElementById("link-password-box").classList.remove("hidden");
                     btn.disabled = false;
                     btn.innerHTML = `<i class="fa-brands fa-google text-rose-500 text-base"></i> <span>Google ile Giriş Yap</span>`;
+                    resetSubmitButton();
                     return;
                 }
 
@@ -163,6 +172,7 @@
                 navigating = false;
                 btn.disabled = false;
                 btn.innerHTML = `<i class="fa-brands fa-google text-rose-500 text-base"></i> <span>Google ile Giriş Yap</span>`;
+                resetSubmitButton();
                 showError("Google girişi tamamlanamadı: " + getFriendlyError(err));
             }
         };
@@ -221,8 +231,21 @@
                 goHome();
             } catch (err) {
                 navigating = false;
-                btn.disabled = false;
-                btn.textContent = isRegister ? "Kayıt Ol" : "Giriş Yap";
+
+                // Hesap Google ile açılmışsa veya şifre/kayıt çakışması varsa uyarı vermek yerine doğrudan Google girişini başlat
+                const fallbackCodes = [
+                    "auth/email-already-in-use",
+                    "auth/invalid-credential",
+                    "auth/wrong-password",
+                    "auth/user-not-found"
+                ];
+
+                if (fallbackCodes.includes(err?.code)) {
+                    await window.loginWithGoogle(email);
+                    return;
+                }
+
+                resetSubmitButton();
                 showError(getFriendlyError(err));
             }
         };
