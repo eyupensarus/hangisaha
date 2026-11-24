@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Oyna</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { transition: background-color 0.2s, color 0.2s; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen">
+
+    <!-- ÜST BAR -->
+    <header class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
+            <!-- SOL: MARKA & ROL -->
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-emerald-500 flex items-center justify-center text-slate-950 font-black text-sm shadow-sm">
+                    <i class="fa-solid fa-futbol"></i>
+                </div>
+                <span class="text-lg font-extrabold tracking-tight text-emerald-600 dark:text-emerald-400">TOP OYNA</span>
+                <span id="role-badge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30">Üye</span>
+            </div>
+
+            <!-- SAĞ: HIZLI BİLDİRİM & KÖŞE SEÇENEKLER SEKMESİ -->
+            <div class="flex items-center gap-2 relative">
+                <!-- Site Sahibi Bildirim Rozeti -->
+                <button id="top-notif-trigger" onclick="openDrawerTab('notifications')" class="hidden relative p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition">
+                    <i class="fa-solid fa-bell text-sm"></i>
+                    <span id="notif-badge" class="hidden absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[10px] font-extrabold flex items-center justify-center">0</span>
+                </button>
+
+                <!-- KÖŞE AÇILIR SEKME TETİKLEYİCİSİ -->
+                <button id="corner-menu-btn" onclick="toggleCornerMenu(event)" class="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition">
+                    <img id="header-avatar" src="https://ui-avatars.com/api/?name=Uye&background=10b981&color=020617" alt="" referrerpolicy="no-referrer" class="w-7 h-7 rounded-full object-cover border border-emerald-500">
+                    <span id="header-name" class="text-xs font-bold max-w-[110px] truncate hidden sm:inline">Üye</span>
+                    <i class="fa-solid fa-bars text-xs text-slate-500 dark:text-slate-400"></i>
+                </button>
+
+                <!-- KÖŞE AÇILIR SEÇENEKLER MENÜSÜ -->
+                <div id="corner-dropdown" class="hidden absolute right-0 top-12 w-72 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-3 space-y-2 z-50">
+                    <!-- Kullanıcı Özeti -->
+                    <div class="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 dark:bg-slate-950/60">
+                        <img id="menu-avatar" src="https://ui-avatars.com/api/?name=Uye&background=10b981&color=020617" alt="" referrerpolicy="no-referrer" class="w-10 h-10 rounded-full object-cover border border-emerald-500">
+                        <div class="min-w-0">
+                            <div id="menu-name" class="text-xs font-bold truncate">Üye</div>
+                            <div id="menu-email" class="text-[11px] text-slate-500 truncate"></div>
+                        </div>
+                    </div>
+
+                    <!-- Sekme Butonları -->
+                    <div class="space-y-1 pt-1">
+                        <button onclick="openDrawerTab('profile')" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                            <span class="flex items-center gap-2.5"><i class="fa-solid fa-user-pen text-emerald-500 w-4"></i> <span data-i18n="menu_profile">Profil & Hesap</span></span>
+                            <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
+                        </button>
+
+                        <button id="menu-pitch-owner-btn" onclick="openDrawerTab('pitch_panel')" class="hidden w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                            <span class="flex items-center gap-2.5"><i class="fa-solid fa-futbol text-sky-500 w-4"></i> <span data-i18n="menu_my_pitches">Sahalarım & Saatler</span></span>
+                            <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
+                        </button>
+
+                        <button id="menu-admin-users-btn" onclick="openDrawerTab('admin_users')" class="hidden w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                            <span class="flex items-center gap-2.5"><i class="fa-solid fa-users-gear text-amber-500 w-4"></i> <span data-i18n="menu_users">Kullanıcı Yönetimi</span></span>
+                            <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
+                        </button>
+
+                        <button id="menu-admin-notif-btn" onclick="openDrawerTab('notifications')" class="hidden w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                            <span class="flex items-center gap-2.5"><i class="fa-solid fa-bell text-rose-500 w-4"></i> <span data-i18n="menu_notifs">Bildirim & Onay</span></span>
+                            <span id="menu-notif-pill" class="px-1.5 py-0.5 rounded-full bg-rose-500/20 text-rose-400 text-[10px] font-bold">0</span>
+                        </button>
+                    </div>
+
+                    <!-- Tema & Dil -->
+                    <div class="border-t border-slate-200 dark:border-slate-800 pt-2 grid grid-cols-2 gap-1.5">
+                        <button onclick="toggleTheme()" class="flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-bold transition">
+                            <i id="theme-icon" class="fa-solid fa-sun text-amber-400"></i>
+                            <span id="theme-label">Açık Tema</span>
+                        </button>
+                        <button onclick="toggleLanguage()" class="flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-bold transition">
+                            <i class="fa-solid fa-globe text-sky-400"></i>
+                            <span id="lang-label">TR / EN</span>
+                        </button>
+                    </div>
+
+                    <!-- Çıkış & Giriş -->
+                    <div class="border-t border-slate-200 dark:border-slate-800 pt-2 flex items-center gap-1.5">
+                        <a href="index.html" class="flex-1 text-center py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-bold transition" data-i18n="login_page">Giriş</a>
+                        <button onclick="logout()" class="flex-1 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition" data-i18n="logout">Çıkış Yap</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ENGEL UYARISI -->
+    <div id="blocked-banner" class="hidden max-w-6xl mx-auto px-4 pt-4">
+        <div class="p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/40 text-rose-600 dark:text-rose-300 text-xs font-bold flex items-center gap-2">
+            <i class="fa-solid fa-ban"></i>
+            <span data-i18n="blocked_msg">Hesabınız kısıtlanmıştır. İşlemler devre dışı.</span>
+        </div>
+    </div>
+
+    <!-- ROL BAZLI ANA İÇERİK -->
+    <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+
+        <!-- 1. SİTE SAHİBİ (KURUCU) ÖZET ÇUBUĞU -->
+        <section id="founder-dashboard-bar" class="hidden grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div onclick="openDrawerTab('admin_users')" class="cursor-pointer bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-500/50 rounded-2xl p-3.5 transition">
+                <div class="text-[11px] text-slate-500" data-i18n="stat_users">Kullanıcılar</div>
+                <div id="stat-users-val" class="text-xl font-black mt-0.5">0</div>
+            </div>
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3.5">
+                <div class="text-[11px] text-slate-500" data-i18n="stat_pitches">Sahalar</div>
+                <div id="stat-pitches-val" class="text-xl font-black text-emerald-500 mt-0.5">0</div>
+            </div>
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3.5">
+                <div class="text-[11px] text-slate-500" data-i18n="stat_bookings">Rezervasyonlar</div>
+                <div id="stat-bookings-val" class="text-xl font-black text-sky-500 mt-0.5">0</div>
+            </div>
+            <div onclick="openDrawerTab('notifications')" class="cursor-pointer bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-rose-500/50 rounded-2xl p-3.5 transition">
+                <div class="text-[11px] text-slate-500" data-i18n="stat_approvals">Onay Bekleyen</div>
+                <div id="stat-approvals-val" class="text-xl font-black text-rose-500 mt-0.5">0</div>
+            </div>
+        </section>
+
+        <!-- 2. SAHA SAHİBİ / SİTE SAHİBİ HIZLI SAHA EKLEME -->
+        <section id="owner-quick-bar" class="hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4">
+            <div class="flex items-center justify-between flex-wrap gap-2 mb-3">
+                <h2 class="text-sm font-extrabold flex items-center gap-2">
+                    <i class="fa-solid fa-plus-circle text-emerald-500"></i>
+                    <span data-i18n="add_pitch_title">Yeni Saha Ekle</span>
+                </h2>
+                <button onclick="openDrawerTab('pitch_panel')" class="text-xs font-bold text-sky-500 hover:underline" data-i18n="manage_my_pitches">Sahalarımı Düzenle →</button>
+            </div>
+            <form onsubmit="addPitch(event)" class="grid grid-cols-1 sm:grid-cols-5 gap-2.5">
+                <input type="text" id="pitch-name" required placeholder="Saha Adı" class="px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs outline-none focus:border-emerald-500">
+                <select id="pitch-district" class="px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs outline-none focus:border-emerald-500">
+                    <option value="Selçuklu">Selçuklu</option>
+                    <option value="Meram">Meram</option>
+                    <option value="Karatay">Karatay</option>
+                </select>
+                <input type="text" id="pitch-address" required placeholder="Açık Adres / Mahalle" class="px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs outline-none focus:border-emerald-500">
+                <input type="number" id="pitch-price" required min="100" value="1200" placeholder="Ücret (₺)" class="px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs outline-none focus:border-emerald-500">
+                <button type="submit" id="add-pitch-btn" class="py-2 px-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold rounded-xl text-xs transition" data-i18n="btn_save">
+                    Kaydet
+                </button>
+            </form>
+        </section>
+
+        <!-- 3. ARAMA & FİLTRELEME (ADRES DAHİL) -->
+        <section class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 grid grid-cols-1 sm:grid-cols-4 gap-3">
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-500 mb-1" data-i18n="lbl_date">Tarih</label>
+                <input type="date" id="match-date" onchange="renderAll()" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs outline-none focus:border-emerald-500">
+            </div>
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-500 mb-1" data-i18n="lbl_district">İlçe</label>
+                <select id="filter-district" onchange="renderAll()" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs outline-none focus:border-emerald-500">
+                    <option value="">Tümü</option>
+                    <option value="Selçuklu">Selçuklu</option>
+                    <option value="Meram">Meram</option>
+                    <option value="Karatay">Karatay</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-500 mb-1" data-i18n="lbl_search">Saha veya Adres Ara</label>
+                <input type="text" id="filter-search" oninput="renderAll()" placeholder="Saha adı, mahalle, sokak..." class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs outline-none focus:border-emerald-500">
+            </div>
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-500 mb-1" data-i18n="lbl_sort">Sıralama / Filtre</label>
+                <select id="filter-sort" onchange="renderAll()" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs outline-none focus:border-emerald-500">
+                    <option value="default">Varsayılan</option>
+                    <option value="price_asc">Fiyat: Artan</option>
+                    <option value="price_desc">Fiyat: Azalan</option>
+                    <option value="available_only">Müsait Saati Olanlar</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- DURUM GÖSTERGESİ -->
+        <div class="flex items-center justify-between flex-wrap gap-2 text-[11px] text-slate-500 px-1">
+            <div class="flex items-center gap-4">
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-emerald-500/40 border border-emerald-500"></span> <span data-i18n="leg_free">Müsait</span></span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-rose-600 border border-rose-400"></span> <span data-i18n="leg_mine">Senin Seçimin (İptal İçin Tıkla)</span></span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-slate-400/50 border border-slate-400"></span> <span data-i18n="leg_full">Dolu</span></span>
+            </div>
+            <span id="sync-count" class="font-semibold text-emerald-600 dark:text-emerald-400"></span>
+        </div>
+
+        <!-- SAHALAR LİSTESİ -->
+        <div id="pitches-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+
+        <!-- REZERVASYONLAR -->
+        <section class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4">
+            <h2 class="text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-3" data-i18n="bookings_title">Aktif Rezervasyonlar</h2>
+            <div id="bookings-list" class="space-y-2 text-xs"></div>
+        </section>
+    </main>
+
+    <!-- YAN ÇEKMECE (SEÇENEKLER PANELİ: PROFİL / SAHA SAHİBİ / SİTE SAHİBİ YÖNETİMİ) -->
+    <div id="side-drawer-overlay" onclick="closeSideDrawer()" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs"></div>
+    <aside id="side-drawer" class="fixed top-0 right-0 z-50 h-full w-full max-w-md bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl transform translate-x-full transition-transform duration-200 flex flex-col">
+        <!-- Çekmece Başlık -->
+        <div class="px-5 h-16 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <h3 id="drawer-title" class="text-sm font-extrabold">Seçenekler</h3>
+            <button onclick="closeSideDrawer()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-xs">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Çekmece Sekme Navigasyonu -->
+        <div class="px-5 py-2.5 border-b border-slate-200 dark:border-slate-800 flex items-center gap-1.5 overflow-x-auto text-xs font-bold">
+            <button id="tab-btn-profile" onclick="switchDrawerTab('profile')" class="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950">Profil</button>
+            <button id="tab-btn-pitch_panel" onclick="switchDrawerTab('pitch_panel')" class="hidden px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800">Sahalarım</button>
+            <button id="tab-btn-admin_users" onclick="switchDrawerTab('admin_users')" class="hidden px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800">Kullanıcılar</button>
+            <button id="tab-btn-notifications" onclick="switchDrawerTab('notifications')" class="hidden px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800">Bildirimler</button>
+        </div>
+
+        <!-- Çekmece İçerik -->
+        <div class="flex-1 overflow-y-auto p-5 space-y-5 text-xs">
+
+            <!-- SEKME 1: PROFİL & KİŞİSEL BİLGİLER -->
+            <div id="tab-content-profile" class="space-y-4">
+                <div class="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                    <img id="drawer-avatar-preview" src="" alt="" referrerpolicy="no-referrer" class="w-14 h-14 rounded-full object-cover border-2 border-emerald-500">
+                    <div class="space-y-1.5 flex-1">
+                        <div class="font-bold text-sm" id="drawer-profile-name">Üye</div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <label class="cursor-pointer px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 font-bold hover:bg-emerald-500/25 transition">
+                                <i class="fa-solid fa-camera mr-1"></i> Fotoğraf Seç
+                                <input type="file" accept="image/*" onchange="handlePhotoUpload(event)" class="hidden">
+                            </label>
+                            <button type="button" onclick="useGooglePhoto()" class="px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-slate-800 font-bold hover:opacity-80 transition">
+                                <i class="fa-brands fa-google mr-1"></i> Google Fotoğrafı
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <form onsubmit="saveUserProfile(event)" class="space-y-3">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-500 mb-1">Ad Soyad</label>
+                        <input type="text" id="prof-name" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-500 mb-1">Telefon Numarası</label>
+                        <input type="tel" id="prof-phone" placeholder="05XX XXX XX XX" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-500 mb-1">Profil Fotoğrafı URL (İsteğe Bağlı)</label>
+                        <input type="url" id="prof-photo-url" placeholder="https://..." class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:border-emerald-500">
+                    </div>
+                    <button type="submit" class="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold transition">
+                        Bilgileri Kaydet
+                    </button>
+                </form>
+
+                <!-- Saha Sahibi Olma Talebi (Normal Kullanıcı İçin) -->
+                <div id="request-owner-box" class="pt-3 border-t border-slate-200 dark:border-slate-800">
+                    <button onclick="requestManagerRoleSelf()" class="w-full py-2.5 rounded-xl bg-sky-500/15 text-sky-600 dark:text-sky-300 border border-sky-500/30 font-bold hover:bg-sky-500/25 transition">
+                        Saha Sahibi Hesabı Talep Et
+                    </button>
+                </div>
+
+                <!-- Hesap Silme -->
+                <div class="pt-3 border-t border-slate-200 dark:border-slate-800">
+                    <button onclick="deleteOwnAccountRecord()" class="w-full py-2.5 rounded-xl bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30 font-bold hover:bg-rose-600 hover:text-white transition">
+                        <i class="fa-solid fa-user-slash mr-1"></i> Hesabımı Sil
+                    </button>
+                </div>
+            </div>
+
+            <!-- SEKME 2: SAHA SAHİBİ YÖNETİM PANELİ -->
+            <div id="tab-content-pitch_panel" class="hidden space-y-4">
+                <div id="owner-pitches-manage-list" class="space-y-3"></div>
+            </div>
+
+            <!-- SEKME 3: SİTE SAHİBİ - KULLANICI YÖNETİMİ -->
+            <div id="tab-content-admin_users" class="hidden space-y-3">
+                <input type="text" id="admin-user-search" oninput="renderMergedUsersList()" placeholder="İsim veya e-posta ara..." class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:border-amber-500">
+                <div id="users-list" class="space-y-2.5"></div>
+            </div>
+
+            <!-- SEKME 4: SİTE SAHİBİ - BİLDİRİMLER & ONAYLAR -->
+            <div id="tab-content-notifications" class="hidden space-y-4">
+                <div class="flex items-center justify-between">
+                    <span class="font-bold text-amber-500">Onay Bekleyen İşlemler</span>
+                    <button onclick="clearInfoLogs()" class="text-[11px] text-slate-400 hover:text-rose-400">Kayıtları Temizle</button>
+                </div>
+                <div id="approvals-queue-list" class="space-y-2"></div>
+
+                <div class="border-t border-slate-200 dark:border-slate-800 pt-3">
+                    <span class="font-bold text-sky-500 block mb-2">Sistem & Rezervasyon Hareketleri</span>
+                    <div id="activity-logs-list" class="space-y-2"></div>
+                </div>
+            </div>
+
+        </div>
+    </aside>
+
+    <!-- TEYİT PENCERESİ (RANDEVU SEÇME VE İPTAL ETME İÇİN ORTAK) -->
+    <div id="confirm-dialog" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 space-y-4 shadow-2xl">
+            <div class="flex items-center gap-2.5">
+                <div id="confirm-icon-wrap" class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-500 flex items-center justify-center">
+                    <i id="confirm-icon" class="fa-solid fa-calendar-check"></i>
+                </div>
+                <h3 id="confirm-title" class="text-sm font-extrabold">İşlem Teyidi</h3>
+            </div>
+            <div id="confirm-body" class="text-xs text-slate-600 dark:text-slate-300 space-y-1.5 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800"></div>
+            <div class="flex items-center justify-end gap-2 pt-1">
+                <button onclick="closeConfirmDialog()" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-bold text-xs transition">
+                    Vazgeç
+                </button>
+                <button id="confirm-proceed-btn" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs transition">
+                    Onayla
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import {
+            getFirestore,
+            collection,
+            doc,
+            setDoc,
+            getDoc,
+            updateDoc,
+            deleteDoc,
+            addDoc,
+            onSnapshot,
+            runTransaction
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const DEFAULT_HOURS = ["16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"];
+        const LOGIN_PAGE = "index.html";
+        const FOUNDER_EMAIL = "eyupensarus@gmail.com";
+        const ARCHIVE_STORAGE_KEY = "top_oyna_archived_users_v2";
+        const PITCHES_STORAGE_KEY = "top_oyna_pitches_v2";
+        const BOOKINGS_STORAGE_KEY = "top_oyna_bookings_v2";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCKYARoGK8ADJ2_T5c2GomrAG47-gHtQ-8",
+            authDomain: "top-oyna-d33f3.firebaseapp.com",
+            projectId: "top-oyna-d33f3",
+            storageBucket: "top-oyna-d33f3.firebasestorage.app",
+            messagingSenderId: "1033043310464",
+            appId: "1:1033043310464:web:d467e84b68f73e99f0f365",
+            measurementId: "G-P2ZRQQFFMD"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = {
+            uid: "guest_user",
+            name: "Misafir",
+            email: "",
+            phone: "",
+            photo: "",
+            googlePhoto: "",
+            blocked: false,
+            role: "user", // user | manager | founder
+            managerStatus: "none"
+        };
+
+        let pitches = [];
+        let bookings = [];
+        let users = [];
+        let archivedUsers = [];
+        let notifications = [];
+        let approvalRequests = [];
+        let pendingConfirmAction = null;
+        let currentLang = localStorage.getItem("top_oyna_lang") || "tr";
+
+        const I18N = {
+            tr: {
+                menu_profile: "Profil & Hesap",
+                menu_my_pitches: "Sahalarım & Saatler",
+                menu_users: "Kullanıcı Yönetimi",
+                menu_notifs: "Bildirim & Onay",
+                login_page: "Giriş",
+                logout: "Çıkış Yap",
+                blocked_msg: "Hesabınız kısıtlanmıştır. İşlemler devre dışı.",
+                stat_users: "Kullanıcılar",
+                stat_pitches: "Sahalar",
+                stat_bookings: "Rezervasyonlar",
+                stat_approvals: "Onay Bekleyen",
+                add_pitch_title: "Yeni Saha Ekle",
+                manage_my_pitches: "Sahalarımı Düzenle →",
+                btn_save: "Kaydet",
+                lbl_date: "Tarih",
+                lbl_district: "İlçe",
+                lbl_search: "Saha veya Adres Ara",
+                lbl_sort: "Sıralama / Filtre",
+                leg_free: "Müsait",
+                leg_mine: "Senin Seçimin (İptal İçin Tıkla)",
+                leg_full: "Dolu",
+                bookings_title: "Aktif Rezervasyonlar"
+            },
+            en: {
+                menu_profile: "Profile & Account",
+                menu_my_pitches: "My Pitches & Hours",
+                menu_users: "User Management",
+                menu_notifs: "Alerts & Approvals",
+                login_page: "Login",
+                logout: "Sign Out",
+                blocked_msg: "Your account is restricted.",
+                stat_users: "Users",
+                stat_pitches: "Pitches",
+                stat_bookings: "Bookings",
+                stat_approvals: "Pending",
+                add_pitch_title: "Add New Pitch",
+                manage_my_pitches: "Manage My Pitches →",
+                btn_save: "Save",
+                lbl_date: "Date",
+                lbl_district: "District",
+                lbl_search: "Search Pitch or Address",
+                lbl_sort: "Sort / Filter",
+                leg_free: "Available",
+                leg_mine: "Your Booking (Click to Cancel)",
+                leg_full: "Booked",
+                bookings_title: "Active Reservations"
+            }
+        };
+
+        function getToday() {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+        }
+
+        function formatTimeTR(ts) {
+            if (!ts) return "-";
+            return new Date(ts).toLocaleString("tr-TR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+        }
+
+        function readLocalList(key, fallback = []) {
+            try {
+                const raw = localStorage.getItem(key);
+                return raw ? JSON.parse(raw) : fallback;
+            } catch (_) { return fallback; }
+        }
+
+        function writeLocalList(key, list) {
+            try { localStorage.setItem(key, JSON.stringify(list)); } catch (_) {}
+        }
+
+        function saveLocalArchive(record) {
+            const list = readLocalList(ARCHIVE_STORAGE_KEY, []);
+            const idx = list.findIndex(item => item.uid === record.uid || (record.email && item.email === record.email));
+            if (idx >= 0) list[idx] = { ...list[idx], ...record, updatedAt: Date.now() };
+            else list.unshift({ ...record, updatedAt: Date.now() });
+            writeLocalList(ARCHIVE_STORAGE_KEY, list);
+            archivedUsers = list;
+        }
+
+        // TEMA & DİL
+        function applySavedTheme() {
+            const saved = localStorage.getItem("top_oyna_theme") || "dark";
+            const isDark = saved === "dark";
+            document.documentElement.classList.toggle("dark", isDark);
+            document.getElementById("theme-icon").className = isDark ? "fa-solid fa-sun text-amber-400" : "fa-solid fa-moon text-slate-700";
+            document.getElementById("theme-label").textContent = isDark ? (currentLang === "tr" ? "Açık Tema" : "Light") : (currentLang === "tr" ? "Koyu Tema" : "Dark");
+        }
+
+        window.toggleTheme = () => {
+            const isDark = document.documentElement.classList.contains("dark");
+            localStorage.setItem("top_oyna_theme", isDark ? "light" : "dark");
+            applySavedTheme();
+        };
+
+        function applyLanguage() {
+            const dict = I18N[currentLang] || I18N.tr;
+            document.querySelectorAll("[data-i18n]").forEach(el => {
+                const key = el.getAttribute("data-i18n");
+                if (dict[key]) el.textContent = dict[key];
+            });
+            document.getElementById("lang-label").textContent = currentLang === "tr" ? "Türkçe" : "English";
+            applySavedTheme();
+        }
+
+        window.toggleLanguage = () => {
+            currentLang = currentLang === "tr" ? "en" : "tr";
+            localStorage.setItem("top_oyna_lang", currentLang);
+            applyLanguage();
+            renderAll();
+        };
+
+        // BAŞLANGIÇ VERİLERİ
+        document.getElementById("match-date").value = getToday();
+        applyLanguage();
+        archivedUsers = readLocalList(ARCHIVE_STORAGE_KEY, []);
+        pitches = readLocalList(PITCHES_STORAGE_KEY, [
+            { id: "pitch_selcuklu_1", name: "Selçuklu Arena", district: "Selçuklu", address: "Bosna Hersek Mah. Osmanlı Cad. No:14", price: 1400, hours: [...DEFAULT_HOURS], ownerId: "system", ownerName: "Ana Yönetim" },
+            { id: "pitch_meram_1", name: "Meram Yıldız Tesisleri", district: "Meram", address: "Havzan Mah. Yeni Meram Cad. No:42", price: 1300, hours: [...DEFAULT_HOURS], ownerId: "system", ownerName: "Ana Yönetim" }
+        ]);
+        bookings = readLocalList(BOOKINGS_STORAGE_KEY, []);
+
+        function isFounder() {
+            return Boolean(currentUser && (currentUser.role === "founder" || (currentUser.email && currentUser.email.toLowerCase() === FOUNDER_EMAIL.toLowerCase())));
+        }
+
+        function isPitchOwner() {
+            return Boolean(currentUser && (currentUser.role === "manager" || isFounder()));
+        }
+
+        function canManagePitch(pitch) {
+            if (!currentUser) return false;
+            if (isFounder()) return true;
+            if (currentUser.role === "manager") {
+                return pitch.ownerId === currentUser.uid;
+            }
+            return false;
+        }
+
+        // KÖŞE AÇILIR SEKME & ÇEKMECE KONTROLLERİ
+        window.toggleCornerMenu = (e) => {
+            if (e) e.stopPropagation();
+            document.getElementById("corner-dropdown").classList.toggle("hidden");
+        };
+
+        document.addEventListener("click", (e) => {
+            const menu = document.getElementById("corner-dropdown");
+            const btn = document.getElementById("corner-menu-btn");
+            if (menu && !menu.contains(e.target) && btn && !btn.contains(e.target)) {
+                menu.classList.add("hidden");
+            }
+        });
+
+        window.openDrawerTab = (tabName) => {
+            document.getElementById("corner-dropdown").classList.add("hidden");
+            document.getElementById("side-drawer-overlay").classList.remove("hidden");
+            document.getElementById("side-drawer").classList.remove("translate-x-full");
+            switchDrawerTab(tabName);
+        };
+
+        window.closeSideDrawer = () => {
+            document.getElementById("side-drawer-overlay").classList.add("hidden");
+            document.getElementById("side-drawer").classList.add("translate-x-full");
+        };
+
+        window.switchDrawerTab = (tabName) => {
+            const tabs = ["profile", "pitch_panel", "admin_users", "notifications"];
+            const titles = {
+                profile: "Profil & Hesap Ayarları",
+                pitch_panel: "Sahalarım & Saat Yönetimi",
+                admin_users: "Kullanıcı Yönetimi",
+                notifications: "Bildirim & Onay Merkezi"
+            };
+            document.getElementById("drawer-title").textContent = titles[tabName] || "Seçenekler";
+            tabs.forEach(t => {
+                const contentEl = document.getElementById(`tab-content-${t}`);
+                const btnEl = document.getElementById(`tab-btn-${t}`);
+                if (contentEl) contentEl.classList.toggle("hidden", t !== tabName);
+                if (btnEl) {
+                    btnEl.className = t === tabName
+                        ? "px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold"
+                        : "px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 font-bold";
+                }
+            });
+            if (tabName === "pitch_panel") renderOwnerPitchesManage();
+            if (tabName === "admin_users") renderMergedUsersList();
+            if (tabName === "notifications") renderNotificationsAndApprovals();
+        };
+
+        function syncUserHeaderAndRoleUI() {
+            const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.name || "Uye")}&background=10b981&color=020617`;
+            const avatarSrc = currentUser.photo || currentUser.googlePhoto || fallbackAvatar;
+
+            document.getElementById("header-avatar").src = avatarSrc;
+            document.getElementById("menu-avatar").src = avatarSrc;
+            document.getElementById("drawer-avatar-preview").src = avatarSrc;
+            document.getElementById("header-name").textContent = currentUser.name;
+            document.getElementById("menu-name").textContent = currentUser.name;
+            document.getElementById("menu-email").textContent = currentUser.email || "Misafir Hesabı";
+            document.getElementById("drawer-profile-name").textContent = currentUser.name;
+
+            document.getElementById("prof-name").value = currentUser.name || "";
+            document.getElementById("prof-phone").value = currentUser.phone || "";
+            document.getElementById("prof-photo-url").value = currentUser.photo || "";
+
+            const badge = document.getElementById("role-badge");
+            const founderBar = document.getElementById("founder-dashboard-bar");
+            const ownerQuickBar = document.getElementById("owner-quick-bar");
+            const topNotifTrigger = document.getElementById("top-notif-trigger");
+
+            const menuPitchBtn = document.getElementById("menu-pitch-owner-btn");
+            const menuUsersBtn = document.getElementById("menu-admin-users-btn");
+            const menuNotifBtn = document.getElementById("menu-admin-notif-btn");
+
+            const tabPitchBtn = document.getElementById("tab-btn-pitch_panel");
+            const tabUsersBtn = document.getElementById("tab-btn-admin_users");
+            const tabNotifBtn = document.getElementById("tab-btn-notifications");
+            const reqOwnerBox = document.getElementById("request-owner-box");
+
+            if (isFounder()) {
+                badge.textContent = "Site Sahibi";
+                badge.className = "text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-500 border border-amber-500/40";
+                founderBar.classList.remove("hidden");
+                ownerQuickBar.classList.remove("hidden");
+                topNotifTrigger.classList.remove("hidden");
+                menuPitchBtn.classList.remove("hidden");
+                menuUsersBtn.classList.remove("hidden");
+                menuNotifBtn.classList.remove("hidden");
+                tabPitchBtn.classList.remove("hidden");
+                tabUsersBtn.classList.remove("hidden");
+                tabNotifBtn.classList.remove("hidden");
+                reqOwnerBox.classList.add("hidden");
+            } else if (currentUser.role === "manager") {
+                badge.textContent = "Saha Sahibi";
+                badge.className = "text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-500 border border-sky-500/40";
+                founderBar.classList.add("hidden");
+                ownerQuickBar.classList.remove("hidden");
+                topNotifTrigger.classList.add("hidden");
+                menuPitchBtn.classList.remove("hidden");
+                menuUsersBtn.classList.add("hidden");
+                menuNotifBtn.classList.add("hidden");
+                tabPitchBtn.classList.remove("hidden");
+                tabUsersBtn.classList.add("hidden");
+                tabNotifBtn.classList.add("hidden");
+                reqOwnerBox.classList.add("hidden");
+            } else {
+                badge.textContent = "Üye";
+                badge.className = "text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-500 border border-emerald-500/30";
+                founderBar.classList.add("hidden");
+                ownerQuickBar.classList.add("hidden");
+                topNotifTrigger.classList.add("hidden");
+                menuPitchBtn.classList.add("hidden");
+                menuUsersBtn.classList.add("hidden");
+                menuNotifBtn.classList.add("hidden");
+                tabPitchBtn.classList.add("hidden");
+                tabUsersBtn.classList.add("hidden");
+                tabNotifBtn.classList.add("hidden");
+                reqOwnerBox.classList.remove("hidden");
+            }
+
+            document.getElementById("blocked-banner").classList.toggle("hidden", !currentUser.blocked);
+        }
+
+        // BİLDİRİM KAYDI (SİTE SAHİBİNE HER OLAYI İLETİR)
+        async function logActivityToFounder(category, title, detail) {
+            const entry = {
+                id: "log_" + Date.now() + "_" + Math.random().toString(36).slice(2, 5),
+                type: "activity_log",
+                category,
+                title,
+                detail,
+                actorName: currentUser ? currentUser.name : "Sistem",
+                actorEmail: currentUser ? currentUser.email : "",
+                createdAt: Date.now()
+            };
+            notifications = [entry, ...notifications];
+            renderNotificationsAndApprovals();
+            try {
+                await addDoc(collection(db, "notifications"), entry);
+            } catch (_) {}
+        }
+
+        // KULLANICI KAYIT & GOOGLE FOTOĞRAF ENTEGRASYONU
+        async function registerLoginUser(user) {
+            const googleInfo = Array.isArray(user.providerData)
+                ? user.providerData.find(p => p && p.providerId === "google.com")
+                : null;
+            const displayName = (googleInfo && googleInfo.displayName) || user.displayName || (user.email || "Kullanıcı").split("@")[0];
+            const email = (googleInfo && googleInfo.email) || user.email || "";
+            const googlePhotoURL = (googleInfo && googleInfo.photoURL) || user.photoURL || "";
+
+            const userRef = doc(db, "users", user.uid);
+            const archiveRef = doc(db, "archived_users", user.uid);
+            let existing = {};
+            try {
+                const snap = await getDoc(userRef);
+                if (snap.exists()) existing = snap.data();
+            } catch (_) {}
+
+            const isFounderAcc = email.toLowerCase() === FOUNDER_EMAIL.toLowerCase();
+            const role = isFounderAcc ? "founder" : (existing.role === "manager" ? "manager" : (existing.role === "founder" ? "founder" : "user"));
+            const managerStatus = role === "manager" ? "approved" : (existing.managerStatus || "none");
+            const activePhoto = existing.photo || googlePhotoURL || "";
+
+            const record = {
+                uid: user.uid,
+                name: existing.name || displayName,
+                email,
+                phone: existing.phone || "",
+                photo: activePhoto,
+                googlePhoto: googlePhotoURL,
+                blocked: existing.blocked === true,
+                role,
+                managerStatus,
+                lastLoginAt: Date.now(),
+                updatedAt: Date.now(),
+                deletedOrSignedOut: false
+            };
+
+            try {
+                await setDoc(userRef, record, { merge: true });
+                await setDoc(archiveRef, { ...record, archivedAt: Date.now() }, { merge: true });
+            } catch (_) {}
+
+            saveLocalArchive(record);
+            currentUser = { ...record };
+            syncUserHeaderAndRoleUI();
+            renderAll();
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                await registerLoginUser(user);
+            } else {
+                syncUserHeaderAndRoleUI();
+                renderAll();
+            }
+            startRealtimeSync();
+        });
+
+        function startRealtimeSync() {
+            const updateCounters = () => {
+                const mergedUsers = getMergedUsers();
+                const pendingCount = approvalRequests.filter(r => r.status === "pending").length +
+                    notifications.filter(n => n.type === "manager_request" && n.status === "pending").length;
+
+                document.getElementById("sync-count").textContent = `${pitches.length} Saha • ${bookings.length} Rezervasyon`;
+                document.getElementById("stat-users-val").textContent = String(mergedUsers.length);
+                document.getElementById("stat-pitches-val").textContent = String(pitches.length);
+                document.getElementById("stat-bookings-val").textContent = String(bookings.length);
+                document.getElementById("stat-approvals-val").textContent = String(pendingCount);
+
+                const badgeEl = document.getElementById("notif-badge");
+                const pillEl = document.getElementById("menu-notif-pill");
+                if (badgeEl) {
+                    badgeEl.textContent = String(pendingCount);
+                    badgeEl.classList.toggle("hidden", pendingCount === 0);
+                }
+                if (pillEl) pillEl.textContent = String(pendingCount);
+            };
+
+            updateCounters();
+            renderAll();
+
+            onSnapshot(collection(db, "pitches"), (snap) => {
+                if (!snap.empty) {
+                    pitches = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    writeLocalList(PITCHES_STORAGE_KEY, pitches);
+                }
+                updateCounters();
+                renderAll();
+                renderOwnerPitchesManage();
+            }, () => {});
+
+            onSnapshot(collection(db, "bookings"), (snap) => {
+                if (!snap.empty) {
+                    bookings = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    writeLocalList(BOOKINGS_STORAGE_KEY, bookings);
+                }
+                updateCounters();
+                renderAll();
+            }, () => {});
+
+            onSnapshot(collection(db, "users"), (snap) => {
+                users = snap.docs.map(d => ({ id: d.id, uid: d.id, ...d.data() }));
+                users.forEach(u => saveLocalArchive(u));
+                if (currentUser && currentUser.uid !== "guest_user") {
+                    const me = users.find(u => u.uid === currentUser.uid || u.id === currentUser.uid);
+                    if (me) {
+                        currentUser = { ...currentUser, ...me };
+                        syncUserHeaderAndRoleUI();
+                    }
+                }
+                renderMergedUsersList();
+                updateCounters();
+            }, () => {});
+
+            onSnapshot(collection(db, "archived_users"), (snap) => {
+                const remoteArch = snap.docs.map(d => ({ id: d.id, uid: d.id, ...d.data() }));
+                const localList = readLocalList(ARCHIVE_STORAGE_KEY, []);
+                const map = new Map();
+                [...localList, ...remoteArch].forEach(item => {
+                    const key = item.uid || item.id || item.email;
+                    if (key) map.set(key, { ...(map.get(key) || {}), ...item });
+                });
+                archivedUsers = Array.from(map.values());
+                writeLocalList(ARCHIVE_STORAGE_KEY, archivedUsers);
+                renderMergedUsersList();
+                updateCounters();
+            }, () => {});
+
+            onSnapshot(collection(db, "notifications"), (snap) => {
+                notifications = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                renderNotificationsAndApprovals();
+                updateCounters();
+            }, () => {});
+
+            onSnapshot(collection(db, "approval_requests"), (snap) => {
+                approvalRequests = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                renderNotificationsAndApprovals();
+                updateCounters();
+            }, () => {});
+        }
+
+        // PROFİL GÜNCELLEME & FOTOĞRAF YÜKLEME
+        window.handlePhotoUpload = (e) => {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement("canvas");
+                    const max = 200;
+                    const scale = Math.min(max / img.width, max / img.height, 1);
+                    canvas.width = img.width * scale;
+                    canvas.height = img.height * scale;
+                    canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+                    const compressed = canvas.toDataURL("image/jpeg", 0.8);
+                    document.getElementById("prof-photo-url").value = compressed;
+                    document.getElementById("drawer-avatar-preview").src = compressed;
+                };
+                img.src = reader.result;
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.useGooglePhoto = () => {
+            if (!currentUser.googlePhoto) return;
+            document.getElementById("prof-photo-url").value = currentUser.googlePhoto;
+            document.getElementById("drawer-avatar-preview").src = currentUser.googlePhoto;
+        };
+
+        window.saveUserProfile = async (e) => {
+            e.preventDefault();
+            if (!currentUser) return;
+            const nextName = document.getElementById("prof-name").value.trim() || currentUser.name;
+            const nextPhone = document.getElementById("prof-phone").value.trim();
+            const nextPhoto = document.getElementById("prof-photo-url").value.trim() || currentUser.googlePhoto || "";
+
+            currentUser.name = nextName;
+            currentUser.phone = nextPhone;
+            currentUser.photo = nextPhoto;
+
+            saveLocalArchive(currentUser);
+            syncUserHeaderAndRoleUI();
+
+            if (currentUser.uid !== "guest_user") {
+                try {
+                    await setDoc(doc(db, "users", currentUser.uid), { name: nextName, phone: nextPhone, photo: nextPhoto, updatedAt: Date.now() }, { merge: true });
+                    await setDoc(doc(db, "archived_users", currentUser.uid), { name: nextName, phone: nextPhone, photo: nextPhoto, updatedAt: Date.now() }, { merge: true });
+                } catch (_) {}
+            }
+            await logActivityToFounder("profile", "Profil Güncellendi", `${nextName} (${nextPhone || "Telefon yok"}) profil bilgilerini güncelledi.`);
+            closeSideDrawer();
+        };
+
+        // SİTE SAHİBİ KULLANICI YÖNETİMİ (HESAP TÜRÜ DEĞİŞTİRME, ENGELLEME, SİLME)
+        function getMergedUsers() {
+            const map = new Map();
+            [...archivedUsers, ...users].forEach(u => {
+                const key = u.uid || u.id || u.email;
+                if (key) map.set(key, { ...(map.get(key) || {}), ...u, uid: u.uid || u.id || key });
+            });
+            return Array.from(map.values()).sort((a, b) => (b.lastLoginAt || 0) - (a.lastLoginAt || 0));
+        }
+
+        window.changeUserRole = async (targetUid, nextRole) => {
+            if (!isFounder()) return;
+            const managerStatus = nextRole === "manager" ? "approved" : "none";
+            if (currentUser && currentUser.uid === targetUid) {
+                currentUser.role = nextRole;
+                currentUser.managerStatus = managerStatus;
+                syncUserHeaderAndRoleUI();
+            }
+            const list = readLocalList(ARCHIVE_STORAGE_KEY, []).map(u =>
+                (u.uid === targetUid || u.id === targetUid) ? { ...u, role: nextRole, managerStatus } : u
+            );
+            writeLocalList(ARCHIVE_STORAGE_KEY, list);
+            archivedUsers = list;
+            try {
+                await setDoc(doc(db, "users", targetUid), { role: nextRole, managerStatus }, { merge: true });
+                await setDoc(doc(db, "archived_users", targetUid), { role: nextRole, managerStatus }, { merge: true });
+            } catch (_) {}
+            renderMergedUsersList();
+            renderAll();
+        };
+
+        window.toggleBlockUser = async (targetUid, nextBlocked) => {
+            if (!isFounder()) return;
+            if (currentUser && currentUser.uid === targetUid) {
+                currentUser.blocked = Boolean(nextBlocked);
+                syncUserHeaderAndRoleUI();
+            }
+            const list = readLocalList(ARCHIVE_STORAGE_KEY, []).map(u =>
+                (u.uid === targetUid || u.id === targetUid) ? { ...u, blocked: Boolean(nextBlocked) } : u
+            );
+            writeLocalList(ARCHIVE_STORAGE_KEY, list);
+            archivedUsers = list;
+            try {
+                await setDoc(doc(db, "users", targetUid), { blocked: Boolean(nextBlocked) }, { merge: true });
+                await setDoc(doc(db, "archived_users", targetUid), { blocked: Boolean(nextBlocked) }, { merge: true });
+            } catch (_) {}
+            renderMergedUsersList();
+        };
+
+        window.adminDeleteUser = async (targetUid, targetName) => {
+            if (!isFounder()) return;
+            openConfirmDialog({
+                title: "Kullanıcı Hesabını Sil",
+                icon: "fa-user-slash",
+                danger: true,
+                html: `<div><b>${targetName}</b> kullanıcısının hesabı sistemden kaldırılacak.</div>`,
+                onConfirm: async () => {
+                    const list = readLocalList(ARCHIVE_STORAGE_KEY, []).filter(u => u.uid !== targetUid && u.id !== targetUid);
+                    writeLocalList(ARCHIVE_STORAGE_KEY, list);
+                    archivedUsers = list;
+                    users = users.filter(u => u.uid !== targetUid && u.id !== targetUid);
+                    try {
+                        await deleteDoc(doc(db, "users", targetUid));
+                        await deleteDoc(doc(db, "archived_users", targetUid));
+                    } catch (_) {}
+                    renderMergedUsersList();
+                }
+            });
+        };
+
+        window.renderMergedUsersList = () => {
+            const listEl = document.getElementById("users-list");
+            if (!listEl) return;
+            const q = (document.getElementById("admin-user-search")?.value || "").trim().toLowerCase();
+            const merged = getMergedUsers().filter(u =>
+                !q || (u.name || "").toLowerCase().includes(q) || (u.email || "").toLowerCase().includes(q)
+            );
+
+            if (merged.length === 0) {
+                listEl.innerHTML = `<div class="text-slate-500 text-center py-4">Kayıt bulunamadı.</div>`;
+                return;
+            }
+
+            listEl.innerHTML = merged.map(u => {
+                const uid = u.uid || u.id;
+                const isBlocked = Boolean(u.blocked);
+                const role = u.role || "user";
+                return `
+                    <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2.5">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="min-w-0">
+                                <div class="font-bold truncate flex items-center gap-1.5">
+                                    <span>${u.name || "İsimsiz"}</span>
+                                    ${isBlocked ? `<span class="px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-400 text-[10px]">Engelli</span>` : ""}
+                                </div>
+                                <div class="text-[11px] text-slate-500 truncate">${u.email || ""} ${u.phone ? "• " + u.phone : ""}</div>
+                            </div>
+                            <select onchange="changeUserRole('${uid}', this.value)" class="px-2 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-[11px] font-bold">
+                                <option value="user" ${role === "user" ? "selected" : ""}>Üye</option>
+                                <option value="manager" ${role === "manager" ? "selected" : ""}>Saha Sahibi</option>
+                                <option value="founder" ${role === "founder" ? "selected" : ""}>Site Sahibi</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center justify-end gap-2 pt-1 border-t border-slate-200 dark:border-slate-800/80">
+                            <button onclick="toggleBlockUser('${uid}', ${!isBlocked})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold ${isBlocked ? "bg-emerald-500/20 text-emerald-500" : "bg-amber-500/20 text-amber-500"}">
+                                ${isBlocked ? "Engeli Kaldır" : "Engelle"}
+                            </button>
+                            <button onclick="adminDeleteUser('${uid}', '${(u.name || "Kullanıcı").replace(/'/g, "")}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-rose-500/20 text-rose-500 hover:bg-rose-600 hover:text-white transition">
+                                Hesabı Sil
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        };
+
+        // ONAY KUYRUĞU & BİLDİRİMLER
+        window.requestManagerRoleSelf = async () => {
+            if (!currentUser || isPitchOwner()) return;
+            const reqNotif = {
+                id: "notif_" + Date.now(),
+                type: "manager_request",
+                title: "Saha Sahibi Talebi",
+                message: `${currentUser.name} (${currentUser.email || currentUser.uid}) saha sahibi yetkisi istiyor.`,
+                requesterUid: currentUser.uid,
+                requesterName: currentUser.name,
+                status: "pending",
+                createdAt: Date.now()
+            };
+            notifications = [reqNotif, ...notifications];
+            try { await addDoc(collection(db, "notifications"), reqNotif); } catch (_) {}
+            closeSideDrawer();
+        };
+
+        window.approveManagerRequest = async (notifId, targetUid, approve) => {
+            notifications = notifications.map(n => n.id === notifId ? { ...n, status: approve ? "approved" : "rejected" } : n);
+            if (targetUid) {
+                await changeUserRole(targetUid, approve ? "manager" : "user");
+            }
+            try { await updateDoc(doc(db, "notifications", notifId), { status: approve ? "approved" : "rejected" }); } catch (_) {}
+            renderNotificationsAndApprovals();
+        };
+
+        async function queueOwnerApproval(actionType, actionLabel, summary, payload) {
+            const reqItem = {
+                id: "req_" + Date.now() + "_" + Math.random().toString(36).slice(2, 5),
+                actionType,
+                actionLabel,
+                summary,
+                payload,
+                requesterUid: currentUser.uid,
+                requesterName: currentUser.name,
+                status: "pending",
+                createdAt: Date.now()
+            };
+            approvalRequests = [reqItem, ...approvalRequests];
+            renderNotificationsAndApprovals();
+            try { await addDoc(collection(db, "approval_requests"), reqItem); } catch (_) {}
+        }
+
+        window.executeApprovedAction = async (reqId) => {
+            const req = approvalRequests.find(r => r.id === reqId);
+            if (!req) return;
+            const p = req.payload || {};
+            try {
+                if (req.actionType === "create_pitch") {
+                    const id = `pitch_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+                    const newPitch = { ...p, id, hours: [...DEFAULT_HOURS], createdAt: Date.now() };
+                    pitches = [newPitch, ...pitches];
+                    writeLocalList(PITCHES_STORAGE_KEY, pitches);
+                    await setDoc(doc(db, "pitches", id), newPitch);
+                } else if (req.actionType === "delete_pitch") {
+                    pitches = pitches.filter(item => item.id !== p.pitchId);
+                    writeLocalList(PITCHES_STORAGE_KEY, pitches);
+                    await deleteDoc(doc(db, "pitches", p.pitchId));
+                }
+            } catch (_) {}
+            approvalRequests = approvalRequests.map(r => r.id === reqId ? { ...r, status: "approved" } : r);
+            try { await updateDoc(doc(db, "approval_requests", reqId), { status: "approved" }); } catch (_) {}
+            renderAll();
+            renderOwnerPitchesManage();
+            renderNotificationsAndApprovals();
+        };
+
+        window.rejectActionRequest = async (reqId) => {
+            approvalRequests = approvalRequests.map(r => r.id === reqId ? { ...r, status: "rejected" } : r);
+            try { await updateDoc(doc(db, "approval_requests", reqId), { status: "rejected" }); } catch (_) {}
+            renderNotificationsAndApprovals();
+        };
+
+        window.clearInfoLogs = () => {
+            notifications = notifications.filter(n => n.type === "manager_request" && n.status === "pending");
+            renderNotificationsAndApprovals();
+        };
+
+        function renderNotificationsAndApprovals() {
+            const queueEl = document.getElementById("approvals-queue-list");
+            const logsEl = document.getElementById("activity-logs-list");
+            if (!queueEl || !logsEl) return;
+
+            const pendingMgr = notifications.filter(n => n.type === "manager_request" && n.status === "pending");
+            const pendingAct = approvalRequests.filter(r => r.status === "pending");
+
+            if (pendingMgr.length === 0 && pendingAct.length === 0) {
+                queueEl.innerHTML = `<div class="text-slate-500">Onay bekleyen işlem yok.</div>`;
+            } else {
+                const mgrHtml = pendingMgr.map(n => `
+                    <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-2">
+                        <div class="font-bold text-amber-500">${n.title}</div>
+                        <div>${n.message}</div>
+                        <div class="flex gap-2">
+                            <button onclick="approveManagerRequest('${n.id}', '${n.requesterUid}', true)" class="px-3 py-1 rounded-lg bg-emerald-500 text-slate-950 font-bold">Onayla</button>
+                            <button onclick="approveManagerRequest('${n.id}', '${n.requesterUid}', false)" class="px-3 py-1 rounded-lg bg-rose-500 text-white font-bold">Reddet</button>
+                        </div>
+                    </div>
+                `).join("");
+
+                const actHtml = pendingAct.map(r => `
+                    <div class="p-3 rounded-xl bg-sky-500/10 border border-sky-500/30 space-y-2">
+                        <div class="font-bold text-sky-500">${r.actionLabel} • ${r.requesterName}</div>
+                        <div>${r.summary}</div>
+                        <div class="flex gap-2">
+                            <button onclick="executeApprovedAction('${r.id}')" class="px-3 py-1 rounded-lg bg-emerald-500 text-slate-950 font-bold">Onayla</button>
+                            <button onclick="rejectActionRequest('${r.id}')" class="px-3 py-1 rounded-lg bg-rose-500 text-white font-bold">Reddet</button>
+                        </div>
+                    </div>
+                `).join("");
+
+                queueEl.innerHTML = mgrHtml + actHtml;
+            }
+
+            const logs = notifications.filter(n => n.type === "activity_log").slice(0, 30);
+            if (logs.length === 0) {
+                logsEl.innerHTML = `<div class="text-slate-500">Henüz hareket kaydı yok.</div>`;
+            } else {
+                logsEl.innerHTML = logs.map(l => `
+                    <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold">${l.title}</span>
+                            <span class="text-[10px] text-slate-400">${formatTimeTR(l.createdAt)}</span>
+                        </div>
+                        <div class="text-slate-500 mt-0.5">${l.detail}</div>
+                    </div>
+                `).join("");
+            }
+        }
+
+        // SAHA EKLEME, DÜZENLEME, SAAT AYARI VE SİLME
+        window.addPitch = async (e) => {
+            e.preventDefault();
+            if (!isPitchOwner() || currentUser.blocked) return;
+
+            const name = document.getElementById("pitch-name").value.trim();
+            const district = document.getElementById("pitch-district").value;
+            const address = document.getElementById("pitch-address").value.trim();
+            const price = Number(document.getElementById("pitch-price").value) || 1200;
+            if (!name) return;
+
+            const payload = { name, district, address, price, ownerId: currentUser.uid, ownerName: currentUser.name };
+
+            // Saha sahibi ekliyorsa site sahibinden onay ister
+            if (!isFounder()) {
+                await queueOwnerApproval("create_pitch", "Yeni Saha Ekleme", `${currentUser.name}, "${name}" (${district} - ${address}) sahasını eklemek istiyor.`, payload);
+                await logActivityToFounder("pitch", "Saha Ekleme Onayı İstendi", `${currentUser.name} -> ${name}`);
+                e.target.reset();
+                return;
+            }
+
+            // Site sahibi doğrudan ekler
+            const id = `pitch_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+            const fullPitch = { ...payload, id, hours: [...DEFAULT_HOURS], createdAt: Date.now() };
+            pitches = [fullPitch, ...pitches];
+            writeLocalList(PITCHES_STORAGE_KEY, pitches);
+            try { await setDoc(doc(db, "pitches", id), fullPitch); } catch (_) {}
+            e.target.reset();
+            renderAll();
+        };
+
+        window.deletePitchAction = async (pitchId, pitchName) => {
+            const pitch = pitches.find(p => p.id === pitchId);
+            if (!pitch || !canManagePitch(pitch)) return;
+
+            if (!isFounder()) {
+                await queueOwnerApproval("delete_pitch", "Saha Silme", `${currentUser.name}, "${pitchName}" sahasını silmek istiyor.`, { pitchId, pitchName });
+                await logActivityToFounder("pitch", "Saha Silme Onayı İstendi", `${currentUser.name} -> ${pitchName}`);
+                return;
+            }
+
+            openConfirmDialog({
+                title: "Sahayı Sil",
+                icon: "fa-trash",
+                danger: true,
+                html: `<div><b>${pitchName}</b> kalıcı olarak silinecek.</div>`,
+                onConfirm: async () => {
+                    pitches = pitches.filter(p => p.id !== pitchId);
+                    writeLocalList(PITCHES_STORAGE_KEY, pitches);
+                    try { await deleteDoc(doc(db, "pitches", pitchId)); } catch (_) {}
+                    renderAll();
+                    renderOwnerPitchesManage();
+                }
+            });
+        };
+
+        window.saveOwnerPitchChanges = async (pitchId) => {
+            const pitch = pitches.find(p => p.id === pitchId);
+            if (!pitch || !canManagePitch(pitch)) return;
+
+            const nextName = document.getElementById(`edit-name-${pitchId}`).value.trim() || pitch.name;
+            const nextAddress = document.getElementById(`edit-addr-${pitchId}`).value.trim();
+            const nextPrice = Number(document.getElementById(`edit-price-${pitchId}`).value) || pitch.price;
+            const nextHoursRaw = document.getElementById(`edit-hours-${pitchId}`).value;
+            const nextHours = nextHoursRaw.split(",").map(s => s.trim()).filter(Boolean);
+
+            pitches = pitches.map(p => p.id === pitchId ? { ...p, name: nextName, address: nextAddress, price: nextPrice, hours: nextHours.length ? nextHours : DEFAULT_HOURS } : p);
+            writeLocalList(PITCHES_STORAGE_KEY, pitches);
+            try {
+                await updateDoc(doc(db, "pitches", pitchId), { name: nextName, address: nextAddress, price: nextPrice, hours: nextHours.length ? nextHours : DEFAULT_HOURS });
+            } catch (_) {}
+
+            if (!isFounder()) {
+                await logActivityToFounder("pitch_update", "Saha Bilgisi Güncellendi", `${currentUser.name}, "${nextName}" sahasının fiyat/saat bilgilerini düzenledi.`);
+            }
+            renderAll();
+            renderOwnerPitchesManage();
+        };
+
+        function renderOwnerPitchesManage() {
+            const container = document.getElementById("owner-pitches-manage-list");
+            if (!container) return;
+            const myPitches = pitches.filter(p => canManagePitch(p));
+
+            if (myPitches.length === 0) {
+                container.innerHTML = `<div class="text-slate-500 text-center py-6">Size ait kayıtlı saha bulunmuyor.</div>`;
+                return;
+            }
+
+            container.innerHTML = myPitches.map(p => {
+                const hrs = (p.hours && p.hours.length ? p.hours : DEFAULT_HOURS).join(", ");
+                return `
+                    <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <span class="font-extrabold text-emerald-500">${p.name}</span>
+                            <button onclick="deletePitchAction('${p.id}', '${p.name.replace(/'/g, "")}')" class="text-rose-500 hover:underline text-[11px] font-bold">Sahayı Sil</button>
+                        </div>
+                        <input type="text" id="edit-name-${p.id}" value="${p.name}" placeholder="Saha Adı" class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                        <input type="text" id="edit-addr-${p.id}" value="${p.address || ""}" placeholder="Adres" class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                        <input type="number" id="edit-price-${p.id}" value="${p.price || 1200}" placeholder="Saatlik Ücret" class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                        <div>
+                            <label class="block text-[10px] text-slate-400 mb-1">Aktif Saatler (virgülle ayırın)</label>
+                            <input type="text" id="edit-hours-${p.id}" value="${hrs}" class="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                        </div>
+                        <button onclick="saveOwnerPitchChanges('${p.id}')" class="w-full py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-extrabold transition">
+                            Değişiklikleri Kaydet
+                        </button>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        // ORTAK TEYİT DİYALOĞU (RANDEVU SEÇME & İPTAL ETME)
+        function openConfirmDialog({ title, icon, danger, html, onConfirm }) {
+            document.getElementById("confirm-title").textContent = title;
+            document.getElementById("confirm-icon").className = `fa-solid ${icon}`;
+            document.getElementById("confirm-icon-wrap").className = danger
+                ? "w-9 h-9 rounded-xl bg-rose-500/20 text-rose-500 flex items-center justify-center"
+                : "w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-500 flex items-center justify-center";
+            document.getElementById("confirm-body").innerHTML = html;
+
+            const proceedBtn = document.getElementById("confirm-proceed-btn");
+            proceedBtn.className = danger
+                ? "px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs transition"
+                : "px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs transition";
+
+            pendingConfirmAction = onConfirm;
+            proceedBtn.onclick = async () => {
+                const fn = pendingConfirmAction;
+                closeConfirmDialog();
+                if (fn) await fn();
+            };
+
+            document.getElementById("confirm-dialog").classList.remove("hidden");
+        }
+
+        window.closeConfirmDialog = () => {
+            document.getElementById("confirm-dialog").classList.add("hidden");
+            pendingConfirmAction = null;
+        };
+
+        // RANDEVU SEÇME (TEYİTLİ)
+        window.rentSlot = (pitchId, pitchName, district, address, price, date, hour) => {
+            if (!currentUser || currentUser.blocked) return;
+
+            const slotDocId = `${pitchId}_${date}_${hour.replace(":", "")}`;
+            if (bookings.some(b => b.id === slotDocId)) return;
+
+            openConfirmDialog({
+                title: "Rezervasyon Teyidi",
+                icon: "fa-calendar-check",
+                danger: false,
+                html: `
+                    <div><b>Saha:</b> ${pitchName} (${district})</div>
+                    ${address ? `<div><b>Adres:</b> ${address}</div>` : ""}
+                    <div><b>Tarih & Saat:</b> ${date} • ${hour}</div>
+                    <div><b>Ücret:</b> ${Number(price).toLocaleString("tr-TR")} ₺</div>
+                `,
+                onConfirm: async () => {
+                    const createdRecord = {
+                        id: slotDocId,
+                        pitchId,
+                        pitchName,
+                        district,
+                        address: address || "",
+                        price,
+                        date,
+                        hour,
+                        userId: currentUser.uid,
+                        userName: currentUser.name,
+                        userEmail: currentUser.email,
+                        userPhone: currentUser.phone || "",
+                        createdAt: Date.now()
+                    };
+
+                    bookings = [createdRecord, ...bookings];
+                    writeLocalList(BOOKINGS_STORAGE_KEY, bookings);
+                    renderAll();
+
+                    try {
+                        const slotRef = doc(db, "bookings", slotDocId);
+                        await runTransaction(db, async (tx) => {
+                            const snap = await tx.get(slotRef);
+                            if (!snap.exists()) tx.set(slotRef, createdRecord);
+                        });
+                    } catch (_) {}
+
+                    await logActivityToFounder(
+                        "booking_created",
+                        "Yeni Rezervasyon",
+                        `${currentUser.name} (${currentUser.phone || currentUser.email || "Üye"}) -> ${pitchName} (${date} ${hour})`
+                    );
+                }
+            });
+        };
+
+        // AYNI TUŞLA RANDEVU İPTALİ (TEYİTLİ)
+        window.cancelSlot = (bookingId) => {
+            const bk = bookings.find(b => b.id === bookingId);
+            if (!bk) return;
+
+            openConfirmDialog({
+                title: "Rezervasyon İptal Teyidi",
+                icon: "fa-calendar-xmark",
+                danger: true,
+                html: `
+                    <div><b>Saha:</b> ${bk.pitchName}</div>
+                    <div><b>Tarih & Saat:</b> ${bk.date} • ${bk.hour}</div>
+                    <div class="text-rose-500 font-semibold pt-1">Bu rezervasyonu iptal etmek istediğinize emin misiniz?</div>
+                `,
+                onConfirm: async () => {
+                    bookings = bookings.filter(b => b.id !== bookingId);
+                    writeLocalList(BOOKINGS_STORAGE_KEY, bookings);
+                    renderAll();
+
+                    try { await deleteDoc(doc(db, "bookings", bookingId)); } catch (_) {}
+
+                    await logActivityToFounder(
+                        "booking_cancelled",
+                        "Rezervasyon İptal Edildi",
+                        `${currentUser.name} -> ${bk.pitchName} (${bk.date} ${bk.hour}) randevusunu iptal etti.`
+                    );
+                }
+            });
+        };
+
+        // ANA LİSTE RENDER
+        window.renderAll = () => {
+            const date = document.getElementById("match-date").value || getToday();
+            const district = document.getElementById("filter-district").value;
+            const search = document.getElementById("filter-search").value.trim().toLowerCase();
+            const sortMode = document.getElementById("filter-sort").value;
+            const isBlocked = Boolean(currentUser && currentUser.blocked);
+
+            let filtered = pitches.filter(p => {
+                const okDist = !district || p.district === district;
+                const okSearch = !search ||
+                    (p.name || "").toLowerCase().includes(search) ||
+                    (p.address || "").toLowerCase().includes(search) ||
+                    (p.district || "").toLowerCase().includes(search);
+
+                if (!okDist || !okSearch) return false;
+
+                if (sortMode === "available_only") {
+                    const pHours = p.hours && p.hours.length ? p.hours : DEFAULT_HOURS;
+                    return pHours.some(h => !bookings.some(b => b.id === `${p.id}_${date}_${h.replace(":", "")}`));
+                }
+                return true;
+            });
+
+            if (sortMode === "price_asc") filtered.sort((a, b) => (a.price || 0) - (b.price || 0));
+            if (sortMode === "price_desc") filtered.sort((a, b) => (b.price || 0) - (a.price || 0));
+
+            const listEl = document.getElementById("pitches-list");
+            if (filtered.length === 0) {
+                listEl.innerHTML = `<div class="col-span-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 text-center text-xs text-slate-500">Kriterlere uygun saha bulunamadı.</div>`;
+            } else {
+                listEl.innerHTML = filtered.map(p => {
+                    const pitchHours = p.hours && p.hours.length ? p.hours : DEFAULT_HOURS;
+                    const buttons = pitchHours.map(h => {
+                        const slotId = `${p.id}_${date}_${h.replace(":", "")}`;
+                        const taken = bookings.find(b => b.id === slotId);
+
+                        if (taken) {
+                            const isMine = currentUser && taken.userId === currentUser.uid;
+                            // AYNI TUŞ: Kendi seçimi ise tıklandığında teyitli iptal açar
+                            if (isMine && !isBlocked) {
+                                return `<button onclick="cancelSlot('${taken.id}')" class="py-2 rounded-xl bg-rose-600 hover:bg-rose-500 border border-rose-400 text-white text-xs font-bold transition">${h}<br><span class="text-[10px] font-normal">İptal Et</span></button>`;
+                            }
+                            return `<button disabled class="py-2 rounded-xl bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-500 text-xs font-bold cursor-not-allowed">${h}<br><span class="text-[10px] font-normal">Dolu</span></button>`;
+                        }
+
+                        if (isBlocked) {
+                            return `<button disabled class="py-2 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-400 text-xs font-bold cursor-not-allowed">${h}</button>`;
+                        }
+
+                        return `<button onclick="rentSlot('${p.id}', '${p.name.replace(/'/g, "")}', '${p.district}', '${(p.address || "").replace(/'/g, "")}', ${p.price || 0}, '${date}', '${h}')" class="py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500 text-emerald-700 dark:text-emerald-300 hover:text-slate-950 border border-emerald-500/30 text-xs font-bold transition">${h}<br><span class="text-[10px] font-normal">Seç</span></button>`;
+                    }).join("");
+
+                    return `
+                        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-3 shadow-xs">
+                            <div class="flex items-start justify-between gap-2">
+                                <div>
+                                    <h3 class="font-extrabold text-sm">${p.name}</h3>
+                                    <p class="text-xs text-slate-500 mt-0.5">${p.district} • <span class="font-bold text-emerald-600 dark:text-emerald-400">${Number(p.price || 0).toLocaleString("tr-TR")} ₺</span></p>
+                                    ${p.address ? `<p class="text-[11px] text-slate-400 mt-0.5"><i class="fa-solid fa-location-dot mr-1"></i>${p.address}</p>` : ""}
+                                </div>
+                                ${canManagePitch(p) ? `
+                                    <button onclick="openDrawerTab('pitch_panel')" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-[11px] font-bold">
+                                        Düzenle
+                                    </button>
+                                ` : ""}
+                            </div>
+                            <div class="grid grid-cols-4 gap-2">${buttons}</div>
+                        </div>
+                    `;
+                }).join("");
+            }
+
+            // AKTİF REZERVASYONLAR LİSTESİ
+            const bookingsEl = document.getElementById("bookings-list");
+            const visibleBookings = bookings
+                .filter(b => isFounder() || (isPitchOwner() && canManagePitch({ ownerId: pitches.find(p => p.id === b.pitchId)?.ownerId })) || b.userId === currentUser.uid)
+                .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+            if (visibleBookings.length === 0) {
+                bookingsEl.innerHTML = `<div class="text-slate-500">Görüntülenecek rezervasyon yok.</div>`;
+            } else {
+                bookingsEl.innerHTML = visibleBookings.map(b => {
+                    const holder = (isFounder() || isPitchOwner()) ? ` • ${b.userName}${b.userPhone ? " (" + b.userPhone + ")" : ""}` : "";
+                    return `
+                        <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-3 py-2.5 rounded-xl gap-2">
+                            <div>
+                                <span class="font-bold">${b.pitchName}</span>
+                                <span class="text-slate-500"> • ${b.date} • </span>
+                                <span class="text-rose-500 font-bold">${b.hour}</span>
+                                <span class="text-slate-500">${holder}</span>
+                            </div>
+                            <button onclick="cancelSlot('${b.id}')" class="px-2.5 py-1 rounded-lg bg-rose-500/15 text-rose-500 hover:bg-rose-600 hover:text-white font-bold transition">
+                                İptal
+                            </button>
+                        </div>
+                    `;
+                }).join("");
+            }
+        };
+
+        // ÇIKIŞ & HESAP SİLME
+        window.logout = async () => {
+            if (currentUser && currentUser.uid !== "guest_user") {
+                const leftRecord = { ...currentUser, deletedOrSignedOut: true, signedOutAt: Date.now() };
+                saveLocalArchive(leftRecord);
+                try { await setDoc(doc(db, "archived_users", currentUser.uid), leftRecord, { merge: true }); } catch (_) {}
+            }
+            try { await signOut(auth); } catch (_) {}
+            window.location.replace(LOGIN_PAGE);
+        };
+
+        window.deleteOwnAccountRecord = () => {
+            if (!currentUser || currentUser.uid === "guest_user") return;
+            openConfirmDialog({
+                title: "Hesabı Sil",
+                icon: "fa-user-slash",
+                danger: true,
+                html: `<div>Hesabınız kalıcı olarak silinecek. Onaylıyor musunuz?</div>`,
+                onConfirm: async () => {
+                    const deletedRecord = { ...currentUser, deletedOrSignedOut: true, deletedAt: Date.now() };
+                    saveLocalArchive(deletedRecord);
+                    try {
+                        await setDoc(doc(db, "archived_users", currentUser.uid), deletedRecord, { merge: true });
+                        await deleteDoc(doc(db, "users", currentUser.uid));
+                    } catch (_) {}
+                    try {
+                        if (auth.currentUser) await deleteUser(auth.currentUser);
+                    } catch (_) {
+                        try { await signOut(auth); } catch (_) {}
+                    }
+                    window.location.replace(LOGIN_PAGE);
+                }
+            });
+        };
+    </script>
+</body>
+</html>
