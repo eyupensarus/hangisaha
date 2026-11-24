@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Oyna</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'media'
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { transition: background-color 0.2s, color 0.2s; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen">
+
+    <!-- ÜST BAR -->
+    <header class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
+            <!-- MARKA -->
+            <a href="#top" onclick="resetHomeView()" class="flex items-center gap-2.5 group">
+                <div class="w-8 h-8 rounded-xl bg-emerald-500 flex items-center justify-center text-slate-950 font-black text-sm shadow-sm group-hover:scale-105 transition">
+                    <i class="fa-solid fa-futbol"></i>
+                </div>
+                <span class="text-lg font-extrabold tracking-tight text-emerald-600 dark:text-emerald-400">TOP OYNA</span>
+                <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30">Üye</span>
+            </a>
+
+            <!-- SAĞ: BİLDİRİMLER, GİRİŞ YAP & KÖŞE AÇILIR MENÜ -->
+            <div class="flex items-center gap-2 relative">
+                <button id="guest-login-btn" onclick="goToLoginPage()" class="hidden px-3 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    <span>Giriş Yap</span>
+                </button>
+
+                <button id="notif-btn" onclick="openDrawerTab('notifications')" class="relative px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-xs font-bold flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-bell text-amber-500"></i>
+                    <span class="hidden sm:inline">Bildirimler</span>
+                    <span id="user-notif-badge" class="hidden min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[10px] font-extrabold flex items-center justify-center">0</span>
+                </button>
+
+                <button id="corner-menu-btn" onclick="toggleCornerMenu(event)" class="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition">
+                    <img id="header-avatar" src="https://ui-avatars.com/api/?name=Uye&background=10b981&color=020617" alt="" referrerpolicy="no-referrer" class="w-7 h-7 rounded-full object-cover border border-emerald-500">
+                    <span id="header-name" class="text-xs font-bold max-w-[110px] truncate hidden sm:inline">Üye</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-500 dark:text-slate-400"></i>
+                </button>
+
+                <!-- KÖŞE AÇILIR SEÇENEKLER MENÜSÜ -->
+                <div id="corner-dropdown" class="hidden absolute right-0 top-12 w-72 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-3 space-y-2 z-50">
+                    <div class="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 dark:bg-slate-950/60">
+                        <img id="menu-avatar" onclick="openPhotoPreview(this.src)" src="https://ui-avatars.com/api/?name=Uye&background=10b981&color=020617" alt="" referrerpolicy="no-referrer" class="w-10 h-10 rounded-full object-cover border border-emerald-500 cursor-pointer hover:opacity-85 transition">
+                        <div class="min-w-0">
+                            <div id="menu-name" class="text-xs font-bold truncate">Üye</div>
+                            <div id="menu-email" class="text-[11px] text-slate-500 truncate"></div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1 pt-1">
+                        <button id="menu-profile-btn" onclick="openDrawerTab('profile_account')" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                            <span class="flex items-center gap-2.5"><i class="fa-solid fa-user-pen text-emerald-500 w-4"></i> <span>Profil & Hesap Ayarları</span></span>
+                            <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
+                        </button>
+                    </div>
+
+                    <div class="border-t border-slate-200 dark:border-slate-800 pt-2">
+                        <button id="dropdown-auth-btn" onclick="logout()" class="w-full py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition">Çıkış Yap</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MİSAFİR / GİRİŞ UYARI BANDI -->
+    <div id="guest-login-banner" class="hidden max-w-6xl mx-auto px-4 pt-4">
+        <div class="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-200 text-xs font-semibold flex items-center justify-between gap-3 flex-wrap">
+            <span>Randevu oluşturmak ve kişisel bildirimlerinizi/ayarlarınızı kullanmak için giriş yapmalısınız.</span>
+            <button onclick="goToLoginPage()" class="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold transition">
+                Giriş Yap
+            </button>
+        </div>
+    </div>
+
+    <!-- HESAP SİLME BEKLEME / GERİ ALMA UYARISI -->
+    <div id="deletion-pending-banner" class="hidden max-w-6xl mx-auto px-4 pt-4">
+        <div class="p-3.5 rounded-2xl bg-amber-500/15 border border-amber-500/40 text-amber-700 dark:text-amber-300 text-xs font-semibold flex items-center justify-between gap-3 flex-wrap">
+            <span>Hesabınız 14 gün sonra silinmek üzere işaretlendi. Onay bekliyor; isterseniz geri alabilirsiniz.</span>
+            <button onclick="restoreDeletedAccount()" class="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold transition">
+                Hesabı Geri Al
+            </button>
+        </div>
+    </div>
+
+    <!-- ENGEL UYARISI -->
+    <div id="blocked-banner" class="hidden max-w-6xl mx-auto px-4 pt-4">
+        <div class="p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/40 text-rose-600 dark:text-rose-300 text-xs font-bold flex items-center gap-2">
+            <i class="fa-solid fa-ban"></i>
+            <span>Hesabınız kısıtlandı.</span>
+        </div>
+    </div>
+
+    <!-- ANA SAYFA İÇERİĞİ -->
+    <main id="top" class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+
+        <!-- ARAMA & FİLTRELEME -->
+        <section class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 grid grid-cols-1 sm:grid-cols-4 gap-3">
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-500 mb-1">Tarih</label>
+                <input type="date" id="match-date" onchange="renderAll()" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs outline-none focus:border-emerald-500">
+            </div>
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-500 mb-1">İlçe</label>
+                <select id="filter-district" onchange="renderAll()" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs outline-none focus:border-emerald-500">
+                    <option value="">Tümü</option>
+                    <option value="Selçuklu">Selçuklu</option>
+                    <option value="Meram">Meram</option>
+                    <option value="Karatay">Karatay</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-500 mb-1">Saha veya Adres Ara</label>
+                <input type="text" id="filter-search" oninput="renderAll()" placeholder="Saha, mahalle, cadde..." class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs outline-none focus:border-emerald-500">
+            </div>
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-500 mb-1">Sıralama</label>
+                <select id="filter-sort" onchange="renderAll()" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs outline-none focus:border-emerald-500">
+                    <option value="default">Varsayılan</option>
+                    <option value="price_asc">Ücret: Artan</option>
+                    <option value="price_desc">Ücret: Azalan</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- SAHALAR LİSTESİ -->
+        <div id="pitches-list" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+    </main>
+
+    <!-- YAN ÇEKMECE (PROFİL & HESAP AYARLARI TEK SAYFA / BİLDİRİMLER) -->
+    <div id="side-drawer-overlay" onclick="closeSideDrawer()" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs"></div>
+    <aside id="side-drawer" class="fixed top-0 right-0 z-50 h-full w-full max-w-md bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl transform translate-x-full transition-transform duration-200 flex flex-col">
+        <div class="px-5 h-16 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <h3 id="drawer-title" class="text-sm font-extrabold">Profil & Hesap Ayarları</h3>
+            <button onclick="closeSideDrawer()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-xs">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="px-5 py-2.5 border-b border-slate-200 dark:border-slate-800 flex items-center gap-1.5 text-xs font-bold">
+            <button id="tab-btn-profile_account" onclick="switchDrawerTab('profile_account')" class="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950">Profil & Hesap</button>
+            <button id="tab-btn-notifications" onclick="switchDrawerTab('notifications')" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800">Bildirimler</button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-5 space-y-6 text-xs">
+
+            <!-- PROFİL & HESAP AYARLARI TEK SAYFA -->
+            <div id="tab-content-profile_account" class="space-y-6">
+                <div class="space-y-4">
+                    <div class="font-extrabold uppercase tracking-wider text-[11px] text-slate-500">Profil Bilgileri</div>
+                    <div class="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                        <img id="drawer-avatar-preview" onclick="openPhotoPreview(this.src)" src="" alt="" referrerpolicy="no-referrer" class="w-14 h-14 rounded-full object-cover border-2 border-emerald-500 cursor-pointer hover:opacity-85 transition">
+                        <div class="space-y-2 flex-1">
+                            <div class="font-bold text-sm" id="drawer-profile-name">Üye</div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <label class="cursor-pointer px-2.5 py-1.5 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 font-bold hover:bg-emerald-500/25 transition">
+                                    <i class="fa-solid fa-camera mr-1"></i> Fotoğraf Seç
+                                    <input type="file" accept="image/*" onchange="handlePhotoUpload(event)" class="hidden">
+                                </label>
+                                <button type="button" onclick="useGooglePhoto()" class="px-2.5 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 font-bold hover:opacity-80 transition">
+                                    <i class="fa-brands fa-google mr-1"></i> Google Fotoğrafı
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form onsubmit="saveUserProfile(event)" class="space-y-3">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-500 mb-1">Ad Soyad</label>
+                            <input type="text" id="prof-name" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-500 mb-1">Telefon Numarası</label>
+                            <input type="tel" id="prof-phone" placeholder="05XX XXX XX XX" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:border-emerald-500">
+                        </div>
+                        <button type="submit" class="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold transition">
+                            Kaydet
+                        </button>
+                    </form>
+                </div>
+
+                <!-- REZERVASYONLARIM (TARİHE GÖRE AZALAN SIRALI) -->
+                <div class="space-y-2.5 pt-2 border-t border-slate-200 dark:border-slate-800">
+                    <div class="font-extrabold uppercase tracking-wider text-[11px] text-slate-500">Rezervasyonlarım</div>
+                    <div id="profile-bookings-list" class="space-y-2"></div>
+                </div>
+
+                <!-- HESAP AYARLARI (HESABI SİL SADECE BURADA) -->
+                <div class="space-y-2.5 pt-2 border-t border-slate-200 dark:border-slate-800">
+                    <div class="font-extrabold uppercase tracking-wider text-[11px] text-slate-500">Hesap Ayarları</div>
+                    <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2.5">
+                        <div class="font-bold text-rose-500">Hesap Silme</div>
+                        <button id="delete-acc-btn" onclick="requestAccountDeletion()" class="w-full py-2.5 rounded-xl bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30 font-bold hover:bg-rose-600 hover:text-white disabled:bg-slate-300 disabled:dark:bg-slate-800 disabled:text-slate-500 disabled:border-slate-400 disabled:dark:border-slate-700 disabled:cursor-not-allowed transition">
+                            Hesabı Sil
+                        </button>
+                        <div id="delete-acc-info" class="hidden text-[11px] text-amber-600 dark:text-amber-300 font-semibold leading-relaxed">
+                            Hesabınız 14 gün sonra silinecektir. Site sahibi onayı bekleniyor; isterseniz geri alabilirsiniz.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BİLDİRİMLER (SADECE BİLDİRİMLER & TEMİZLEME) -->
+            <div id="tab-content-notifications" class="hidden space-y-3">
+                <div class="flex items-center justify-between">
+                    <span class="font-extrabold uppercase tracking-wider text-[11px] text-slate-500">Bildirimler</span>
+                    <button onclick="clearMyNotifications()" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-rose-500/15 hover:text-rose-500 text-[11px] font-bold transition">
+                        Temizle
+                    </button>
+                </div>
+                <div id="my-notifications-list" class="space-y-2"></div>
+            </div>
+
+        </div>
+    </aside>
+
+    <!-- PROFİL / SAHA FOTOĞRAFI BÜYÜK ÖNİZLEME -->
+    <div id="photo-preview-modal" onclick="closePhotoPreview()" class="hidden fixed inset-0 z-60 bg-black/70 backdrop-blur-md flex items-center justify-center p-6">
+        <img id="photo-preview-img" onclick="event.stopPropagation()" src="" alt="" referrerpolicy="no-referrer" class="max-w-full max-h-[82vh] rounded-3xl shadow-2xl border-2 border-white/20 object-contain">
+    </div>
+
+    <!-- SAHA DETAY PENCERESİ (TELEFON, KONUM, ADRES) -->
+    <div id="pitch-info-modal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 space-y-4 shadow-2xl text-xs">
+            <div class="flex items-center justify-between">
+                <h3 id="pitch-info-title" class="text-sm font-extrabold">Saha Bilgileri</h3>
+                <button onclick="closePitchInfoModal()" class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="pitch-info-body" class="space-y-2.5 bg-slate-50 dark:bg-slate-950 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800"></div>
+            <div class="flex justify-end">
+                <button onclick="closePitchInfoModal()" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold">Kapat</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- REZERVASYON TÜRÜ SEÇİM PENCERESİ (HAFTALIK / TEK SEFERLİK) -->
+    <div id="booking-type-modal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 space-y-4 shadow-2xl">
+            <h3 class="text-sm font-extrabold">Rezervasyon Seçeneği</h3>
+            <div id="booking-type-info" class="text-xs text-slate-500 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800"></div>
+            <div class="grid grid-cols-2 gap-2.5">
+                <button id="btn-single-booking" class="py-2.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs transition">
+                    Tek seferlik
+                </button>
+                <button id="btn-weekly-booking" class="py-2.5 px-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-extrabold text-xs transition">
+                    Haftalık
+                </button>
+            </div>
+            <button onclick="closeBookingTypeModal()" class="w-full py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold text-xs">
+                Vazgeç
+            </button>
+        </div>
+    </div>
+
+    <!-- GENEL TEYİT PENCERESİ -->
+    <div id="confirm-dialog" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 space-y-4 shadow-2xl">
+            <h3 id="confirm-title" class="text-sm font-extrabold">Onay</h3>
+            <div id="confirm-body" class="text-xs text-slate-600 dark:text-slate-300 space-y-1.5 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800"></div>
+            <div class="flex items-center justify-end gap-2">
+                <button id="confirm-cancel-btn" onclick="closeConfirmDialog()" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold text-xs">
+                    Vazgeç
+                </button>
+                <button id="confirm-proceed-btn" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs">
+                    Onayla
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import {
+            getFirestore,
+            collection,
+            doc,
+            setDoc,
+            getDoc,
+            deleteDoc,
+            addDoc,
+            onSnapshot,
+            runTransaction
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const DEFAULT_HOURS = ["16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"];
+        const LOGIN_PAGE = "index.html";
+        const EXPECTED_ROLE = "user";
+        const PITCHES_STORAGE_KEY = "top_oyna_pitches_v3";
+        const BOOKINGS_STORAGE_KEY = "top_oyna_bookings_v3";
+        const USER_NOTIFS_PREFIX = "top_oyna_user_notifs_v3_";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCKYARoGK8ADJ2_T5c2GomrAG47-gHtQ-8",
+            authDomain: "top-oyna-d33f3.firebaseapp.com",
+            projectId: "top-oyna-d33f3",
+            storageBucket: "top-oyna-d33f3.firebasestorage.app",
+            messagingSenderId: "1033043310464",
+            appId: "1:1033043310464:web:d467e84b68f73e99f0f365",
+            measurementId: "G-P2ZRQQFFMD"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        function createGuestUser() {
+            return {
+                uid: "",
+                isAuthenticated: false,
+                name: "Misafir Üye",
+                email: "",
+                phone: "",
+                photo: "",
+                googlePhoto: "",
+                blocked: false,
+                deletionPending: false,
+                nameHistory: [],
+                emailHistory: [],
+                phoneHistory: []
+            };
+        }
+
+        let currentUser = createGuestUser();
+        let pitches = [];
+        let bookings = [];
+        let myNotifications = [];
+        let pendingConfirmAction = null;
+        let userDocUnsubscribe = null;
+        let deletedSessionUnsubscribe = null;
+        let userNotifsUnsubscribe = null;
+        let isForcingLogout = false;
+
+        window.goToLoginPage = () => {
+            window.location.replace(LOGIN_PAGE);
+        };
+
+        function getToday() {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+        }
+
+        function addDays(dateStr, days) {
+            const parts = String(dateStr).split("-").map(Number);
+            const dt = new Date(parts[0], (parts[1] || 1) - 1, parts[2] || 1);
+            dt.setDate(dt.getDate() + days);
+            return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
+        }
+
+        function formatTimeTR(ts) {
+            if (!ts) return "-";
+            return new Date(ts).toLocaleString("tr-TR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+        }
+
+        function readLocalList(key, fallback = []) {
+            try {
+                const raw = localStorage.getItem(key);
+                return raw ? JSON.parse(raw) : fallback;
+            } catch (_) { return fallback; }
+        }
+
+        function writeLocalList(key, list) {
+            try { localStorage.setItem(key, JSON.stringify(list)); } catch (_) {}
+        }
+
+        function getUserNotifsKey(uid) {
+            return uid ? `${USER_NOTIFS_PREFIX}${uid}` : "";
+        }
+
+        function loadUserNotificationsForUid(uid) {
+            if (!uid) {
+                myNotifications = [];
+                updateNotifBadge();
+                renderMyNotifications();
+                return;
+            }
+            myNotifications = readLocalList(getUserNotifsKey(uid), []);
+            updateNotifBadge();
+            renderMyNotifications();
+        }
+
+        function saveUserNotificationsForUid(uid, list) {
+            if (!uid) return;
+            writeLocalList(getUserNotifsKey(uid), list);
+        }
+
+        function cleanupUserListeners() {
+            if (typeof userDocUnsubscribe === "function") {
+                try { userDocUnsubscribe(); } catch (_) {}
+                userDocUnsubscribe = null;
+            }
+            if (typeof deletedSessionUnsubscribe === "function") {
+                try { deletedSessionUnsubscribe(); } catch (_) {}
+                deletedSessionUnsubscribe = null;
+            }
+            if (typeof userNotifsUnsubscribe === "function") {
+                try { userNotifsUnsubscribe(); } catch (_) {}
+                userNotifsUnsubscribe = null;
+            }
+        }
+
+        async function forceLogoutAccount(reasonKey, reasonValue = "") {
+            if (isForcingLogout) return;
+            isForcingLogout = true;
+            cleanupUserListeners();
+            currentUser = createGuestUser();
+            try {
+                if (reasonKey) sessionStorage.setItem(reasonKey, reasonValue);
+                localStorage.removeItem("top_oyna_active_role");
+            } catch (_) {}
+            try { await signOut(auth); } catch (_) {}
+            window.location.replace(LOGIN_PAGE);
+        }
+
+        function watchCurrentUserRealtime(uid) {
+            cleanupUserListeners();
+            if (!uid) return;
+
+            deletedSessionUnsubscribe = onSnapshot(doc(db, "deleted_sessions", uid), (snap) => {
+                if (snap.exists()) {
+                    forceLogoutAccount("top_oyna_account_deleted", "1");
+                }
+            }, () => {});
+
+            userDocUnsubscribe = onSnapshot(doc(db, "users", uid), (snap) => {
+                if (!snap.exists()) {
+                    forceLogoutAccount("top_oyna_account_deleted", "1");
+                    return;
+                }
+                const data = snap.data() || {};
+                if (data.deleted === true) {
+                    forceLogoutAccount("top_oyna_account_deleted", "1");
+                    return;
+                }
+                if (data.blocked === true) {
+                    forceLogoutAccount("top_oyna_account_blocked", "1");
+                    return;
+                }
+                const serverRole = (data.role || "").trim();
+                if (serverRole && serverRole !== EXPECTED_ROLE) {
+                    forceLogoutAccount("top_oyna_role_changed", serverRole);
+                    return;
+                }
+
+                currentUser = {
+                    ...currentUser,
+                    name: data.name || currentUser.name,
+                    email: data.email || currentUser.email,
+                    phone: data.phone !== undefined ? data.phone : currentUser.phone,
+                    photo: data.photo !== undefined ? data.photo : currentUser.photo,
+                    blocked: data.blocked === true,
+                    deletionPending: data.deletionPending === true,
+                    nameHistory: Array.isArray(data.nameHistory) ? data.nameHistory : currentUser.nameHistory,
+                    emailHistory: Array.isArray(data.emailHistory) ? data.emailHistory : currentUser.emailHistory,
+                    phoneHistory: Array.isArray(data.phoneHistory) ? data.phoneHistory : currentUser.phoneHistory
+                };
+                syncProfileUI();
+                renderAll();
+            }, () => {});
+
+            userNotifsUnsubscribe = onSnapshot(collection(db, "users", uid, "notifications"), (snap) => {
+                const remoteItems = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                remoteItems.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                myNotifications = remoteItems.slice(0, 40);
+                saveUserNotificationsForUid(uid, myNotifications);
+                updateNotifBadge();
+                renderMyNotifications();
+            }, () => {});
+        }
+
+        window.resetHomeView = () => {
+            closeSideDrawer();
+            document.getElementById("corner-dropdown").classList.add("hidden");
+            document.getElementById("filter-district").value = "";
+            document.getElementById("filter-search").value = "";
+            document.getElementById("filter-sort").value = "default";
+            renderAll();
+        };
+
+        document.getElementById("match-date").value = getToday();
+        pitches = readLocalList(PITCHES_STORAGE_KEY, [
+            {
+                id: "pitch_1",
+                name: "Selçuklu Arena",
+                district: "Selçuklu",
+                address: "Bosna Hersek Mah. Osmanlı Cad. No:14, Selçuklu/Konya",
+                phone: "0532 000 00 01",
+                lat: 38.0185,
+                lng: 32.5152,
+                price: 1400,
+                hours: [...DEFAULT_HOURS]
+            },
+            {
+                id: "pitch_2",
+                name: "Meram Yıldız",
+                district: "Meram",
+                address: "Havzan Mah. Yeni Meram Cad. No:42, Meram/Konya",
+                phone: "0532 000 00 02",
+                lat: 37.8542,
+                lng: 32.4581,
+                price: 1300,
+                hours: [...DEFAULT_HOURS]
+            }
+        ]);
+        bookings = readLocalList(BOOKINGS_STORAGE_KEY, []);
+
+        function getMapsUrl(pitch) {
+            if (pitch && pitch.lat && pitch.lng) {
+                return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${pitch.lat},${pitch.lng}`)}`;
+            }
+            const q = [pitch?.name, pitch?.address, pitch?.district, "Konya"].filter(Boolean).join(" ");
+            return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+        }
+
+        window.openPitchInfoModal = (pitchId) => {
+            const p = pitches.find(item => item.id === pitchId);
+            if (!p) return;
+            const mapsUrl = getMapsUrl(p);
+            const phone = p.phone || p.ownerPhone || "Belirtilmemiş";
+            const address = p.address || "Belirtilmemiş";
+            const coords = (p.lat && p.lng) ? `${p.lat}, ${p.lng}` : `${p.name} • ${p.district}`;
+
+            document.getElementById("pitch-info-title").textContent = p.name;
+            document.getElementById("pitch-info-body").innerHTML = `
+                <div><b>Telefon:</b> ${phone !== "Belirtilmemiş" ? `<a href="tel:${phone}" class="text-emerald-600 dark:text-emerald-400 font-bold underline">${phone}</a>` : phone}</div>
+                <div><b>Adres:</b> <a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" class="text-sky-600 dark:text-sky-400 font-semibold underline">${address}</a></div>
+                <div><b>Harita Konumu:</b> <a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" class="text-emerald-600 dark:text-emerald-400 font-bold underline"><i class="fa-solid fa-map-location-dot mr-1"></i>${coords} (Google Harita'da Aç)</a></div>
+            `;
+            document.getElementById("pitch-info-modal").classList.remove("hidden");
+        };
+
+        window.closePitchInfoModal = () => {
+            document.getElementById("pitch-info-modal").classList.add("hidden");
+        };
+
+        function requireAuthForAction(message = "Randevu oluşturmak için giriş yapmalısınız.") {
+            if (currentUser.isAuthenticated && currentUser.uid) return true;
+            openConfirmDialog({
+                title: "Giriş Gerekli",
+                html: `<div>${message}</div>`,
+                proceedText: "Giriş Yap",
+                onConfirm: () => goToLoginPage()
+            });
+            return false;
+        }
+
+        function syncProfileUI() {
+            const isAuthed = Boolean(currentUser.isAuthenticated && currentUser.uid);
+            const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.name || "Uye")}&background=10b981&color=020617`;
+            const imgSrc = isAuthed ? (currentUser.photo || currentUser.googlePhoto || fallback) : fallback;
+
+            document.getElementById("header-avatar").src = imgSrc;
+            document.getElementById("menu-avatar").src = imgSrc;
+            document.getElementById("drawer-avatar-preview").src = imgSrc;
+            document.getElementById("header-name").textContent = isAuthed ? currentUser.name : "Giriş Yap";
+            document.getElementById("menu-name").textContent = currentUser.name;
+            document.getElementById("menu-email").textContent = isAuthed ? (currentUser.email || "") : "Giriş yapılmadı";
+            document.getElementById("drawer-profile-name").textContent = currentUser.name;
+
+            document.getElementById("prof-name").value = isAuthed ? (currentUser.name || "") : "";
+            document.getElementById("prof-phone").value = isAuthed ? (currentUser.phone || "") : "";
+
+            document.getElementById("guest-login-btn").classList.toggle("hidden", isAuthed);
+            document.getElementById("guest-login-banner").classList.toggle("hidden", isAuthed);
+
+            const authBtn = document.getElementById("dropdown-auth-btn");
+            if (isAuthed) {
+                authBtn.textContent = "Çıkış Yap";
+                authBtn.className = "w-full py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition";
+                authBtn.onclick = () => logout();
+            } else {
+                authBtn.textContent = "Giriş Yap";
+                authBtn.className = "w-full py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold transition";
+                authBtn.onclick = () => goToLoginPage();
+            }
+
+            document.getElementById("blocked-banner").classList.toggle("hidden", !isAuthed || !currentUser.blocked);
+            document.getElementById("deletion-pending-banner").classList.toggle("hidden", !isAuthed || !currentUser.deletionPending);
+
+            const delBtn = document.getElementById("delete-acc-btn");
+            const delInfo = document.getElementById("delete-acc-info");
+            if (currentUser.deletionPending) {
+                delBtn.disabled = true;
+                delInfo.classList.remove("hidden");
+            } else {
+                delBtn.disabled = !isAuthed;
+                delInfo.classList.add("hidden");
+            }
+        }
+
+        function updateNotifBadge() {
+            const badge = document.getElementById("user-notif-badge");
+            if (!badge) return;
+            const count = currentUser.isAuthenticated ? myNotifications.length : 0;
+            badge.textContent = String(count);
+            badge.classList.toggle("hidden", count === 0);
+        }
+
+        async function pushUserNotification(title, detail) {
+            if (!currentUser.isAuthenticated || !currentUser.uid) return;
+            const item = {
+                id: "unotif_" + Date.now() + "_" + Math.random().toString(36).slice(2, 5),
+                userId: currentUser.uid,
+                title,
+                detail,
+                createdAt: Date.now()
+            };
+            myNotifications = [item, ...myNotifications].slice(0, 40);
+            saveUserNotificationsForUid(currentUser.uid, myNotifications);
+            updateNotifBadge();
+            renderMyNotifications();
+
+            try {
+                await setDoc(doc(db, "users", currentUser.uid, "notifications", item.id), item);
+            } catch (_) {}
+        }
+
+        window.clearMyNotifications = async () => {
+            if (!currentUser.isAuthenticated || !currentUser.uid) return;
+            const toDelete = [...myNotifications];
+            myNotifications = [];
+            saveUserNotificationsForUid(currentUser.uid, []);
+            updateNotifBadge();
+            renderMyNotifications();
+
+            for (const item of toDelete) {
+                if (item.id) {
+                    try { await deleteDoc(doc(db, "users", currentUser.uid, "notifications", item.id)); } catch (_) {}
+                }
+            }
+        };
+
+        async function notifyStakeholders(type, title, detail, extra = {}) {
+            if (!currentUser.isAuthenticated || !currentUser.uid) return;
+            try {
+                await addDoc(collection(db, "notifications"), {
+                    type,
+                    title,
+                    detail,
+                    userId: currentUser.uid,
+                    userName: currentUser.name,
+                    userEmail: currentUser.email,
+                    userPhone: currentUser.phone || "",
+                    createdAt: Date.now(),
+                    ...extra
+                });
+            } catch (_) {}
+        }
+
+        function renderMyNotifications() {
+            const el = document.getElementById("my-notifications-list");
+            if (!el) return;
+            if (!currentUser.isAuthenticated || !currentUser.uid) {
+                el.innerHTML = `<div class="text-slate-500 text-center py-6 space-y-2"><div>Bildirimlerinizi görmek için giriş yapın.</div><button onclick="goToLoginPage()" class="px-3 py-1.5 rounded-xl bg-emerald-500 text-slate-950 font-extrabold text-xs">Giriş Yap</button></div>`;
+                return;
+            }
+            if (myNotifications.length === 0) {
+                el.innerHTML = `<div class="text-slate-500 text-center py-6">Bildirim yok.</div>`;
+                return;
+            }
+            el.innerHTML = myNotifications.map(n => `
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="font-bold">${n.title}</span>
+                        <span class="text-[10px] text-slate-400">${formatTimeTR(n.createdAt)}</span>
+                    </div>
+                    <div class="text-slate-500 mt-0.5">${n.detail}</div>
+                </div>
+            `).join("");
+        }
+
+        function renderProfileBookings() {
+            const el = document.getElementById("profile-bookings-list");
+            if (!el) return;
+            if (!currentUser.isAuthenticated || !currentUser.uid) {
+                el.innerHTML = `<div class="text-slate-500">Giriş yapın.</div>`;
+                return;
+            }
+
+            const mine = bookings
+                .filter(b => b.userId === currentUser.uid)
+                .sort((a, b) => String(`${b.date || ""} ${b.hour || ""}`).localeCompare(String(`${a.date || ""} ${a.hour || ""}`)));
+
+            if (mine.length === 0) {
+                el.innerHTML = `<div class="text-slate-500">Rezervasyon yok.</div>`;
+                return;
+            }
+
+            el.innerHTML = mine.map(b => {
+                const modeBadge = b.bookingType === "weekly" ? "Haftalık" : "Tek seferlik";
+                return `
+                    <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-3 py-2.5 rounded-xl gap-2">
+                        <div>
+                            <div class="font-bold">${b.pitchName}</div>
+                            <div class="text-[11px] text-slate-500">${b.date} • ${b.hour} • ${modeBadge}</div>
+                        </div>
+                        <button onclick="cancelSlot('${b.id}')" class="px-2.5 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold transition">
+                            İptal et
+                        </button>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        window.toggleCornerMenu = (e) => {
+            if (e) e.stopPropagation();
+            document.getElementById("corner-dropdown").classList.toggle("hidden");
+        };
+
+        document.addEventListener("click", (e) => {
+            const menu = document.getElementById("corner-dropdown");
+            const btn = document.getElementById("corner-menu-btn");
+            if (menu && !menu.contains(e.target) && btn && !btn.contains(e.target)) {
+                menu.classList.add("hidden");
+            }
+        });
+
+        window.openDrawerTab = (tab) => {
+            document.getElementById("corner-dropdown").classList.add("hidden");
+            if (!currentUser.isAuthenticated && tab !== "notifications") {
+                requireAuthForAction("Profil ve hesap ayarlarını görüntülemek için giriş yapmalısınız.");
+                return;
+            }
+            document.getElementById("side-drawer-overlay").classList.remove("hidden");
+            document.getElementById("side-drawer").classList.remove("translate-x-full");
+            switchDrawerTab(tab);
+        };
+
+        window.closeSideDrawer = () => {
+            document.getElementById("side-drawer-overlay").classList.add("hidden");
+            document.getElementById("side-drawer").classList.add("translate-x-full");
+        };
+
+        window.switchDrawerTab = (tab) => {
+            const tabs = ["profile_account", "notifications"];
+            const titles = {
+                profile_account: "Profil & Hesap Ayarları",
+                notifications: "Bildirimler"
+            };
+            document.getElementById("drawer-title").textContent = titles[tab] || "Seçenekler";
+            tabs.forEach(t => {
+                document.getElementById(`tab-content-${t}`).classList.toggle("hidden", t !== tab);
+                const btn = document.getElementById(`tab-btn-${t}`);
+                btn.className = t === tab
+                    ? "px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold"
+                    : "px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 font-bold";
+            });
+            if (tab === "profile_account") renderProfileBookings();
+            if (tab === "notifications") renderMyNotifications();
+        };
+
+        window.openPhotoPreview = (src) => {
+            if (!src) return;
+            document.getElementById("photo-preview-img").src = src;
+            document.getElementById("photo-preview-modal").classList.remove("hidden");
+        };
+
+        window.closePhotoPreview = () => {
+            document.getElementById("photo-preview-modal").classList.add("hidden");
+        };
+
+        window.closeBookingTypeModal = () => {
+            document.getElementById("booking-type-modal").classList.add("hidden");
+        };
+
+        window.handlePhotoUpload = async (e) => {
+            if (!requireAuthForAction("Profil fotoğrafını değiştirmek için giriş yapmalısınız.")) return;
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                const img = new Image();
+                img.onload = async () => {
+                    const canvas = document.createElement("canvas");
+                    const max = 300;
+                    const scale = Math.min(max / img.width, max / img.height, 1);
+                    canvas.width = img.width * scale;
+                    canvas.height = img.height * scale;
+                    canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+                    const dataUrl = canvas.toDataURL("image/jpeg", 0.82);
+                    currentUser.photo = dataUrl;
+                    syncProfileUI();
+                    try { await setDoc(doc(db, "users", currentUser.uid), { photo: dataUrl }, { merge: true }); } catch (_) {}
+                    await pushUserNotification("Profil Fotoğrafı", "Yeni profil fotoğrafınız kaydedildi.");
+                    await notifyStakeholders("profile_updated", "Üye Profil Fotoğrafı Güncellendi", `${currentUser.name} profil fotoğrafını güncelledi.`);
+                };
+                img.src = reader.result;
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.useGooglePhoto = async () => {
+            if (!requireAuthForAction("Google fotoğrafını uygulamak için giriş yapmalısınız.")) return;
+            const gPhoto = currentUser.googlePhoto || (auth.currentUser && auth.currentUser.photoURL) || "";
+            if (!gPhoto) return;
+            currentUser.photo = gPhoto;
+            syncProfileUI();
+            try { await setDoc(doc(db, "users", currentUser.uid), { photo: gPhoto }, { merge: true }); } catch (_) {}
+            await pushUserNotification("Profil Fotoğrafı", "Google profil fotoğrafınız uygulandı.");
+            await notifyStakeholders("profile_updated", "Üye Profil Fotoğrafı Güncellendi", `${currentUser.name} Google profil fotoğrafına döndü.`);
+        };
+
+        function appendHistoryEntry(list, oldVal, newVal) {
+            const arr = Array.isArray(list) ? [...list] : [];
+            const prevClean = (oldVal || "").trim();
+            const nextClean = (newVal || "").trim();
+            if (prevClean && prevClean !== nextClean) {
+                const last = arr[arr.length - 1];
+                const lastVal = typeof last === "string" ? last : (last && last.value);
+                if (lastVal !== prevClean) {
+                    arr.push({ value: prevClean, changedAt: Date.now() });
+                }
+            }
+            return arr;
+        }
+
+        window.saveUserProfile = async (e) => {
+            e.preventDefault();
+            if (!requireAuthForAction("Profil bilgilerinizi kaydetmek için giriş yapmalısınız.")) return;
+
+            const prevName = currentUser.name || "";
+            const prevPhone = currentUser.phone || "";
+            const prevEmail = currentUser.email || "";
+
+            const nextName = document.getElementById("prof-name").value.trim() || prevName;
+            const nextPhone = document.getElementById("prof-phone").value.trim();
+
+            const nameHistory = appendHistoryEntry(currentUser.nameHistory, prevName, nextName);
+            const phoneHistory = appendHistoryEntry(currentUser.phoneHistory, prevPhone, nextPhone);
+            const emailHistory = Array.isArray(currentUser.emailHistory) ? [...currentUser.emailHistory] : [];
+
+            currentUser.name = nextName;
+            currentUser.phone = nextPhone;
+            currentUser.nameHistory = nameHistory;
+            currentUser.phoneHistory = phoneHistory;
+            currentUser.emailHistory = emailHistory;
+
+            syncProfileUI();
+            try {
+                await setDoc(doc(db, "users", currentUser.uid), {
+                    name: currentUser.name,
+                    previousName: prevName !== nextName ? prevName : (currentUser.previousName || ""),
+                    phone: currentUser.phone,
+                    previousPhone: prevPhone !== nextPhone ? prevPhone : (currentUser.previousPhone || ""),
+                    email: currentUser.email,
+                    previousEmail: currentUser.previousEmail || "",
+                    photo: currentUser.photo,
+                    nameHistory,
+                    phoneHistory,
+                    emailHistory,
+                    updatedAt: Date.now()
+                }, { merge: true });
+            } catch (_) {}
+
+            await pushUserNotification("Profil Güncellendi", `${currentUser.name} • ${currentUser.phone || "Telefon yok"}`);
+            await notifyStakeholders(
+                "profile_updated",
+                "Üye Bilgileri Güncellendi",
+                `${currentUser.name} (${prevEmail || currentUser.uid}) - Tel: ${currentUser.phone || "-"}`
+            );
+            closeSideDrawer();
+        };
+
+        window.requestAccountDeletion = async () => {
+            if (!requireAuthForAction("Hesap silme talebi oluşturmak için giriş yapmalısınız.")) return;
+            if (currentUser.deletionPending) return;
+            currentUser.deletionPending = true;
+            syncProfileUI();
+
+            try {
+                await setDoc(doc(db, "users", currentUser.uid), {
+                    deletionPending: true,
+                    deletionRequestedAt: Date.now()
+                }, { merge: true });
+            } catch (_) {}
+
+            await notifyStakeholders(
+                "account_deletion_request",
+                "Hesap Silme Onayı",
+                `${currentUser.name} (${currentUser.email || currentUser.uid}) 14 gün içinde silinmek üzere hesap silme onayı istiyor.`,
+                { requesterUid: currentUser.uid, requesterName: currentUser.name, status: "pending" }
+            );
+            await pushUserNotification("Hesap Silme", "Hesabınız 14 gün sonra silinecektir. İsterseniz geri alabilirsiniz.");
+        };
+
+        window.restoreDeletedAccount = async () => {
+            if (!requireAuthForAction("Hesap silme talebini geri almak için giriş yapmalısınız.")) return;
+            currentUser.deletionPending = false;
+            syncProfileUI();
+            try {
+                await setDoc(doc(db, "users", currentUser.uid), {
+                    deletionPending: false,
+                    deletionRequestedAt: null
+                }, { merge: true });
+            } catch (_) {}
+            await notifyStakeholders(
+                "account_deletion_cancelled",
+                "Hesap Silme İptal Edildi",
+                `${currentUser.name} hesap silme talebini geri aldı.`
+            );
+            await pushUserNotification("Hesap Geri Alındı", "Hesabınız aktif olarak devam ediyor.");
+        };
+
+        function openConfirmDialog({ title, html, proceedText = "Onayla", onConfirm }) {
+            document.getElementById("confirm-title").textContent = title;
+            document.getElementById("confirm-body").innerHTML = html;
+            const proceedBtn = document.getElementById("confirm-proceed-btn");
+            proceedBtn.textContent = proceedText;
+            pendingConfirmAction = onConfirm;
+            proceedBtn.onclick = async () => {
+                const fn = pendingConfirmAction;
+                closeConfirmDialog();
+                if (fn) await fn();
+            };
+            document.getElementById("confirm-dialog").classList.remove("hidden");
+        }
+
+        window.closeConfirmDialog = () => {
+            document.getElementById("confirm-dialog").classList.add("hidden");
+            pendingConfirmAction = null;
+        };
+
+        async function createBookingRecord({ pitchId, pitchName, district, address, price, date, hour, bookingType }) {
+            if (!requireAuthForAction()) return;
+            const targetDates = bookingType === "weekly" ? [0, 7, 14, 21].map(d => addDays(date, d)) : [date];
+            const pitchObj = pitches.find(p => p.id === pitchId);
+            const createdRecords = [];
+
+            for (const dStr of targetDates) {
+                const slotDocId = `${pitchId}_${dStr}_${hour.replace(":", "")}`;
+                if (bookings.some(b => b.id === slotDocId)) continue;
+
+                const record = {
+                    id: slotDocId,
+                    pitchId,
+                    ownerId: pitchObj?.ownerId || "",
+                    ownerEmail: pitchObj?.ownerEmail || "",
+                    pitchName,
+                    district,
+                    address: address || "",
+                    price,
+                    date: dStr,
+                    hour,
+                    bookingType,
+                    userId: currentUser.uid,
+                    userName: currentUser.name,
+                    userEmail: currentUser.email,
+                    userPhone: currentUser.phone || "",
+                    createdAt: Date.now()
+                };
+                createdRecords.push(record);
+            }
+
+            if (createdRecords.length === 0) return;
+
+            bookings = [...createdRecords, ...bookings];
+            writeLocalList(BOOKINGS_STORAGE_KEY, bookings);
+            renderAll();
+            renderProfileBookings();
+
+            for (const rec of createdRecords) {
+                try {
+                    const slotRef = doc(db, "bookings", rec.id);
+                    await runTransaction(db, async (tx) => {
+                        const snap = await tx.get(slotRef);
+                        if (!snap.exists()) tx.set(slotRef, rec);
+                    });
+                } catch (_) {}
+            }
+
+            const typeLabel = bookingType === "weekly" ? "Haftalık" : "Tek seferlik";
+            await pushUserNotification("Rezervasyon Oluşturuldu", `${pitchName} • ${date} • ${hour} (${typeLabel})`);
+            await notifyStakeholders(
+                "booking_created",
+                "Yeni Rezervasyon",
+                `${currentUser.name} (${currentUser.phone || "-"}) -> ${pitchName} (${date} ${hour} - ${typeLabel})`
+            );
+        }
+
+        window.rentSlot = (pitchId, pitchName, district, address, price, date, hour) => {
+            if (!requireAuthForAction("Randevu oluşturmak için önce giriş yapmalısınız.")) return;
+            if (!currentUser || currentUser.blocked) return;
+
+            const slotDocId = `${pitchId}_${date}_${hour.replace(":", "")}`;
+            if (bookings.some(b => b.id === slotDocId)) return;
+
+            openConfirmDialog({
+                title: "Rezervasyon Teyidi",
+                html: `<div><b>${pitchName}</b> • ${date} • ${hour}</div><div>Seçimi onaylıyor musunuz?</div>`,
+                onConfirm: () => {
+                    document.getElementById("booking-type-info").innerHTML = `<div><b>${pitchName}</b></div><div>${date} • ${hour}</div>`;
+                    document.getElementById("btn-single-booking").onclick = () => {
+                        closeBookingTypeModal();
+                        createBookingRecord({ pitchId, pitchName, district, address, price, date, hour, bookingType: "single" });
+                    };
+                    document.getElementById("btn-weekly-booking").onclick = () => {
+                        closeBookingTypeModal();
+                        createBookingRecord({ pitchId, pitchName, district, address, price, date, hour, bookingType: "weekly" });
+                    };
+                    document.getElementById("booking-type-modal").classList.remove("hidden");
+                }
+            });
+        };
+
+        window.cancelSlot = (bookingId) => {
+            if (!requireAuthForAction()) return;
+            const bk = bookings.find(b => b.id === bookingId);
+            if (!bk) return;
+
+            openConfirmDialog({
+                title: "Rezervasyonu İptal et",
+                html: `<div><b>${bk.pitchName}</b> • ${bk.date} • ${bk.hour} randevusunu iptal etmek istiyor musunuz?</div>`,
+                proceedText: "İptal et",
+                onConfirm: async () => {
+                    bookings = bookings.filter(b => b.id !== bookingId);
+                    writeLocalList(BOOKINGS_STORAGE_KEY, bookings);
+                    renderAll();
+                    renderProfileBookings();
+                    try { await deleteDoc(doc(db, "bookings", bookingId)); } catch (_) {}
+                    await pushUserNotification("Rezervasyon İptal Edildi", `${bk.pitchName} • ${bk.date} • ${bk.hour}`);
+                    await notifyStakeholders("booking_cancelled", "Rezervasyon İptali", `${currentUser.name} -> ${bk.pitchName} (${bk.date} ${bk.hour})`);
+                }
+            });
+        };
+
+        window.renderAll = () => {
+            const date = document.getElementById("match-date").value || getToday();
+            const district = document.getElementById("filter-district").value;
+            const search = document.getElementById("filter-search").value.trim().toLowerCase();
+            const sortMode = document.getElementById("filter-sort").value;
+            const isAuthed = Boolean(currentUser.isAuthenticated && currentUser.uid);
+            const isBlocked = Boolean(isAuthed && currentUser.blocked);
+
+            let filtered = pitches.filter(p => {
+                const okDist = !district || p.district === district;
+                const okSearch = !search ||
+                    (p.name || "").toLowerCase().includes(search) ||
+                    (p.address || "").toLowerCase().includes(search) ||
+                    (p.district || "").toLowerCase().includes(search);
+                return okDist && okSearch;
+            });
+
+            if (sortMode === "price_asc") filtered.sort((a, b) => (a.price || 0) - (b.price || 0));
+            if (sortMode === "price_desc") filtered.sort((a, b) => (b.price || 0) - (a.price || 0));
+
+            const listEl = document.getElementById("pitches-list");
+            if (filtered.length === 0) {
+                listEl.innerHTML = `<div class="col-span-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 text-center text-xs text-slate-500">Saha bulunamadı.</div>`;
+            } else {
+                listEl.innerHTML = filtered.map(p => {
+                    const pHours = p.hours && p.hours.length ? p.hours : DEFAULT_HOURS;
+                    const buttons = pHours.map(h => {
+                        const slotId = `${p.id}_${date}_${h.replace(":", "")}`;
+                        const taken = bookings.find(b => b.id === slotId);
+
+                        if (taken) {
+                            const isMine = isAuthed && taken.userId === currentUser.uid;
+                            if (isMine && !isBlocked) {
+                                return `<button onclick="cancelSlot('${taken.id}')" class="h-12 w-full rounded-xl bg-emerald-500 hover:bg-emerald-400 border border-emerald-600 text-slate-950 text-xs font-extrabold flex flex-col items-center justify-center leading-tight transition"><span>${h}</span><span class="text-[10px]">İptal et</span></button>`;
+                            }
+                            return `<button disabled class="h-12 w-full rounded-xl bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-500 text-xs font-bold flex flex-col items-center justify-center leading-tight cursor-not-allowed"><span>${h}</span><span class="text-[10px] font-normal">Dolu</span></button>`;
+                        }
+
+                        if (!isAuthed) {
+                            return `<button onclick="goToLoginPage()" class="h-12 w-full rounded-xl bg-white hover:bg-slate-100 text-slate-900 border border-slate-300 text-xs font-bold flex flex-col items-center justify-center leading-tight transition"><span>${h}</span><span class="text-[10px] font-semibold text-slate-500">Giriş Yap</span></button>`;
+                        }
+
+                        if (isBlocked) {
+                            return `<button disabled class="h-12 w-full rounded-xl bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-400 text-xs font-bold flex flex-col items-center justify-center leading-tight cursor-not-allowed"><span>${h}</span></button>`;
+                        }
+
+                        return `<button onclick="rentSlot('${p.id}', '${p.name.replace(/'/g, "")}', '${p.district}', '${(p.address || "").replace(/'/g, "")}', ${p.price || 0}, '${date}', '${h}')" class="h-12 w-full rounded-xl bg-white hover:bg-slate-100 text-slate-900 border border-slate-300 text-xs font-bold flex flex-col items-center justify-center leading-tight transition"><span>${h}</span></button>`;
+                    }).join("");
+
+                    const photoUrl = p.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(p.name)}&size=600&background=0f172a&color=34d399`;
+                    const mapsUrl = getMapsUrl(p);
+                    const phone = p.phone || p.ownerPhone || "";
+
+                    return `
+                        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden space-y-3 pb-4">
+                            <img src="${photoUrl}" onclick="openPhotoPreview(this.src)" alt="${p.name}" class="w-full h-52 object-cover cursor-pointer hover:opacity-95 transition">
+                            <div class="px-4 space-y-2">
+                                <div class="flex items-start justify-between gap-2">
+                                    <div>
+                                        <h3 class="font-extrabold text-base">${p.name}</h3>
+                                        <p class="text-xs text-slate-500">${p.district} • <span class="font-extrabold text-emerald-600 dark:text-emerald-400">${Number(p.price || 0).toLocaleString("tr-TR")} ₺</span></p>
+                                    </div>
+                                    <button onclick="openPitchInfoModal('${p.id}')" class="px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-[11px] font-bold shrink-0">
+                                        Saha Bilgileri
+                                    </button>
+                                </div>
+                                ${phone ? `<div class="text-xs text-slate-600 dark:text-slate-300"><i class="fa-solid fa-phone mr-1.5 text-emerald-500"></i><a href="tel:${phone}" class="hover:underline">${phone}</a></div>` : ""}
+                                ${p.address ? `<div class="text-xs text-slate-500"><a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" class="hover:text-emerald-600 dark:hover:text-emerald-400 hover:underline"><i class="fa-solid fa-location-dot mr-1.5 text-rose-500"></i>${p.address}</a></div>` : ""}
+                                <div class="pt-1"><a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-[11px] font-bold text-sky-600 dark:text-sky-400 hover:underline"><i class="fa-solid fa-map"></i>Haritada Aç</a></div>
+                            </div>
+                            <div class="px-4 grid grid-cols-4 gap-2">${buttons}</div>
+                        </div>
+                    `;
+                }).join("");
+            }
+
+            renderProfileBookings();
+        };
+
+        async function loadMemberUser(user) {
+            try {
+                const delSnap = await getDoc(doc(db, "deleted_sessions", user.uid));
+                if (delSnap.exists()) {
+                    await forceLogoutAccount("top_oyna_account_deleted", "1");
+                    return;
+                }
+            } catch (_) {}
+
+            const googleInfo = Array.isArray(user.providerData)
+                ? user.providerData.find(p => p && p.providerId === "google.com")
+                : null;
+            const gPhoto = (googleInfo && googleInfo.photoURL) || user.photoURL || "";
+            const name = (googleInfo && googleInfo.displayName) || user.displayName || (user.email || "Üye").split("@")[0];
+            const email = (googleInfo && googleInfo.email) || user.email || "";
+
+            let existing = {};
+            try {
+                const snap = await getDoc(doc(db, "users", user.uid));
+                if (snap.exists()) existing = snap.data();
+            } catch (_) {}
+
+            if (existing.deleted === true) {
+                await forceLogoutAccount("top_oyna_account_deleted", "1");
+                return;
+            }
+            if (existing.blocked === true) {
+                await forceLogoutAccount("top_oyna_account_blocked", "1");
+                return;
+            }
+            if (existing.role && existing.role !== EXPECTED_ROLE) {
+                await forceLogoutAccount("top_oyna_role_changed", existing.role);
+                return;
+            }
+
+            const prevEmail = existing.email || "";
+            const emailHistory = appendHistoryEntry(existing.emailHistory, prevEmail, email);
+
+            currentUser = {
+                uid: user.uid,
+                isAuthenticated: true,
+                name: existing.name || name,
+                email,
+                phone: existing.phone || "",
+                photo: existing.photo || gPhoto || "",
+                googlePhoto: gPhoto,
+                blocked: existing.blocked === true,
+                deletionPending: existing.deletionPending === true,
+                nameHistory: Array.isArray(existing.nameHistory) ? existing.nameHistory : [],
+                emailHistory,
+                phoneHistory: Array.isArray(existing.phoneHistory) ? existing.phoneHistory : []
+            };
+
+            try {
+                await setDoc(doc(db, "users", user.uid), {
+                    uid: user.uid,
+                    name: currentUser.name,
+                    email: currentUser.email,
+                    previousEmail: prevEmail && prevEmail !== email ? prevEmail : (existing.previousEmail || ""),
+                    phone: currentUser.phone,
+                    photo: currentUser.photo,
+                    googlePhoto: currentUser.googlePhoto,
+                    emailHistory,
+                    role: EXPECTED_ROLE,
+                    lastLoginAt: Date.now()
+                }, { merge: true });
+            } catch (_) {}
+
+            loadUserNotificationsForUid(user.uid);
+            watchCurrentUserRealtime(user.uid);
+            syncProfileUI();
+            renderAll();
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (isForcingLogout) return;
+            if (user) {
+                await loadMemberUser(user);
+            } else {
+                cleanupUserListeners();
+                currentUser = createGuestUser();
+                loadUserNotificationsForUid("");
+                syncProfileUI();
+                renderAll();
+            }
+            updateNotifBadge();
+
+            onSnapshot(collection(db, "pitches"), (snap) => {
+                if (!snap.empty) {
+                    pitches = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    writeLocalList(PITCHES_STORAGE_KEY, pitches);
+                    renderAll();
+                }
+            }, () => {});
+
+            onSnapshot(collection(db, "bookings"), (snap) => {
+                bookings = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                writeLocalList(BOOKINGS_STORAGE_KEY, bookings);
+                renderAll();
+                renderProfileBookings();
+            }, () => {});
+        });
+
+        window.logout = async () => {
+            cleanupUserListeners();
+            currentUser = createGuestUser();
+            loadUserNotificationsForUid("");
+            try { await signOut(auth); } catch (_) {}
+            window.location.replace(LOGIN_PAGE);
+        };
+    </script>
+</body>
+</html>
