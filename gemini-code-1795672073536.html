@@ -1,0 +1,2042 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hangi Saha</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'media'
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        html { scroll-behavior: smooth; }
+        body { transition: background-color 0.2s, color 0.2s; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen">
+
+    <!-- ÜST BAR -->
+    <header class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
+            <!-- MARKA -->
+            <a href="#top" onclick="resetHomeView(event)" class="flex items-center gap-2.5 group">
+                <div class="w-8 h-8 rounded-xl bg-emerald-500 flex items-center justify-center text-slate-950 font-black text-sm shadow-sm group-hover:scale-105 transition">
+                    <i class="fa-solid fa-futbol"></i>
+                </div>
+                <span class="text-lg font-extrabold tracking-tight text-emerald-600 dark:text-emerald-400">HANGİ SAHA</span>
+                <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30">Üye</span>
+            </a>
+
+            <!-- SAĞ: BİLDİRİMLER, GİRİŞ YAP & KÖŞE AÇILIR MENÜ -->
+            <div class="flex items-center gap-2 relative">
+                <button id="guest-login-btn" onclick="goToLoginPage()" class="hidden px-3 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    <span>Giriş Yap</span>
+                </button>
+
+                <button id="notif-btn" onclick="openDrawerTab('notifications')" class="relative px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-xs font-bold flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-bell text-amber-500"></i>
+                    <span class="hidden sm:inline">Bildirimler</span>
+                    <span id="user-notif-badge" class="hidden min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[10px] font-extrabold flex items-center justify-center">0</span>
+                </button>
+
+                <button id="corner-menu-btn" onclick="toggleCornerMenu(event)" class="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition">
+                    <img id="header-avatar" src="https://ui-avatars.com/api/?name=Uye&background=10b981&color=020617" alt="" referrerpolicy="no-referrer" class="w-7 h-7 rounded-full object-cover border border-emerald-500">
+                    <span id="header-name" class="text-xs font-bold max-w-[110px] truncate hidden sm:inline">Üye</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-500 dark:text-slate-400"></i>
+                </button>
+
+                <!-- KÖŞE AÇILIR SEÇENEKLER MENÜSÜ -->
+                <div id="corner-dropdown" class="hidden absolute right-0 top-12 w-72 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-3 space-y-2 z-50">
+                    <div class="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 dark:bg-slate-950/60">
+                        <img id="menu-avatar" onclick="openPhotoPreview(this.src)" src="https://ui-avatars.com/api/?name=Uye&background=10b981&color=020617" alt="" referrerpolicy="no-referrer" class="w-10 h-10 rounded-full object-cover border border-emerald-500 cursor-pointer hover:opacity-85 transition">
+                        <div class="min-w-0">
+                            <div id="menu-name" class="text-xs font-bold truncate">Üye</div>
+                            <div id="menu-email" class="text-[11px] text-slate-500 truncate"></div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1 pt-1">
+                        <button id="menu-profile-btn" onclick="openDrawerTab('profile')" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                            <span class="flex items-center gap-2.5"><i class="fa-solid fa-user-pen text-emerald-500 w-4"></i> <span>Profil Bilgileri</span></span>
+                            <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
+                        </button>
+                    </div>
+
+                    <div class="border-t border-slate-200 dark:border-slate-800 pt-2">
+                        <button id="dropdown-auth-btn" onclick="logout()" class="w-full py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition">Çıkış Yap</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ÜSTYAZI REZERVASYON ŞERİDİ -->
+        <div id="selected-booking-ticker" onclick="scrollToSelectedBookingPitch()" class="hidden cursor-pointer bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 text-xs font-bold transition">
+            <div class="max-w-6xl mx-auto flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2 min-w-0 truncate">
+                    <i class="fa-solid fa-calendar-check shrink-0"></i>
+                    <span id="selected-booking-ticker-text" class="truncate">Seçili Rezervasyon: -</span>
+                </div>
+                <span class="shrink-0 text-[11px] underline flex items-center gap-1">
+                    Sahaya Git <i class="fa-solid fa-arrow-down text-[10px]"></i>
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- MİSAFİR / GİRİŞ UYARI BANDI -->
+    <div id="guest-login-banner" class="hidden max-w-6xl mx-auto px-4 pt-4">
+        <div class="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-200 text-xs font-semibold flex items-center justify-between gap-3 flex-wrap">
+            <span>Randevu oluşturmak ve kişisel bildirimlerinizi/ayarlarınızı kullanmak için giriş yapmalısınız.</span>
+            <button onclick="goToLoginPage()" class="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold transition">
+                Giriş Yap
+            </button>
+        </div>
+    </div>
+
+    <!-- SÜREKLİ İPTAL KAYNAĞI GEÇİCİ REZERVASYON KISITI UYARISI -->
+    <div id="cooldown-banner" class="hidden max-w-6xl mx-auto px-4 pt-4">
+        <div class="p-3.5 rounded-2xl bg-amber-500/15 border border-amber-500/40 text-amber-800 dark:text-amber-200 text-xs font-bold flex items-center gap-2">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span id="cooldown-banner-text">2 saat içinde 2 iptal yaptığınız için 2 saat boyunca yeni rezervasyon yapamazsınız.</span>
+        </div>
+    </div>
+
+    <!-- ENGEL UYARISI -->
+    <div id="blocked-banner" class="hidden max-w-6xl mx-auto px-4 pt-4">
+        <div class="p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/40 text-rose-600 dark:text-rose-300 text-xs font-bold flex items-center gap-2">
+            <i class="fa-solid fa-ban"></i>
+            <span>Hesabınız kısıtlandı.</span>
+        </div>
+    </div>
+
+    <!-- ANA SAYFA İÇERİĞİ -->
+    <main id="top" class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+
+        <!-- ARAMA & FİLTRELEME -->
+        <section class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block text-[11px] font-semibold text-slate-500">Tarih (Çoklu Seçim)</label>
+                        <span id="preferred-weekday-badge" class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">Gün: -</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <input type="date" id="match-date" onchange="handlePrimaryDateChange(this.value)" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs outline-none focus:border-emerald-500">
+                        <button type="button" onclick="toggleSelectedDate(document.getElementById('match-date').value)" title="Bu tarihi çoklu seçime ekle/çıkar" class="px-2.5 py-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-600 dark:text-emerald-300 text-xs font-bold shrink-0">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-500 mb-1">İlçe</label>
+                    <select id="filter-district" onchange="handleFilterChange()" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs outline-none focus:border-emerald-500">
+                        <option value="">Tümü</option>
+                        <option value="Selçuklu">Selçuklu</option>
+                        <option value="Meram">Meram</option>
+                        <option value="Karatay">Karatay</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-500 mb-1">Saha veya Adres Ara</label>
+                    <input type="text" id="filter-search" oninput="handleSearchInput()" onkeydown="handleSearchKeydown(event)" placeholder="Saha, mahalle, cadde..." class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-500 mb-1">Sıralama</label>
+                    <select id="filter-sort" onchange="handleFilterChange()" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs outline-none focus:border-emerald-500">
+                        <option value="default">Öncelikli & Kayıtlı Sıra</option>
+                        <option value="price_asc">Ücret: Artan</option>
+                        <option value="price_desc">Ücret: Azalan</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- SEÇİLİ TARİHLER & SAATLER ÇUBUĞU -->
+            <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-2 text-xs">
+                <div class="flex items-center justify-between gap-2 flex-wrap">
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        <span class="text-[11px] font-bold text-slate-500">Seçili Tarihler:</span>
+                        <div id="multi-dates-chips" class="flex items-center gap-1.5 flex-wrap"></div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span id="multi-hours-summary" class="text-[11px] font-bold text-sky-600 dark:text-sky-400">Seçili Saat: 0</span>
+                        <button type="button" id="multi-book-btn" onclick="openMultiSelectionBookingModal()" class="hidden px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-[11px] transition">
+                            Seçilen Tarih & Saatlere Randevu Al
+                        </button>
+                        <button type="button" id="clear-multi-sel-btn" onclick="clearMultiSelections()" class="hidden px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-bold text-[11px]">
+                            Temizle
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ARAMA GEÇMİŞİ -->
+                <div id="search-history-bar" class="hidden flex items-center justify-between gap-2 flex-wrap">
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        <span class="text-[11px] font-bold text-slate-400"><i class="fa-solid fa-clock-rotate-left mr-1"></i>Arama Geçmişi:</span>
+                        <div id="search-history-chips" class="flex items-center gap-1.5 flex-wrap"></div>
+                    </div>
+                    <button type="button" onclick="clearSearchHistory()" class="text-[10px] font-bold text-slate-400 hover:text-rose-500">Geçmişi Sil</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SAHALAR LİSTESİ -->
+        <div id="pitches-list" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+    </main>
+
+    <!-- YAN ÇEKMECE -->
+    <div id="side-drawer-overlay" onclick="closeSideDrawer()" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs"></div>
+    <aside id="side-drawer" class="fixed top-0 right-0 z-50 h-full w-full max-w-md bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl transform translate-x-full transition-transform duration-200 flex flex-col">
+        <div class="px-5 h-16 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <h3 id="drawer-title" class="text-sm font-extrabold">Profil Bilgileri</h3>
+            <button onclick="closeSideDrawer()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-xs">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="px-5 py-2.5 border-b border-slate-200 dark:border-slate-800 flex items-center gap-1.5 text-xs font-bold">
+            <button id="tab-btn-profile" onclick="switchDrawerTab('profile')" class="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950">Profil Bilgileri</button>
+            <button id="tab-btn-notifications" onclick="switchDrawerTab('notifications')" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800">Bildirimler</button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-5 space-y-6 text-xs">
+
+            <!-- PROFİL BİLGİLERİ -->
+            <div id="tab-content-profile" class="space-y-6">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                        <img id="drawer-avatar-preview" onclick="openPhotoPreview(this.src)" src="" alt="" referrerpolicy="no-referrer" class="w-14 h-14 rounded-full object-cover border-2 border-emerald-500 cursor-pointer hover:opacity-85 transition">
+                        <div class="space-y-2 flex-1">
+                            <div class="font-bold text-sm" id="drawer-profile-name">Üye</div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <label class="cursor-pointer px-2.5 py-1.5 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 font-bold hover:bg-emerald-500/25 transition">
+                                    <i class="fa-solid fa-camera mr-1"></i> Fotoğraf Seç
+                                    <input type="file" accept="image/*" onchange="handlePhotoUpload(event)" class="hidden">
+                                </label>
+                                <button type="button" onclick="useGooglePhoto()" class="px-2.5 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 font-bold hover:opacity-80 transition">
+                                    <i class="fa-brands fa-google mr-1"></i> Google Fotoğrafı
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form onsubmit="saveUserProfile(event)" class="space-y-3">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-500 mb-1">Ad Soyad</label>
+                            <input type="text" id="prof-name" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="block text-[11px] font-semibold text-slate-500">Telefon Numarası</label>
+                                <button type="button" onclick="pickPhoneFromContacts()" class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline">
+                                    <i class="fa-solid fa-address-book mr-1"></i>Rehberden Seç
+                                </button>
+                            </div>
+                            <input type="tel" id="prof-phone" placeholder="05XX XXX XX XX" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:border-emerald-500">
+                        </div>
+                        <div id="prof-phone-history-box" class="hidden p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
+                            <div class="text-[10px] font-extrabold uppercase text-slate-400">Önceki Telefon Numaraları</div>
+                            <div id="prof-phone-history-list" class="text-[11px] text-slate-500 space-y-0.5"></div>
+                        </div>
+                        <button type="submit" class="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold transition">
+                            Kaydet
+                        </button>
+                    </form>
+                </div>
+
+                <!-- REZERVASYONLARIM -->
+                <div class="space-y-2.5 pt-2 border-t border-slate-200 dark:border-slate-800">
+                    <div class="font-extrabold uppercase tracking-wider text-[11px] text-slate-500">Rezervasyonlarım</div>
+                    <div id="profile-bookings-list" class="space-y-2"></div>
+                </div>
+            </div>
+
+            <!-- BİLDİRİMLER -->
+            <div id="tab-content-notifications" class="hidden space-y-3">
+                <div class="flex items-center justify-between">
+                    <span class="font-extrabold uppercase tracking-wider text-[11px] text-slate-500">Bildirimler</span>
+                    <button onclick="clearMyNotifications()" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-rose-500/15 hover:text-rose-500 text-[11px] font-bold transition">
+                        Temizle
+                    </button>
+                </div>
+                <div id="my-notifications-list" class="space-y-2"></div>
+            </div>
+
+        </div>
+    </aside>
+
+    <!-- PROFİL / SAHA FOTOĞRAFI BÜYÜK ÖNİZLEME -->
+    <div id="photo-preview-modal" onclick="closePhotoPreview()" class="hidden fixed inset-0 z-60 bg-black/70 backdrop-blur-md flex items-center justify-center p-6">
+        <div id="photo-preview-content" onclick="event.stopPropagation()" class="max-w-full max-h-[82vh] flex items-center justify-center"></div>
+    </div>
+
+    <!-- SAHA DETAY PENCERESİ (TELEFON, KONUM, ADRES) -->
+    <div id="pitch-info-modal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 space-y-4 shadow-2xl text-xs">
+            <div class="flex items-center justify-between">
+                <h3 id="pitch-info-title" class="text-sm font-extrabold">Saha Bilgileri</h3>
+                <button onclick="closePitchInfoModal()" class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="pitch-info-body" class="space-y-2.5 bg-slate-50 dark:bg-slate-950 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800"></div>
+            <div class="flex justify-end">
+                <button onclick="closePitchInfoModal()" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold">Kapat</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- REZERVASYON TÜRÜ SEÇİM PENCERESİ (HAFTALIK / TEK SEFERLİK) -->
+    <div id="booking-type-modal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 space-y-4 shadow-2xl">
+            <h3 class="text-sm font-extrabold">Rezervasyon Seçeneği</h3>
+            <div id="booking-type-info" class="text-xs text-slate-500 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800 space-y-1"></div>
+            <div class="grid grid-cols-2 gap-2.5">
+                <button id="btn-single-booking" class="py-2.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs transition">
+                    Tek seferlik
+                </button>
+                <button id="btn-weekly-booking" class="py-2.5 px-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-extrabold text-xs transition">
+                    Haftalık
+                </button>
+            </div>
+            <button onclick="closeBookingTypeModal()" class="w-full py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold text-xs">
+                Vazgeç
+            </button>
+        </div>
+    </div>
+
+    <!-- GENEL TEYİT / UYARI PENCERESİ -->
+    <div id="confirm-dialog" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 space-y-4 shadow-2xl">
+            <h3 id="confirm-title" class="text-sm font-extrabold">Onay</h3>
+            <div id="confirm-body" class="text-xs text-slate-600 dark:text-slate-300 space-y-2 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800 leading-relaxed"></div>
+            <div id="confirm-extra-actions" class="hidden space-y-2"></div>
+            <div class="flex items-center justify-end gap-2">
+                <button id="confirm-cancel-btn" onclick="closeConfirmDialog()" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold text-xs">
+                    İptal
+                </button>
+                <button id="confirm-proceed-btn" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs">
+                    Onaylıyorum
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import {
+            getFirestore,
+            collection,
+            doc,
+            setDoc,
+            getDoc,
+            deleteDoc,
+            addDoc,
+            onSnapshot,
+            runTransaction
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const DEFAULT_HOURS = ["16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"];
+        const WEEKDAY_NAMES_TR = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
+        const LOGIN_PAGE = "index.html";
+        const EXPECTED_ROLE = "user";
+        const PITCHES_STORAGE_KEY = "hangi_saha_pitches_v1";
+        const BOOKINGS_STORAGE_KEY = "hangi_saha_bookings_v1";
+        const USER_NOTIFS_PREFIX = "hangi_saha_user_notifs_v1_";
+        const DISMISSED_NOTIFS_PREFIX = "hangi_saha_dismissed_notifs_v1_";
+        const PREFS_STORAGE_PREFIX = "hangi_saha_prefs_v1_";
+
+        const CANCEL_WINDOW_MS = 2 * 60 * 60 * 1000;
+        const CANCEL_LIMIT = 2;
+        const COOLDOWN_MS = 2 * 60 * 60 * 1000;
+
+        const BOOKING_POLICY_TEXT =
+            "Maç ücreti tesiste ödenir. Sitemiz ayrıca komisyon almaz. Maçınızın iptali durumunda ücretin %10'u tesise tediye edilmelidir. Lütfen maç saatinizden 2 saat önce rezervasyonunuzu iptal edin. Aksi takdirde yasal işlem uygulanır.";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCKYARoGK8ADJ2_T5c2GomrAG47-gHtQ-8",
+            authDomain: "top-oyna-d33f3.firebaseapp.com",
+            projectId: "top-oyna-d33f3",
+            storageBucket: "top-oyna-d33f3.firebasestorage.app",
+            messagingSenderId: "1033043310464",
+            appId: "1:1033043310464:web:d467e84b68f73e99f0f365",
+            measurementId: "G-P2ZRQQFFMD"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        function createGuestUser() {
+            return {
+                uid: "",
+                isAuthenticated: false,
+                name: "Misafir Üye",
+                email: "",
+                phone: "",
+                previousPhone: "",
+                photo: "",
+                googlePhoto: "",
+                blocked: false,
+                nameHistory: [],
+                emailHistory: [],
+                phoneHistory: [],
+                cancelTimestamps: [],
+                cancelCooldownUntil: 0,
+                pitchOrder: [],
+                preferredWeekday: null
+            };
+        }
+
+        let currentUser = createGuestUser();
+        let pitches = [];
+        let bookings = [];
+        let directNotifications = [];
+        let sharedNotifications = [];
+        let myNotifications = [];
+        let pendingConfirmAction = null;
+        let userDocUnsubscribe = null;
+        let deletedSessionUnsubscribe = null;
+        let userNotifsUnsubscribe = null;
+        let sharedNotifsUnsubscribe = null;
+        let isForcingLogout = false;
+
+        let selectedDates = [];
+        let selectedHours = [];
+        let searchHistory = [];
+        let selectedBookingId = "";
+        let searchHistorySaveTimer = null;
+
+        window.goToLoginPage = () => {
+            window.location.replace(LOGIN_PAGE);
+        };
+
+        function getToday() {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+        }
+
+        function addDays(dateStr, days) {
+            const parts = String(dateStr).split("-").map(Number);
+            const dt = new Date(parts[0], (parts[1] || 1) - 1, parts[2] || 1);
+            dt.setDate(dt.getDate() + days);
+            return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
+        }
+
+        function getWeekdayIndexFromDate(dateStr) {
+            const parts = String(dateStr || "").split("-").map(Number);
+            if (parts.length !== 3 || !parts[0]) return new Date().getDay();
+            return new Date(parts[0], (parts[1] || 1) - 1, parts[2] || 1).getDay();
+        }
+
+        function getNextDateForWeekday(weekdayIndex, baseDateStr = getToday()) {
+            const targetIdx = Number(weekdayIndex);
+            if (Number.isNaN(targetIdx) || targetIdx < 0 || targetIdx > 6) return baseDateStr;
+            const parts = String(baseDateStr).split("-").map(Number);
+            const dt = new Date(parts[0], (parts[1] || 1) - 1, parts[2] || 1);
+            const diff = (targetIdx - dt.getDay() + 7) % 7;
+            dt.setDate(dt.getDate() + diff);
+            return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
+        }
+
+        function formatDateWithWeekday(dateStr) {
+            const wd = WEEKDAY_NAMES_TR[getWeekdayIndexFromDate(dateStr)] || "";
+            return `${dateStr} (${wd})`;
+        }
+
+        function formatTimeTR(ts) {
+            if (!ts) return "-";
+            return new Date(ts).toLocaleString("tr-TR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+        }
+
+        function getActiveCooldownRemainingMs() {
+            const until = Number(currentUser.cancelCooldownUntil || 0);
+            if (!until) return 0;
+            const rem = until - Date.now();
+            return rem > 0 ? rem : 0;
+        }
+
+        function formatRemainingDuration(ms) {
+            const totalMin = Math.max(1, Math.ceil(ms / 60000));
+            const hrs = Math.floor(totalMin / 60);
+            const mins = totalMin % 60;
+            if (hrs > 0 && mins > 0) return `${hrs} saat ${mins} dakika`;
+            if (hrs > 0) return `${hrs} saat`;
+            return `${mins} dakika`;
+        }
+
+        function readLocalList(key, fallback = []) {
+            try {
+                const raw = localStorage.getItem(key);
+                return raw ? JSON.parse(raw) : fallback;
+            } catch (_) { return fallback; }
+        }
+
+        function writeLocalList(key, list) {
+            try { localStorage.setItem(key, JSON.stringify(list)); } catch (_) {}
+        }
+
+        function getDismissedNotifIds(uid) {
+            if (!uid) return new Set();
+            return new Set(readLocalList(`${DISMISSED_NOTIFS_PREFIX}${uid}`, []));
+        }
+
+        function addDismissedNotifIds(uid, ids) {
+            if (!uid || !ids.length) return;
+            const prev = readLocalList(`${DISMISSED_NOTIFS_PREFIX}${uid}`, []);
+            const merged = [...new Set([...prev, ...ids])].slice(-200);
+            writeLocalList(`${DISMISSED_NOTIFS_PREFIX}${uid}`, merged);
+        }
+
+        function mergeAndRefreshNotifications() {
+            if (!currentUser.isAuthenticated || !currentUser.uid) {
+                myNotifications = [];
+                updateNotifBadge();
+                renderMyNotifications();
+                return;
+            }
+            const dismissed = getDismissedNotifIds(currentUser.uid);
+            const map = new Map();
+
+            [...directNotifications, ...sharedNotifications].forEach(item => {
+                if (!item || !item.id || dismissed.has(item.id)) return;
+                const dedupeKey = item.notifKey || item.id;
+                if (!map.has(dedupeKey)) {
+                    map.set(dedupeKey, item);
+                }
+            });
+
+            myNotifications = Array.from(map.values())
+                .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+                .slice(0, 40);
+
+            saveUserNotificationsForUid(currentUser.uid, myNotifications);
+            updateNotifBadge();
+            renderMyNotifications();
+        }
+
+        function getPrefsKey(uid = "") {
+            return `${PREFS_STORAGE_PREFIX}${uid || "guest"}`;
+        }
+
+        function loadUserPreferences(uid = currentUser.uid) {
+            const saved = readLocalList(getPrefsKey(uid), {});
+            const preferredWeekday = (typeof currentUser.preferredWeekday === "number")
+                ? currentUser.preferredWeekday
+                : (typeof saved.preferredWeekday === "number" ? saved.preferredWeekday : null);
+
+            const initialDate = preferredWeekday !== null
+                ? getNextDateForWeekday(preferredWeekday, getToday())
+                : (saved.lastDate || getToday());
+
+            document.getElementById("match-date").value = initialDate;
+            document.getElementById("filter-district").value = saved.district || "";
+            document.getElementById("filter-search").value = saved.search || "";
+            document.getElementById("filter-sort").value = saved.sort || "default";
+
+            selectedDates = Array.isArray(saved.selectedDates) && saved.selectedDates.length > 0
+                ? [...saved.selectedDates]
+                : [initialDate];
+            selectedHours = Array.isArray(saved.selectedHours) ? [...saved.selectedHours] : [];
+            searchHistory = Array.isArray(saved.searchHistory) ? [...saved.searchHistory] : [];
+            selectedBookingId = saved.selectedBookingId || "";
+
+            if (typeof preferredWeekday === "number") {
+                currentUser.preferredWeekday = preferredWeekday;
+            }
+            if (Array.isArray(saved.pitchOrder) && saved.pitchOrder.length > 0 && (!currentUser.pitchOrder || currentUser.pitchOrder.length === 0)) {
+                currentUser.pitchOrder = [...saved.pitchOrder];
+            }
+
+            updatePreferredWeekdayBadge();
+            renderMultiSelectionBar();
+            renderSearchHistory();
+            renderSelectedBookingTicker();
+        }
+
+        async function saveUserPreferences(syncCloud = true) {
+            const dateVal = document.getElementById("match-date").value || getToday();
+            const weekdayIdx = getWeekdayIndexFromDate(dateVal);
+            currentUser.preferredWeekday = weekdayIdx;
+
+            const prefs = {
+                preferredWeekday: weekdayIdx,
+                lastDate: dateVal,
+                district: document.getElementById("filter-district").value || "",
+                search: document.getElementById("filter-search").value || "",
+                sort: document.getElementById("filter-sort").value || "default",
+                selectedDates,
+                selectedHours,
+                searchHistory,
+                selectedBookingId,
+                pitchOrder: currentUser.pitchOrder || [],
+                updatedAt: Date.now()
+            };
+
+            writeLocalList(getPrefsKey(currentUser.uid), prefs);
+            writeLocalList(getPrefsKey(""), prefs);
+
+            if (syncCloud && currentUser.isAuthenticated && currentUser.uid) {
+                await persistCurrentUserContinuously({
+                    preferredWeekday: weekdayIdx,
+                    lastFilterPrefs: {
+                        district: prefs.district,
+                        search: prefs.search,
+                        sort: prefs.sort,
+                        preferredWeekday: weekdayIdx
+                    },
+                    searchHistory,
+                    pitchOrder: currentUser.pitchOrder || []
+                });
+            }
+        }
+
+        function updatePreferredWeekdayBadge() {
+            const el = document.getElementById("preferred-weekday-badge");
+            if (!el) return;
+            const dateVal = document.getElementById("match-date").value || getToday();
+            const wdName = WEEKDAY_NAMES_TR[getWeekdayIndexFromDate(dateVal)];
+            el.textContent = `Gün: ${wdName}`;
+        }
+
+        window.handlePrimaryDateChange = (val) => {
+            if (!val) return;
+            if (!selectedDates.includes(val)) {
+                selectedDates = [val, ...selectedDates.filter(d => d !== val)].slice(0, 7);
+            }
+            updatePreferredWeekdayBadge();
+            renderMultiSelectionBar();
+            saveUserPreferences(true);
+            renderAll();
+        };
+
+        window.toggleSelectedDate = (dateStr) => {
+            if (!dateStr) return;
+            if (selectedDates.includes(dateStr)) {
+                if (selectedDates.length > 1) {
+                    selectedDates = selectedDates.filter(d => d !== dateStr);
+                }
+            } else {
+                selectedDates = [...selectedDates, dateStr].slice(0, 10);
+            }
+            renderMultiSelectionBar();
+            saveUserPreferences(false);
+            renderAll();
+        };
+
+        window.toggleSelectedHour = (hourStr) => {
+            if (!hourStr) return;
+            if (selectedHours.includes(hourStr)) {
+                selectedHours = selectedHours.filter(h => h !== hourStr);
+            } else {
+                selectedHours = [...selectedHours, hourStr];
+            }
+            renderMultiSelectionBar();
+            saveUserPreferences(false);
+            renderAll();
+        };
+
+        window.clearMultiSelections = () => {
+            const activeDate = document.getElementById("match-date").value || getToday();
+            selectedDates = [activeDate];
+            selectedHours = [];
+            renderMultiSelectionBar();
+            saveUserPreferences(false);
+            renderAll();
+        };
+
+        function renderMultiSelectionBar() {
+            const datesEl = document.getElementById("multi-dates-chips");
+            const summaryEl = document.getElementById("multi-hours-summary");
+            const bookBtn = document.getElementById("multi-book-btn");
+            const clearBtn = document.getElementById("clear-multi-sel-btn");
+
+            const activeDate = document.getElementById("match-date").value || getToday();
+            const listToShow = selectedDates.length > 0 ? selectedDates : [activeDate];
+
+            datesEl.innerHTML = listToShow.map(d => {
+                const wd = WEEKDAY_NAMES_TR[getWeekdayIndexFromDate(d)];
+                return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-bold text-[11px]">${d} (${wd})</span>`;
+            }).join("");
+
+            const totalSlots = listToShow.length * selectedHours.length;
+            summaryEl.textContent = selectedHours.length > 0
+                ? `Seçili Saatler: ${selectedHours.join(", ")} (${totalSlots} slot)`
+                : `Seçili Saat: 0`;
+
+            const hasMulti = listToShow.length > 0 && selectedHours.length > 0;
+            bookBtn.classList.toggle("hidden", !hasMulti);
+            clearBtn.classList.toggle("hidden", selectedHours.length === 0 && listToShow.length <= 1);
+        }
+
+        function recordSearchHistory(term) {
+            const clean = (term || "").trim();
+            if (clean.length < 2) return;
+            searchHistory = [clean, ...searchHistory.filter(item => item.toLowerCase() !== clean.toLowerCase())].slice(0, 8);
+            renderSearchHistory();
+            saveUserPreferences(true);
+        }
+
+        window.handleSearchInput = () => {
+            const val = document.getElementById("filter-search").value;
+            saveUserPreferences(false);
+            renderAll();
+            clearTimeout(searchHistorySaveTimer);
+            searchHistorySaveTimer = setTimeout(() => {
+                if (val.trim().length >= 2) recordSearchHistory(val);
+            }, 900);
+        };
+
+        window.handleSearchKeydown = (e) => {
+            if (e.key === "Enter") {
+                recordSearchHistory(e.target.value);
+            }
+        };
+
+        window.applyHistorySearch = (term) => {
+            document.getElementById("filter-search").value = term;
+            recordSearchHistory(term);
+            renderAll();
+        };
+
+        window.clearSearchHistory = () => {
+            searchHistory = [];
+            renderSearchHistory();
+            saveUserPreferences(true);
+        };
+
+        function renderSearchHistory() {
+            const bar = document.getElementById("search-history-bar");
+            const chips = document.getElementById("search-history-chips");
+            if (!bar || !chips) return;
+            if (!searchHistory.length) {
+                bar.classList.add("hidden");
+                chips.innerHTML = "";
+                return;
+            }
+            bar.classList.remove("hidden");
+            chips.innerHTML = searchHistory.map(item => `
+                <button type="button" onclick="applyHistorySearch('${item.replace(/'/g, "\\'")}')" class="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-emerald-500/20 hover:text-emerald-600 dark:hover:text-emerald-300 text-[11px] font-semibold transition">
+                    ${item}
+                </button>
+            `).join("");
+        }
+
+        window.handleFilterChange = () => {
+            saveUserPreferences(true);
+            renderAll();
+        };
+
+        function getUserNotifsKey(uid) {
+            return uid ? `${USER_NOTIFS_PREFIX}${uid}` : "";
+        }
+
+        function loadUserNotificationsForUid(uid) {
+            if (!uid) {
+                directNotifications = [];
+                sharedNotifications = [];
+                myNotifications = [];
+                updateNotifBadge();
+                renderMyNotifications();
+                return;
+            }
+            directNotifications = readLocalList(getUserNotifsKey(uid), []);
+            mergeAndRefreshNotifications();
+        }
+
+        function saveUserNotificationsForUid(uid, list) {
+            if (!uid) return;
+            writeLocalList(getUserNotifsKey(uid), list);
+        }
+
+        function cleanupUserListeners() {
+            if (typeof userDocUnsubscribe === "function") {
+                try { userDocUnsubscribe(); } catch (_) {}
+                userDocUnsubscribe = null;
+            }
+            if (typeof deletedSessionUnsubscribe === "function") {
+                try { deletedSessionUnsubscribe(); } catch (_) {}
+                deletedSessionUnsubscribe = null;
+            }
+            if (typeof userNotifsUnsubscribe === "function") {
+                try { userNotifsUnsubscribe(); } catch (_) {}
+                userNotifsUnsubscribe = null;
+            }
+            if (typeof sharedNotifsUnsubscribe === "function") {
+                try { sharedNotifsUnsubscribe(); } catch (_) {}
+                sharedNotifsUnsubscribe = null;
+            }
+        }
+
+        async function forceLogoutAccount(reasonKey, reasonValue = "") {
+            if (isForcingLogout) return;
+            isForcingLogout = true;
+            cleanupUserListeners();
+            currentUser = createGuestUser();
+            try {
+                if (reasonKey) sessionStorage.setItem(reasonKey, reasonValue);
+                localStorage.removeItem("top_oyna_active_role");
+            } catch (_) {}
+            try { await signOut(auth); } catch (_) {}
+            window.location.replace(LOGIN_PAGE);
+        }
+
+        function watchCurrentUserRealtime(uid, userEmail = "") {
+            cleanupUserListeners();
+            if (!uid) return;
+
+            deletedSessionUnsubscribe = onSnapshot(doc(db, "deleted_sessions", uid), (snap) => {
+                if (snap.exists()) {
+                    forceLogoutAccount("top_oyna_account_deleted", "1");
+                }
+            }, () => {});
+
+            userDocUnsubscribe = onSnapshot(doc(db, "users", uid), (snap) => {
+                if (!snap.exists()) {
+                    forceLogoutAccount("top_oyna_account_deleted", "1");
+                    return;
+                }
+                const data = snap.data() || {};
+                if (data.deleted === true) {
+                    forceLogoutAccount("top_oyna_account_deleted", "1");
+                    return;
+                }
+                if (data.blocked === true) {
+                    forceLogoutAccount("top_oyna_account_blocked", "1");
+                    return;
+                }
+                const serverRole = (data.role || "").trim();
+                if (serverRole && serverRole !== EXPECTED_ROLE) {
+                    forceLogoutAccount("top_oyna_role_changed", serverRole);
+                    return;
+                }
+
+                currentUser = {
+                    ...currentUser,
+                    name: data.name || currentUser.name,
+                    email: data.email || currentUser.email,
+                    phone: data.phone !== undefined ? data.phone : currentUser.phone,
+                    previousPhone: data.previousPhone !== undefined ? data.previousPhone : currentUser.previousPhone,
+                    photo: data.photo !== undefined ? data.photo : currentUser.photo,
+                    blocked: data.blocked === true,
+                    nameHistory: Array.isArray(data.nameHistory) ? data.nameHistory : currentUser.nameHistory,
+                    emailHistory: Array.isArray(data.emailHistory) ? data.emailHistory : currentUser.emailHistory,
+                    phoneHistory: Array.isArray(data.phoneHistory) ? data.phoneHistory : currentUser.phoneHistory,
+                    cancelTimestamps: Array.isArray(data.cancelTimestamps) ? data.cancelTimestamps : currentUser.cancelTimestamps,
+                    cancelCooldownUntil: Number(data.cancelCooldownUntil || 0),
+                    pitchOrder: Array.isArray(data.pitchOrder) && data.pitchOrder.length > 0 ? data.pitchOrder : currentUser.pitchOrder,
+                    preferredWeekday: typeof data.preferredWeekday === "number" ? data.preferredWeekday : currentUser.preferredWeekday
+                };
+                if (Array.isArray(data.searchHistory) && data.searchHistory.length > 0) {
+                    searchHistory = [...data.searchHistory];
+                    renderSearchHistory();
+                }
+                syncProfileUI();
+                renderAll();
+            }, () => {});
+
+            userNotifsUnsubscribe = onSnapshot(collection(db, "users", uid, "notifications"), (snap) => {
+                directNotifications = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                mergeAndRefreshNotifications();
+            }, () => {});
+
+            const cleanEmail = (userEmail || currentUser.email || "").trim().toLowerCase();
+            sharedNotifsUnsubscribe = onSnapshot(collection(db, "notifications"), (snap) => {
+                sharedNotifications = snap.docs
+                    .map(d => ({ id: d.id, ...d.data() }))
+                    .filter(item => {
+                        const targetUid = (item.recipientUid || "").trim();
+                        const targetEmail = (item.recipientEmail || "").trim().toLowerCase();
+                        return (targetUid && targetUid === uid) || (cleanEmail && targetEmail && targetEmail === cleanEmail);
+                    });
+                mergeAndRefreshNotifications();
+            }, () => {});
+        }
+
+        window.resetHomeView = (e) => {
+            if (e) e.preventDefault();
+            closeSideDrawer();
+            document.getElementById("corner-dropdown").classList.add("hidden");
+            document.getElementById("filter-district").value = "";
+            document.getElementById("filter-search").value = "";
+            document.getElementById("filter-sort").value = "default";
+            saveUserPreferences(true);
+            renderAll();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        };
+
+        pitches = readLocalList(PITCHES_STORAGE_KEY, [
+            {
+                id: "pitch_1",
+                name: "Selçuklu Arena",
+                district: "Selçuklu",
+                address: "Bosna Hersek Mah. Osmanlı Cad. No:14, Selçuklu/Konya",
+                phone: "0532 000 00 01",
+                lat: 38.0185,
+                lng: 32.5152,
+                price: 1400,
+                hours: [...DEFAULT_HOURS]
+            },
+            {
+                id: "pitch_2",
+                name: "Meram Yıldız",
+                district: "Meram",
+                address: "Havzan Mah. Yeni Meram Cad. No:42, Meram/Konya",
+                phone: "0532 000 00 02",
+                lat: 37.8542,
+                lng: 32.4581,
+                price: 1300,
+                hours: [...DEFAULT_HOURS]
+            }
+        ]);
+        bookings = readLocalList(BOOKINGS_STORAGE_KEY, []);
+
+        function renderTopDownPitchSvg(pitchName = "Halı Saha") {
+            return `
+                <div class="w-full h-52 bg-emerald-800 relative overflow-hidden flex items-center justify-center select-none">
+                    <svg viewBox="0 0 400 220" class="w-full h-full" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${pitchName} kuşbakışı saha çizimi">
+                        <defs>
+                            <pattern id="turfStripes_${pitchName.replace(/\W+/g, "_")}" width="40" height="220" patternUnits="userSpaceOnUse">
+                                <rect x="0" y="0" width="20" height="220" fill="#15803d" />
+                                <rect x="20" y="0" width="20" height="220" fill="#166534" />
+                            </pattern>
+                        </defs>
+                        <rect x="0" y="0" width="400" height="220" fill="url(#turfStripes_${pitchName.replace(/\W+/g, "_")})" />
+                        <rect x="22" y="18" width="356" height="184" rx="4" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5" />
+                        <line x1="200" y1="18" x2="200" y2="202" stroke="rgba(255,255,255,0.9)" stroke-width="2.5" />
+                        <circle cx="200" cy="110" r="32" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5" />
+                        <circle cx="200" cy="110" r="3.5" fill="#ffffff" />
+                        <rect x="22" y="54" width="54" height="112" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.2" />
+                        <rect x="22" y="82" width="20" height="56" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2" />
+                        <rect x="12" y="88" width="10" height="44" fill="rgba(255,255,255,0.22)" stroke="#ffffff" stroke-width="2" />
+                        <rect x="324" y="54" width="54" height="112" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.2" />
+                        <rect x="358" y="82" width="20" height="56" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2" />
+                        <rect x="378" y="88" width="10" height="44" fill="rgba(255,255,255,0.22)" stroke="#ffffff" stroke-width="2" />
+                    </svg>
+                    <span class="absolute bottom-2.5 right-2.5 px-2.5 py-1 rounded-lg bg-slate-950/65 text-white text-[10px] font-bold backdrop-blur-xs">
+                        Kuşbakışı Saha Görünümü
+                    </span>
+                </div>
+            `;
+        }
+
+        function renderPitchVisualHtml(pitch, largePreview = false) {
+            if (pitch && pitch.photo) {
+                const cls = largePreview
+                    ? "max-w-full max-h-[82vh] rounded-3xl shadow-2xl border-2 border-white/20 object-contain"
+                    : "w-full h-52 object-cover cursor-pointer hover:opacity-95 transition";
+                return `<img src="${pitch.photo}" onclick="openPitchPhotoPreview('${pitch.id}')" alt="${pitch.name}" class="${cls}">`;
+            }
+            if (largePreview) {
+                return `<div class="w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl border-2 border-white/20">${renderTopDownPitchSvg(pitch?.name || "Saha")}</div>`;
+            }
+            return `<div onclick="openPitchPhotoPreview('${pitch.id}')" class="cursor-pointer hover:opacity-95 transition">${renderTopDownPitchSvg(pitch.name)}</div>`;
+        }
+
+        window.openPitchPhotoPreview = (pitchId) => {
+            const p = pitches.find(item => item.id === pitchId);
+            if (!p) return;
+            document.getElementById("photo-preview-content").innerHTML = renderPitchVisualHtml(p, true);
+            document.getElementById("photo-preview-modal").classList.remove("hidden");
+        };
+
+        function getAddressNavigationUrl(pitch) {
+            const addrQuery = [pitch?.address, pitch?.district, "Konya"].filter(Boolean).join(", ");
+            if (addrQuery) {
+                return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addrQuery)}`;
+            }
+            if (pitch && pitch.lat && pitch.lng) {
+                return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${pitch.lat},${pitch.lng}`)}`;
+            }
+            return "https://www.google.com/maps";
+        }
+
+        window.handlePhoneAction = async (e, rawPhone) => {
+            if (e) e.preventDefault();
+            const cleanPhone = String(rawPhone || "").trim();
+            if (!cleanPhone) return;
+
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(cleanPhone);
+                }
+            } catch (_) {}
+
+            window.location.href = `tel:${cleanPhone.replace(/\s+/g, "")}`;
+        };
+
+        window.pickPhoneFromContacts = async () => {
+            if (!("contacts" in navigator) || !navigator.contacts || typeof navigator.contacts.select !== "function") {
+                openConfirmDialog({
+                    title: "Rehber Erişimi",
+                    html: `<div>Bu tarayıcı doğrudan rehber seçiciyi desteklemiyor. Telefon numarasını doğrudan alana yazabilir veya kopyalayıp yapıştırabilirsiniz.</div>`,
+                    cancelText: "Kapat",
+                    proceedText: "Tamam",
+                    onConfirm: null
+                });
+                return;
+            }
+            try {
+                const picked = await navigator.contacts.select(["tel"], { multiple: false });
+                const firstTel = picked?.[0]?.tel?.[0] || "";
+                if (firstTel) {
+                    document.getElementById("prof-phone").value = firstTel;
+                }
+            } catch (_) {}
+        };
+
+        window.openPitchInfoModal = (pitchId) => {
+            const p = pitches.find(item => item.id === pitchId);
+            if (!p) return;
+            const navUrl = getAddressNavigationUrl(p);
+            const phone = p.phone || p.ownerPhone || "Belirtilmemiş";
+            const address = p.address || "Belirtilmemiş";
+
+            document.getElementById("pitch-info-title").textContent = p.name;
+            document.getElementById("pitch-info-body").innerHTML = `
+                <div><b>Telefon:</b> ${phone !== "Belirtilmemiş" ? `<a href="tel:${phone.replace(/\s+/g, "")}" onclick="handlePhoneAction(event, '${phone}')" class="text-emerald-600 dark:text-emerald-400 font-bold underline">${phone}</a> <span class="text-[10px] text-slate-400">(Ara & Kopyala)</span>` : phone}</div>
+                <div><b>Adres (Navigasyon):</b> <a href="${navUrl}" target="_blank" rel="noopener noreferrer" class="text-sky-600 dark:text-sky-400 font-semibold underline"><i class="fa-solid fa-diamond-turn-right mr-1"></i>${address}</a></div>
+            `;
+            document.getElementById("pitch-info-modal").classList.remove("hidden");
+        };
+
+        window.closePitchInfoModal = () => {
+            document.getElementById("pitch-info-modal").classList.add("hidden");
+        };
+
+        function requireAuthForAction(message = "Randevu oluşturmak için giriş yapmalısınız.") {
+            if (currentUser.isAuthenticated && currentUser.uid) return true;
+            openConfirmDialog({
+                title: "Giriş Gerekli",
+                html: `<div>${message}</div>`,
+                proceedText: "Giriş Yap",
+                onConfirm: () => goToLoginPage()
+            });
+            return false;
+        }
+
+        function renderPhoneHistoryUI() {
+            const box = document.getElementById("prof-phone-history-box");
+            const listEl = document.getElementById("prof-phone-history-list");
+            if (!box || !listEl) return;
+
+            const hist = Array.isArray(currentUser.phoneHistory) ? [...currentUser.phoneHistory] : [];
+            const items = [];
+            hist.forEach(h => {
+                if (typeof h === "string") {
+                    if (h) items.push(`<div>• ${h}</div>`);
+                } else if (h && h.value) {
+                    items.push(`<div>• <b>${h.value}</b> <span class="text-[10px] text-slate-400">(${formatTimeTR(h.changedAt)})</span></div>`);
+                }
+            });
+            if (items.length === 0 && currentUser.previousPhone) {
+                items.push(`<div>• <b>${currentUser.previousPhone}</b></div>`);
+            }
+
+            if (items.length > 0 && currentUser.isAuthenticated) {
+                listEl.innerHTML = items.join("");
+                box.classList.remove("hidden");
+            } else {
+                listEl.innerHTML = "";
+                box.classList.add("hidden");
+            }
+        }
+
+        function syncProfileUI() {
+            const isAuthed = Boolean(currentUser.isAuthenticated && currentUser.uid);
+            const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.name || "Uye")}&background=10b981&color=020617`;
+            const imgSrc = isAuthed ? (currentUser.photo || currentUser.googlePhoto || fallback) : fallback;
+
+            document.getElementById("header-avatar").src = imgSrc;
+            document.getElementById("menu-avatar").src = imgSrc;
+            document.getElementById("drawer-avatar-preview").src = imgSrc;
+            document.getElementById("header-name").textContent = isAuthed ? currentUser.name : "Giriş Yap";
+            document.getElementById("menu-name").textContent = currentUser.name;
+            document.getElementById("menu-email").textContent = isAuthed ? (currentUser.email || "") : "Giriş yapılmadı";
+            document.getElementById("drawer-profile-name").textContent = currentUser.name;
+
+            document.getElementById("prof-name").value = isAuthed ? (currentUser.name || "") : "";
+            document.getElementById("prof-phone").value = isAuthed ? (currentUser.phone || "") : "";
+            renderPhoneHistoryUI();
+
+            document.getElementById("guest-login-btn").classList.toggle("hidden", isAuthed);
+            document.getElementById("guest-login-banner").classList.toggle("hidden", isAuthed);
+
+            const authBtn = document.getElementById("dropdown-auth-btn");
+            if (isAuthed) {
+                authBtn.textContent = "Çıkış Yap";
+                authBtn.className = "w-full py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition";
+                authBtn.onclick = () => logout();
+            } else {
+                authBtn.textContent = "Giriş Yap";
+                authBtn.className = "w-full py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold transition";
+                authBtn.onclick = () => goToLoginPage();
+            }
+
+            const remMs = isAuthed ? getActiveCooldownRemainingMs() : 0;
+            const cdBanner = document.getElementById("cooldown-banner");
+            const cdText = document.getElementById("cooldown-banner-text");
+            if (remMs > 0) {
+                cdText.textContent = `2 saat içinde 2 iptal yaptığınız için ${formatRemainingDuration(remMs)} boyunca yeni rezervasyon yapamazsınız.`;
+                cdBanner.classList.remove("hidden");
+            } else {
+                cdBanner.classList.add("hidden");
+            }
+
+            document.getElementById("blocked-banner").classList.toggle("hidden", !isAuthed || !currentUser.blocked);
+        }
+
+        function updateNotifBadge() {
+            const badge = document.getElementById("user-notif-badge");
+            if (!badge) return;
+            const count = currentUser.isAuthenticated ? myNotifications.length : 0;
+            badge.textContent = String(count);
+            badge.classList.toggle("hidden", count === 0);
+        }
+
+        async function pushUserNotification(title, detail) {
+            if (!currentUser.isAuthenticated || !currentUser.uid) return;
+            const item = {
+                id: "unotif_" + Date.now() + "_" + Math.random().toString(36).slice(2, 5),
+                userId: currentUser.uid,
+                title,
+                detail,
+                createdAt: Date.now()
+            };
+            directNotifications = [item, ...directNotifications];
+            mergeAndRefreshNotifications();
+
+            try {
+                await setDoc(doc(db, "users", currentUser.uid, "notifications", item.id), item);
+            } catch (_) {}
+        }
+
+        window.clearMyNotifications = async () => {
+            if (!currentUser.isAuthenticated || !currentUser.uid) return;
+            const toDelete = [...myNotifications];
+            addDismissedNotifIds(currentUser.uid, toDelete.map(x => x.id));
+            directNotifications = [];
+            sharedNotifications = [];
+            myNotifications = [];
+            saveUserNotificationsForUid(currentUser.uid, []);
+            updateNotifBadge();
+            renderMyNotifications();
+
+            for (const item of toDelete) {
+                if (item.id) {
+                    try { await deleteDoc(doc(db, "users", currentUser.uid, "notifications", item.id)); } catch (_) {}
+                }
+            }
+        };
+
+        function resolvePitchOwnerId(pitchObj, bookingObj = null) {
+            const directId = (pitchObj?.ownerId || bookingObj?.ownerId || "").trim();
+            if (directId) return directId;
+            const ownerEmail = (pitchObj?.ownerEmail || bookingObj?.ownerEmail || "").trim().toLowerCase();
+            if (!ownerEmail) return "";
+            const pitchId = pitchObj?.id || bookingObj?.pitchId || "";
+            const sameOwnerPitch = pitches.find(p => p.ownerId && (p.ownerEmail || "").toLowerCase() === ownerEmail && (!pitchId || p.id === pitchId));
+            return sameOwnerPitch?.ownerId || "";
+        }
+
+        async function sendBookingEventNotifications({ type, title, detail, pitchObj, bookingObj, actionAt }) {
+            if (!currentUser.isAuthenticated || !currentUser.uid) return;
+            const ownerId = resolvePitchOwnerId(pitchObj, bookingObj);
+            const ownerEmail = (pitchObj?.ownerEmail || bookingObj?.ownerEmail || "").trim();
+
+            const payload = {
+                type,
+                title,
+                detail,
+                userId: currentUser.uid,
+                userName: currentUser.name,
+                userEmail: currentUser.email,
+                userPhone: currentUser.phone || "",
+                userPhoneHistory: currentUser.phoneHistory || [],
+                pitchId: pitchObj?.id || bookingObj?.pitchId || "",
+                pitchName: pitchObj?.name || bookingObj?.pitchName || "",
+                ownerId,
+                ownerEmail,
+                actionAt: actionAt || Date.now(),
+                createdAt: actionAt || Date.now()
+            };
+
+            try {
+                await addDoc(collection(db, "notifications"), payload);
+            } catch (_) {}
+
+            if (ownerId) {
+                try {
+                    const ownerNotifId = `onotif_${actionAt || Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+                    await setDoc(doc(db, "users", ownerId, "notifications", ownerNotifId), {
+                        ...payload,
+                        id: ownerNotifId,
+                        recipientRole: "manager"
+                    });
+                } catch (_) {}
+            }
+        }
+
+        function renderMyNotifications() {
+            const el = document.getElementById("my-notifications-list");
+            if (!el) return;
+            if (!currentUser.isAuthenticated || !currentUser.uid) {
+                el.innerHTML = `<div class="text-slate-500 text-center py-6 space-y-2"><div>Bildirimlerinizi görmek için giriş yapın.</div><button onclick="goToLoginPage()" class="px-3 py-1.5 rounded-xl bg-emerald-500 text-slate-950 font-extrabold text-xs">Giriş Yap</button></div>`;
+                return;
+            }
+            if (myNotifications.length === 0) {
+                el.innerHTML = `<div class="text-slate-500 text-center py-6">Bildirim yok.</div>`;
+                return;
+            }
+            el.innerHTML = myNotifications.map(n => `
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="font-bold">${n.title}</span>
+                        <span class="text-[10px] text-slate-400">${formatTimeTR(n.createdAt)}</span>
+                    </div>
+                    <div class="text-slate-500 mt-0.5">${n.detail}</div>
+                </div>
+            `).join("");
+        }
+
+        function getActiveSelectedBooking() {
+            if (!currentUser.isAuthenticated || !currentUser.uid) return null;
+            const mine = bookings.filter(b => b.userId === currentUser.uid);
+            if (!mine.length) return null;
+            if (selectedBookingId) {
+                const found = mine.find(b => b.id === selectedBookingId);
+                if (found) return found;
+            }
+            mine.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            return mine[0];
+        }
+
+        function renderSelectedBookingTicker() {
+            const ticker = document.getElementById("selected-booking-ticker");
+            const textEl = document.getElementById("selected-booking-ticker-text");
+            if (!ticker || !textEl) return;
+
+            const bk = getActiveSelectedBooking();
+            if (!bk) {
+                ticker.classList.add("hidden");
+                return;
+            }
+            const modeLabel = bk.bookingType === "weekly" ? "Haftalık" : "Tek seferlik";
+            const wd = WEEKDAY_NAMES_TR[getWeekdayIndexFromDate(bk.date)];
+            textEl.textContent = `Seçili Rezervasyon: ${bk.pitchName} • ${bk.date} (${wd}) • ${bk.hour} • ${modeLabel}`;
+            ticker.classList.remove("hidden");
+        }
+
+        window.selectBookingBanner = (bookingId) => {
+            selectedBookingId = bookingId;
+            renderSelectedBookingTicker();
+            renderProfileBookings();
+            saveUserPreferences(false);
+        };
+
+        window.scrollToSelectedBookingPitch = () => {
+            const bk = getActiveSelectedBooking();
+            if (!bk || !bk.pitchId) return;
+            const card = document.getElementById(`pitch-card-${bk.pitchId}`);
+            if (card) {
+                card.scrollIntoView({ behavior: "smooth", block: "center" });
+                card.classList.add("ring-2", "ring-emerald-500");
+                setTimeout(() => card.classList.remove("ring-2", "ring-emerald-500"), 1800);
+            }
+        };
+
+        function renderProfileBookings() {
+            const el = document.getElementById("profile-bookings-list");
+            if (!el) return;
+            if (!currentUser.isAuthenticated || !currentUser.uid) {
+                el.innerHTML = `<div class="text-slate-500">Giriş yapın.</div>`;
+                return;
+            }
+
+            const mine = bookings
+                .filter(b => b.userId === currentUser.uid)
+                .sort((a, b) => String(`${b.date || ""} ${b.hour || ""}`).localeCompare(String(`${a.date || ""} ${a.hour || ""}`)));
+
+            if (mine.length === 0) {
+                el.innerHTML = `<div class="text-slate-500">Rezervasyon yok.</div>`;
+                return;
+            }
+
+            const activeSel = getActiveSelectedBooking();
+            el.innerHTML = mine.map(b => {
+                const modeBadge = b.bookingType === "weekly" ? "Haftalık" : "Tek seferlik";
+                const isSelected = activeSel && activeSel.id === b.id;
+                return `
+                    <div onclick="selectBookingBanner('${b.id}')" class="cursor-pointer flex items-center justify-between bg-slate-50 dark:bg-slate-950 border ${isSelected ? "border-emerald-500" : "border-slate-200 dark:border-slate-800"} px-3 py-2.5 rounded-xl gap-2">
+                        <div>
+                            <div class="font-bold">${b.pitchName} ${isSelected ? '<span class="text-[10px] text-emerald-500 ml-1">(Üstyazıda)</span>' : ""}</div>
+                            <div class="text-[11px] text-slate-500">${b.date} • ${b.hour} • ${modeBadge}</div>
+                        </div>
+                        <button onclick="event.stopPropagation(); cancelSlot('${b.id}')" class="px-2.5 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold transition">
+                            İptal et
+                        </button>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        window.toggleCornerMenu = (e) => {
+            if (e) e.stopPropagation();
+            document.getElementById("corner-dropdown").classList.toggle("hidden");
+        };
+
+        document.addEventListener("click", (e) => {
+            const menu = document.getElementById("corner-dropdown");
+            const btn = document.getElementById("corner-menu-btn");
+            if (menu && !menu.contains(e.target) && btn && !btn.contains(e.target)) {
+                menu.classList.add("hidden");
+            }
+        });
+
+        window.openDrawerTab = (tab) => {
+            document.getElementById("corner-dropdown").classList.add("hidden");
+            if (!currentUser.isAuthenticated && tab !== "notifications") {
+                requireAuthForAction("Profil bilgilerini görüntülemek için giriş yapmalısınız.");
+                return;
+            }
+            document.getElementById("side-drawer-overlay").classList.remove("hidden");
+            document.getElementById("side-drawer").classList.remove("translate-x-full");
+            switchDrawerTab(tab);
+        };
+
+        window.closeSideDrawer = () => {
+            document.getElementById("side-drawer-overlay").classList.add("hidden");
+            document.getElementById("side-drawer").classList.add("translate-x-full");
+        };
+
+        window.switchDrawerTab = (tab) => {
+            const tabs = ["profile", "notifications"];
+            const titles = {
+                profile: "Profil Bilgileri",
+                notifications: "Bildirimler"
+            };
+            document.getElementById("drawer-title").textContent = titles[tab] || "Seçenekler";
+            tabs.forEach(t => {
+                document.getElementById(`tab-content-${t}`).classList.toggle("hidden", t !== tab);
+                const btn = document.getElementById(`tab-btn-${t}`);
+                btn.className = t === tab
+                    ? "px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold"
+                    : "px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 font-bold";
+            });
+            if (tab === "profile") renderProfileBookings();
+            if (tab === "notifications") renderMyNotifications();
+        };
+
+        window.openPhotoPreview = (src) => {
+            if (!src) return;
+            document.getElementById("photo-preview-content").innerHTML = `<img src="${src}" alt="" referrerpolicy="no-referrer" class="max-w-full max-h-[82vh] rounded-3xl shadow-2xl border-2 border-white/20 object-contain">`;
+            document.getElementById("photo-preview-modal").classList.remove("hidden");
+        };
+
+        window.closePhotoPreview = () => {
+            document.getElementById("photo-preview-modal").classList.add("hidden");
+        };
+
+        window.closeBookingTypeModal = () => {
+            document.getElementById("booking-type-modal").classList.add("hidden");
+        };
+
+        async function persistCurrentUserContinuously(extraFields = {}) {
+            if (!currentUser.isAuthenticated || !currentUser.uid) return;
+            try {
+                await setDoc(doc(db, "users", currentUser.uid), {
+                    uid: currentUser.uid,
+                    name: currentUser.name,
+                    email: currentUser.email,
+                    phone: currentUser.phone || "",
+                    previousPhone: currentUser.previousPhone || "",
+                    photo: currentUser.photo || "",
+                    googlePhoto: currentUser.googlePhoto || "",
+                    nameHistory: currentUser.nameHistory || [],
+                    emailHistory: currentUser.emailHistory || [],
+                    phoneHistory: currentUser.phoneHistory || [],
+                    cancelTimestamps: currentUser.cancelTimestamps || [],
+                    cancelCooldownUntil: Number(currentUser.cancelCooldownUntil || 0),
+                    pitchOrder: currentUser.pitchOrder || [],
+                    preferredWeekday: typeof currentUser.preferredWeekday === "number" ? currentUser.preferredWeekday : null,
+                    searchHistory,
+                    role: EXPECTED_ROLE,
+                    ...extraFields
+                }, { merge: true });
+            } catch (_) {}
+        }
+
+        window.handlePhotoUpload = async (e) => {
+            if (!requireAuthForAction("Profil fotoğrafını değiştirmek için giriş yapmalısınız.")) return;
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                const img = new Image();
+                img.onload = async () => {
+                    const canvas = document.createElement("canvas");
+                    const max = 300;
+                    const scale = Math.min(max / img.width, max / img.height, 1);
+                    canvas.width = img.width * scale;
+                    canvas.height = img.height * scale;
+                    canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+                    const dataUrl = canvas.toDataURL("image/jpeg", 0.82);
+                    currentUser.photo = dataUrl;
+                    syncProfileUI();
+                    await persistCurrentUserContinuously({ updatedAt: Date.now() });
+                    await pushUserNotification("Profil Fotoğrafı", "Yeni profil fotoğrafınız kaydedildi.");
+                };
+                img.src = reader.result;
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.useGooglePhoto = async () => {
+            if (!requireAuthForAction("Google fotoğrafını uygulamak için giriş yapmalısınız.")) return;
+            const gPhoto = currentUser.googlePhoto || (auth.currentUser && auth.currentUser.photoURL) || "";
+            if (!gPhoto) return;
+            currentUser.photo = gPhoto;
+            syncProfileUI();
+            await persistCurrentUserContinuously({ updatedAt: Date.now() });
+            await pushUserNotification("Profil Fotoğrafı", "Google profil fotoğrafınız uygulandı.");
+        };
+
+        function appendHistoryEntry(list, oldVal, newVal) {
+            const arr = Array.isArray(list) ? [...list] : [];
+            const prevClean = (oldVal || "").trim();
+            const nextClean = (newVal || "").trim();
+            if (prevClean && prevClean !== nextClean) {
+                const last = arr[arr.length - 1];
+                const lastVal = typeof last === "string" ? last : (last && last.value);
+                if (lastVal !== prevClean) {
+                    arr.push({ value: prevClean, changedAt: Date.now() });
+                }
+            }
+            return arr;
+        }
+
+        window.saveUserProfile = async (e) => {
+            e.preventDefault();
+            if (!requireAuthForAction("Profil bilgilerinizi kaydetmek için giriş yapmalısınız.")) return;
+
+            const prevName = currentUser.name || "";
+            const prevPhone = currentUser.phone || "";
+
+            const nextName = document.getElementById("prof-name").value.trim() || prevName;
+            const nextPhone = document.getElementById("prof-phone").value.trim();
+
+            const nameHistory = appendHistoryEntry(currentUser.nameHistory, prevName, nextName);
+            const phoneHistory = appendHistoryEntry(currentUser.phoneHistory, prevPhone, nextPhone);
+
+            currentUser.name = nextName;
+            currentUser.phone = nextPhone;
+            currentUser.previousPhone = (prevPhone && prevPhone !== nextPhone) ? prevPhone : (currentUser.previousPhone || "");
+            currentUser.nameHistory = nameHistory;
+            currentUser.phoneHistory = phoneHistory;
+
+            syncProfileUI();
+            await persistCurrentUserContinuously({
+                previousName: prevName !== nextName ? prevName : (currentUser.previousName || ""),
+                updatedAt: Date.now()
+            });
+
+            await pushUserNotification("Profil Güncellendi", `${currentUser.name} • ${currentUser.phone || "Telefon yok"}`);
+            closeSideDrawer();
+        };
+
+        function openConfirmDialog({ title, html, extraHtml = "", cancelText = "İptal", proceedText = "Onaylıyorum", onConfirm }) {
+            document.getElementById("confirm-title").textContent = title;
+            document.getElementById("confirm-body").innerHTML = html;
+            const extraBox = document.getElementById("confirm-extra-actions");
+            if (extraHtml) {
+                extraBox.innerHTML = extraHtml;
+                extraBox.classList.remove("hidden");
+            } else {
+                extraBox.innerHTML = "";
+                extraBox.classList.add("hidden");
+            }
+            const cancelBtn = document.getElementById("confirm-cancel-btn");
+            const proceedBtn = document.getElementById("confirm-proceed-btn");
+            cancelBtn.textContent = cancelText;
+            proceedBtn.textContent = proceedText;
+            proceedBtn.classList.toggle("hidden", !onConfirm);
+            pendingConfirmAction = onConfirm;
+            proceedBtn.onclick = async () => {
+                const fn = pendingConfirmAction;
+                closeConfirmDialog();
+                if (fn) await fn();
+            };
+            document.getElementById("confirm-dialog").classList.remove("hidden");
+        }
+
+        window.closeConfirmDialog = () => {
+            document.getElementById("confirm-dialog").classList.add("hidden");
+            document.getElementById("confirm-extra-actions").classList.add("hidden");
+            document.getElementById("confirm-extra-actions").innerHTML = "";
+            pendingConfirmAction = null;
+        };
+
+        function syncUserPitchOrderWith(pitchId) {
+            if (!pitchId) return;
+            const existingOrder = Array.isArray(currentUser.pitchOrder) ? currentUser.pitchOrder : [];
+            const allIds = pitches.map(p => p.id);
+            const merged = [pitchId, ...existingOrder.filter(id => id !== pitchId), ...allIds.filter(id => id !== pitchId)];
+            currentUser.pitchOrder = [...new Set(merged)];
+        }
+
+        async function createBookingRecord({ pitchId, pitchName, district, address, price, datesList, hoursList, bookingType }) {
+            if (!requireAuthForAction()) return;
+
+            const remMs = getActiveCooldownRemainingMs();
+            if (remMs > 0) {
+                syncProfileUI();
+                renderAll();
+                return;
+            }
+
+            const datesArr = Array.isArray(datesList) ? datesList : [datesList];
+            const hoursArr = Array.isArray(hoursList) ? hoursList : [hoursList];
+            const pitchObj = pitches.find(p => p.id === pitchId);
+            const ownerId = resolvePitchOwnerId(pitchObj);
+            const createdRecords = [];
+            const actionAt = Date.now();
+            const seriesId = `series_${pitchId}_${actionAt}_${Math.random().toString(36).slice(2, 6)}`;
+
+            for (const baseDate of datesArr) {
+                const targetDates = bookingType === "weekly" ? [0, 7, 14, 21].map(d => addDays(baseDate, d)) : [baseDate];
+                for (const h of hoursArr) {
+                    for (const dStr of targetDates) {
+                        const slotDocId = `${pitchId}_${dStr}_${h.replace(":", "")}`;
+                        if (bookings.some(b => b.id === slotDocId) || createdRecords.some(r => r.id === slotDocId)) continue;
+
+                        const record = {
+                            id: slotDocId,
+                            seriesId: bookingType === "weekly" ? seriesId : "",
+                            pitchId,
+                            ownerId,
+                            ownerEmail: pitchObj?.ownerEmail || "",
+                            pitchName,
+                            district,
+                            address: address || "",
+                            price,
+                            date: dStr,
+                            hour: h,
+                            bookingType,
+                            userId: currentUser.uid,
+                            userName: currentUser.name,
+                            userEmail: currentUser.email,
+                            userPhone: currentUser.phone || "",
+                            userPhoneHistory: currentUser.phoneHistory || [],
+                            createdAt: actionAt
+                        };
+                        createdRecords.push(record);
+                    }
+                }
+            }
+
+            if (createdRecords.length === 0) return;
+
+            syncUserPitchOrderWith(pitchId);
+            selectedBookingId = createdRecords[0].id;
+            bookings = [...createdRecords, ...bookings];
+            writeLocalList(BOOKINGS_STORAGE_KEY, bookings);
+            renderSelectedBookingTicker();
+            renderAll();
+            renderProfileBookings();
+
+            for (const rec of createdRecords) {
+                try {
+                    const slotRef = doc(db, "bookings", rec.id);
+                    await runTransaction(db, async (tx) => {
+                        const snap = await tx.get(slotRef);
+                        if (!snap.exists()) tx.set(slotRef, rec);
+                    });
+                } catch (_) {}
+            }
+
+            await saveUserPreferences(true);
+
+            const typeLabel = bookingType === "weekly" ? "Haftalık" : "Tek seferlik";
+            const timeStr = formatTimeTR(actionAt);
+            const summarySlots = createdRecords.slice(0, 3).map(r => `${r.date} ${r.hour}`).join(", ") + (createdRecords.length > 3 ? ` (+${createdRecords.length - 3})` : "");
+
+            await pushUserNotification("Rezervasyon Oluşturuldu", `${pitchName} • ${summarySlots} (${typeLabel})`);
+            await sendBookingEventNotifications({
+                type: "booking_created",
+                title: "Yeni Rezervasyon",
+                detail: `${currentUser.name} (Tel: ${currentUser.phone || "-"}) -> ${pitchName} | Randevular: ${summarySlots} (${typeLabel}) | Rezervasyon Saati: ${timeStr}`,
+                pitchObj,
+                bookingObj: createdRecords[0],
+                actionAt
+            });
+        }
+
+        function openBookingModalForSlots({ pitchId, pitchName, district, address, price, datesList, hoursList }) {
+            const datesArr = Array.isArray(datesList) ? datesList : [datesList];
+            const hoursArr = Array.isArray(hoursList) ? hoursList : [hoursList];
+
+            openConfirmDialog({
+                title: "Rezervasyon Bilgilendirme ve Onayı",
+                html: `
+                    <div class="font-bold text-slate-900 dark:text-slate-100">${pitchName} • ${datesArr.join(", ")} • ${hoursArr.join(", ")}</div>
+                    <div class="p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 font-medium">${BOOKING_POLICY_TEXT}</div>
+                `,
+                cancelText: "İptal",
+                proceedText: "Onaylıyorum",
+                onConfirm: () => {
+                    document.getElementById("booking-type-info").innerHTML = `
+                        <div><b>${pitchName}</b></div>
+                        <div>Tarihler: ${datesArr.map(d => formatDateWithWeekday(d)).join(", ")}</div>
+                        <div>Saatler: ${hoursArr.join(", ")}</div>
+                    `;
+                    document.getElementById("btn-single-booking").onclick = () => {
+                        closeBookingTypeModal();
+                        createBookingRecord({ pitchId, pitchName, district, address, price, datesList: datesArr, hoursList: hoursArr, bookingType: "single" });
+                    };
+                    document.getElementById("btn-weekly-booking").onclick = () => {
+                        closeBookingTypeModal();
+                        createBookingRecord({ pitchId, pitchName, district, address, price, datesList: datesArr, hoursList: hoursArr, bookingType: "weekly" });
+                    };
+                    document.getElementById("booking-type-modal").classList.remove("hidden");
+                }
+            });
+        }
+
+        window.openMultiSelectionBookingModal = () => {
+            if (!requireAuthForAction("Randevu oluşturmak için önce giriş yapmalısınız.")) return;
+            if (!currentUser || currentUser.blocked) return;
+
+            const activeDate = document.getElementById("match-date").value || getToday();
+            const datesArr = selectedDates.length > 0 ? selectedDates : [activeDate];
+            if (!selectedHours.length) return;
+
+            const targetPitch = getOrderedPitches(pitches)[0];
+            if (!targetPitch) return;
+
+            openBookingModalForSlots({
+                pitchId: targetPitch.id,
+                pitchName: targetPitch.name,
+                district: targetPitch.district,
+                address: targetPitch.address || "",
+                price: targetPitch.price || 0,
+                datesList: datesArr,
+                hoursList: selectedHours
+            });
+        };
+
+        window.rentSlot = (pitchId, pitchName, district, address, price, date, hour) => {
+            if (!requireAuthForAction("Randevu oluşturmak için önce giriş yapmalısınız.")) return;
+            if (!currentUser || currentUser.blocked) return;
+
+            const remMs = getActiveCooldownRemainingMs();
+            if (remMs > 0) {
+                syncProfileUI();
+                renderAll();
+                return;
+            }
+
+            const slotDocId = `${pitchId}_${date}_${hour.replace(":", "")}`;
+            if (bookings.some(b => b.id === slotDocId)) return;
+
+            const datesList = selectedDates.length > 1 && selectedDates.includes(date) ? selectedDates : [date];
+            const hoursList = selectedHours.length > 1 && selectedHours.includes(hour) ? selectedHours : [hour];
+
+            openBookingModalForSlots({ pitchId, pitchName, district, address, price, datesList, hoursList });
+        };
+
+        async function executeCancelBookings(targetsToCancel, bk) {
+            if (!targetsToCancel.length) return;
+            const now = Date.now();
+            const pitchObj = pitches.find(p => p.id === bk.pitchId);
+            const targetIds = new Set(targetsToCancel.map(item => item.id));
+
+            bookings = bookings.filter(b => !targetIds.has(b.id));
+            writeLocalList(BOOKINGS_STORAGE_KEY, bookings);
+
+            if (selectedBookingId && targetIds.has(selectedBookingId)) {
+                const remainingMine = bookings.filter(b => b.userId === currentUser.uid);
+                selectedBookingId = remainingMine[0]?.id || "";
+            }
+
+            const prevCancels = Array.isArray(currentUser.cancelTimestamps) ? currentUser.cancelTimestamps : [];
+            const recentCancels = prevCancels.filter(ts => (now - Number(ts)) <= CANCEL_WINDOW_MS);
+            recentCancels.push(now);
+
+            let nextCooldown = Number(currentUser.cancelCooldownUntil || 0);
+            let triggeredCooldown = false;
+            if (recentCancels.length >= CANCEL_LIMIT) {
+                nextCooldown = Math.max(nextCooldown, now + COOLDOWN_MS);
+                recentCancels.length = 0;
+                triggeredCooldown = true;
+            }
+
+            currentUser.cancelTimestamps = recentCancels;
+            currentUser.cancelCooldownUntil = nextCooldown;
+
+            syncProfileUI();
+            renderSelectedBookingTicker();
+            renderAll();
+            renderProfileBookings();
+            await saveUserPreferences(false);
+
+            for (const item of targetsToCancel) {
+                try { await deleteDoc(doc(db, "bookings", item.id)); } catch (_) {}
+            }
+            await persistCurrentUserContinuously({ lastCancelAt: now });
+
+            const cancelTimeStr = formatTimeTR(now);
+            const scopeSummary = targetsToCancel.length > 1
+                ? `${targetsToCancel.length} adet haftalık randevu (${bk.pitchName} • ${bk.hour})`
+                : `${bk.pitchName} • ${bk.date} • ${bk.hour}`;
+
+            await pushUserNotification(
+                "Rezervasyon İptal Edildi",
+                triggeredCooldown
+                    ? `${scopeSummary} (İptal Saati: ${cancelTimeStr}) — 2 saat içinde 2 iptal yapıldığı için 2 saat rezervasyon yasağı uygulandı.`
+                    : `${scopeSummary} (İptal Saati: ${cancelTimeStr})`
+            );
+
+            await sendBookingEventNotifications({
+                type: "booking_cancelled",
+                title: "Rezervasyon İptali",
+                detail: `${currentUser.name} (Tel: ${currentUser.phone || "-"}) -> ${scopeSummary} | İptal Saati: ${cancelTimeStr}${triggeredCooldown ? " | [2 Saat Rezervasyon Kısıtı Uygulandı]" : ""}`,
+                pitchObj,
+                bookingObj: bk,
+                actionAt: now
+            });
+        }
+
+        window.cancelSlot = (bookingId) => {
+            if (!requireAuthForAction()) return;
+            const bk = bookings.find(b => b.id === bookingId);
+            if (!bk) return;
+
+            const isWeekly = bk.bookingType === "weekly";
+            const continuingWeeklySlots = isWeekly
+                ? bookings.filter(item =>
+                    item.userId === bk.userId &&
+                    item.pitchId === bk.pitchId &&
+                    item.hour === bk.hour &&
+                    item.bookingType === "weekly" &&
+                    String(item.date) >= String(bk.date) &&
+                    (!bk.seriesId || item.seriesId === bk.seriesId)
+                )
+                : [];
+
+            if (isWeekly && continuingWeeklySlots.length > 1) {
+                openConfirmDialog({
+                    title: "Haftalık Rezervasyon İptali",
+                    html: `<div><b>${bk.pitchName}</b> • ${bk.date} • ${bk.hour} randevusu haftalık serinin bir parçası. Hangisini iptal etmek istersiniz?</div>`,
+                    extraHtml: `
+                        <button type="button" id="btn-cancel-only-this" class="w-full py-2.5 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs text-left">
+                            Sadece bu rezervasyonu iptal et (${bk.date} ${bk.hour})
+                        </button>
+                        <button type="button" id="btn-cancel-series-too" class="w-full py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs text-left">
+                            Devam eden haftalık rezervasyonları da iptal et (${continuingWeeklySlots.length} adet)
+                        </button>
+                    `,
+                    cancelText: "Vazgeç",
+                    proceedText: "",
+                    onConfirm: null
+                });
+
+                setTimeout(() => {
+                    const b1 = document.getElementById("btn-cancel-only-this");
+                    const b2 = document.getElementById("btn-cancel-series-too");
+                    if (b1) {
+                        b1.onclick = async () => {
+                            closeConfirmDialog();
+                            await executeCancelBookings([bk], bk);
+                        };
+                    }
+                    if (b2) {
+                        b2.onclick = async () => {
+                            closeConfirmDialog();
+                            await executeCancelBookings(continuingWeeklySlots, bk);
+                        };
+                    }
+                }, 0);
+                return;
+            }
+
+            openConfirmDialog({
+                title: "Rezervasyonu İptal et",
+                html: `<div><b>${bk.pitchName}</b> • ${bk.date} • ${bk.hour} (${isWeekly ? "Haftalık" : "Tek seferlik"}) randevusunu iptal etmek istiyor musunuz?</div>`,
+                cancelText: "Vazgeç",
+                proceedText: "İptal et",
+                onConfirm: async () => {
+                    await executeCancelBookings([bk], bk);
+                }
+            });
+        };
+
+        function getOrderedPitches(list) {
+            const arr = [...list];
+            const userBookings = currentUser.isAuthenticated && currentUser.uid
+                ? bookings.filter(b => b.userId === currentUser.uid)
+                : bookings;
+
+            const now = new Date();
+            const todayStr = getToday();
+            const nowHm = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+            const currentActivePitchIds = new Set(
+                userBookings
+                    .filter(b => String(b.date) === todayStr && String(b.hour || "").slice(0, 5) >= nowHm)
+                    .map(b => b.pitchId)
+            );
+
+            const latestBookingTimeByPitch = {};
+            userBookings.forEach(b => {
+                const stamp = Math.max(Number(b.createdAt || 0), new Date(`${b.date || todayStr}T${(b.hour || "00:00").slice(0, 5)}:00`).getTime() || 0);
+                if (!latestBookingTimeByPitch[b.pitchId] || stamp > latestBookingTimeByPitch[b.pitchId]) {
+                    latestBookingTimeByPitch[b.pitchId] = stamp;
+                }
+            });
+
+            const orderMap = new Map();
+            (Array.isArray(currentUser.pitchOrder) ? currentUser.pitchOrder : []).forEach((id, idx) => {
+                orderMap.set(id, idx);
+            });
+
+            arr.sort((a, b) => {
+                const aHasNow = currentActivePitchIds.has(a.id) ? 1 : 0;
+                const bHasNow = currentActivePitchIds.has(b.id) ? 1 : 0;
+                if (aHasNow !== bHasNow) return bHasNow - aHasNow;
+
+                const aLatest = latestBookingTimeByPitch[a.id] || 0;
+                const bLatest = latestBookingTimeByPitch[b.id] || 0;
+                if (aLatest !== bLatest) return bLatest - aLatest;
+
+                const aOrder = orderMap.has(a.id) ? orderMap.get(a.id) : 9999;
+                const bOrder = orderMap.has(b.id) ? orderMap.get(b.id) : 9999;
+                if (aOrder !== bOrder) return aOrder - bOrder;
+
+                return String(a.name || "").localeCompare(String(b.name || ""), "tr");
+            });
+
+            return arr;
+        }
+
+        window.renderAll = () => {
+            const date = document.getElementById("match-date").value || getToday();
+            const district = document.getElementById("filter-district").value;
+            const search = document.getElementById("filter-search").value.trim().toLowerCase();
+            const sortMode = document.getElementById("filter-sort").value;
+            const isAuthed = Boolean(currentUser.isAuthenticated && currentUser.uid);
+            const isBlocked = Boolean(isAuthed && currentUser.blocked);
+            const remMs = isAuthed ? getActiveCooldownRemainingMs() : 0;
+            const isCooldown = remMs > 0;
+
+            let filtered = pitches.filter(p => {
+                const okDist = !district || p.district === district;
+                const okSearch = !search ||
+                    (p.name || "").toLowerCase().includes(search) ||
+                    (p.address || "").toLowerCase().includes(search) ||
+                    (p.district || "").toLowerCase().includes(search);
+                return okDist && okSearch;
+            });
+
+            if (sortMode === "price_asc") {
+                filtered.sort((a, b) => (a.price || 0) - (b.price || 0));
+            } else if (sortMode === "price_desc") {
+                filtered.sort((a, b) => (b.price || 0) - (a.price || 0));
+            } else {
+                filtered = getOrderedPitches(filtered);
+            }
+
+            const listEl = document.getElementById("pitches-list");
+            if (filtered.length === 0) {
+                listEl.innerHTML = `<div class="col-span-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 text-center text-xs text-slate-500">Saha bulunamadı.</div>`;
+            } else {
+                listEl.innerHTML = filtered.map(p => {
+                    const pHours = p.hours && p.hours.length ? p.hours : DEFAULT_HOURS;
+                    const buttons = pHours.map(h => {
+                        const slotId = `${p.id}_${date}_${h.replace(":", "")}`;
+                        const taken = bookings.find(b => b.id === slotId);
+                        const isHourPicked = selectedHours.includes(h);
+
+                        if (taken) {
+                            const isMine = isAuthed && taken.userId === currentUser.uid;
+                            const typeText = taken.bookingType === "weekly" ? "Haftalık" : "Tek seferlik";
+                            if (isMine && !isBlocked) {
+                                return `<button onclick="cancelSlot('${taken.id}')" class="h-12 w-full rounded-xl bg-emerald-500 hover:bg-emerald-400 border border-emerald-600 text-slate-950 text-xs font-extrabold flex flex-col items-center justify-center leading-tight transition"><span>${h} • ${typeText}</span><span class="text-[10px]">İptal et</span></button>`;
+                            }
+                            return `<button disabled class="h-12 w-full rounded-xl bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-500 text-xs font-bold flex flex-col items-center justify-center leading-tight cursor-not-allowed"><span>${h}</span><span class="text-[10px] font-normal">Dolu (${typeText})</span></button>`;
+                        }
+
+                        if (!isAuthed) {
+                            return `<button onclick="goToLoginPage()" class="h-12 w-full rounded-xl bg-white hover:bg-slate-100 text-slate-900 border border-slate-300 text-xs font-bold flex flex-col items-center justify-center leading-tight transition"><span>${h}</span><span class="text-[10px] font-semibold text-slate-500">Giriş Yap</span></button>`;
+                        }
+
+                        if (isBlocked || isCooldown) {
+                            return `<button disabled class="h-12 w-full rounded-xl bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-400 text-xs font-bold flex flex-col items-center justify-center leading-tight cursor-not-allowed"><span>${h}</span><span class="text-[10px] font-normal">${isCooldown ? "Kısıtlı" : ""}</span></button>`;
+                        }
+
+                        const pickedCls = isHourPicked
+                            ? "bg-sky-500 hover:bg-sky-400 text-slate-950 border-sky-600"
+                            : "bg-white hover:bg-slate-100 text-slate-900 border-slate-300";
+
+                        return `<button onclick="rentSlot('${p.id}', '${p.name.replace(/'/g, "")}', '${p.district}', '${(p.address || "").replace(/'/g, "")}', ${p.price || 0}, '${date}', '${h}')" class="h-12 w-full rounded-xl ${pickedCls} border text-xs font-bold flex flex-col items-center justify-center leading-tight transition"><span>${h}</span>${isHourPicked ? `<span class="text-[9px] font-extrabold">Seçili</span>` : ""}</button>`;
+                    }).join("");
+
+                    const navUrl = getAddressNavigationUrl(p);
+                    const phone = p.phone || p.ownerPhone || "";
+
+                    return `
+                        <div id="pitch-card-${p.id}" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden space-y-3 pb-4 transition">
+                            ${renderPitchVisualHtml(p, false)}
+                            <div class="px-4 space-y-2">
+                                <div class="flex items-start justify-between gap-2">
+                                    <div>
+                                        <h3 class="font-extrabold text-base">${p.name}</h3>
+                                        <p class="text-xs text-slate-500">${p.district} • <span class="font-extrabold text-emerald-600 dark:text-emerald-400">${Number(p.price || 0).toLocaleString("tr-TR")} ₺</span></p>
+                                    </div>
+                                    <button onclick="openPitchInfoModal('${p.id}')" class="px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-[11px] font-bold shrink-0">
+                                        Saha Bilgileri
+                                    </button>
+                                </div>
+                                ${phone ? `<div class="text-xs text-slate-600 dark:text-slate-300"><i class="fa-solid fa-phone mr-1.5 text-emerald-500"></i><a href="tel:${phone.replace(/\s+/g, "")}" onclick="handlePhoneAction(event, '${phone}')" class="hover:underline font-medium">${phone}</a></div>` : ""}
+                                ${p.address ? `<div class="text-xs text-slate-500"><a href="${navUrl}" target="_blank" rel="noopener noreferrer" class="hover:text-emerald-600 dark:hover:text-emerald-400 hover:underline"><i class="fa-solid fa-location-dot mr-1.5 text-rose-500"></i>${p.address}</a></div>` : ""}
+                                <div class="pt-1 flex items-center justify-between gap-2 flex-wrap">
+                                    <a href="${navUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-[11px] font-bold text-sky-600 dark:text-sky-400 hover:underline"><i class="fa-solid fa-diamond-turn-right"></i>Adrese Navigasyon</a>
+                                    <div class="flex items-center gap-1 flex-wrap">
+                                        ${pHours.map(hr => `<button type="button" onclick="toggleSelectedHour('${hr}')" class="px-1.5 py-0.5 rounded text-[10px] font-bold ${selectedHours.includes(hr) ? "bg-sky-500 text-slate-950" : "bg-slate-100 dark:bg-slate-800 text-slate-500"}">${hr}</button>`).join("")}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="px-4 grid grid-cols-4 gap-2">${buttons}</div>
+                        </div>
+                    `;
+                }).join("");
+            }
+
+            renderSelectedBookingTicker();
+            renderProfileBookings();
+        };
+
+        async function loadMemberUser(user) {
+            try {
+                const delSnap = await getDoc(doc(db, "deleted_sessions", user.uid));
+                if (delSnap.exists()) {
+                    await forceLogoutAccount("top_oyna_account_deleted", "1");
+                    return;
+                }
+            } catch (_) {}
+
+            const googleInfo = Array.isArray(user.providerData)
+                ? user.providerData.find(p => p && p.providerId === "google.com")
+                : null;
+            const gPhoto = (googleInfo && googleInfo.photoURL) || user.photoURL || "";
+            const name = (googleInfo && googleInfo.displayName) || user.displayName || (user.email || "Üye").split("@")[0];
+            const email = (googleInfo && googleInfo.email) || user.email || "";
+
+            let existing = {};
+            try {
+                const snap = await getDoc(doc(db, "users", user.uid));
+                if (snap.exists()) existing = snap.data();
+            } catch (_) {}
+
+            if (existing.deleted === true) {
+                await forceLogoutAccount("top_oyna_account_deleted", "1");
+                return;
+            }
+            if (existing.blocked === true) {
+                await forceLogoutAccount("top_oyna_account_blocked", "1");
+                return;
+            }
+            if (existing.role && existing.role !== EXPECTED_ROLE) {
+                await forceLogoutAccount("top_oyna_role_changed", existing.role);
+                return;
+            }
+
+            const prevEmail = existing.email || "";
+            const emailHistory = appendHistoryEntry(existing.emailHistory, prevEmail, email);
+            const phoneHistory = Array.isArray(existing.phoneHistory)
+                ? existing.phoneHistory
+                : (existing.previousPhone ? [{ value: existing.previousPhone, changedAt: existing.updatedAt || Date.now() }] : []);
+
+            currentUser = {
+                uid: user.uid,
+                isAuthenticated: true,
+                name: existing.name || name,
+                email,
+                phone: existing.phone || "",
+                previousPhone: existing.previousPhone || "",
+                photo: existing.photo || gPhoto || "",
+                googlePhoto: gPhoto,
+                blocked: existing.blocked === true,
+                nameHistory: Array.isArray(existing.nameHistory) ? existing.nameHistory : [],
+                emailHistory,
+                phoneHistory,
+                cancelTimestamps: Array.isArray(existing.cancelTimestamps) ? existing.cancelTimestamps : [],
+                cancelCooldownUntil: Number(existing.cancelCooldownUntil || 0),
+                pitchOrder: Array.isArray(existing.pitchOrder) ? existing.pitchOrder : [],
+                preferredWeekday: typeof existing.preferredWeekday === "number" ? existing.preferredWeekday : null
+            };
+
+            loadUserPreferences(user.uid);
+            await persistCurrentUserContinuously({
+                previousEmail: prevEmail && prevEmail !== email ? prevEmail : (existing.previousEmail || ""),
+                lastLoginAt: Date.now()
+            });
+
+            loadUserNotificationsForUid(user.uid);
+            watchCurrentUserRealtime(user.uid, email);
+            syncProfileUI();
+            renderAll();
+        }
+
+        loadUserPreferences("");
+
+        setInterval(() => {
+            if (currentUser.isAuthenticated && currentUser.uid) {
+                syncProfileUI();
+                renderAll();
+            }
+        }, 30000);
+
+        onAuthStateChanged(auth, async (user) => {
+            if (isForcingLogout) return;
+            if (user) {
+                await loadMemberUser(user);
+            } else {
+                cleanupUserListeners();
+                currentUser = createGuestUser();
+                loadUserPreferences("");
+                loadUserNotificationsForUid("");
+                syncProfileUI();
+                renderAll();
+            }
+            updateNotifBadge();
+
+            onSnapshot(collection(db, "pitches"), (snap) => {
+                if (!snap.empty) {
+                    pitches = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    writeLocalList(PITCHES_STORAGE_KEY, pitches);
+                    renderAll();
+                }
+            }, () => {});
+
+            onSnapshot(collection(db, "bookings"), (snap) => {
+                bookings = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                writeLocalList(BOOKINGS_STORAGE_KEY, bookings);
+                renderAll();
+                renderProfileBookings();
+            }, () => {});
+        });
+
+        window.logout = async () => {
+            cleanupUserListeners();
+            currentUser = createGuestUser();
+            loadUserNotificationsForUid("");
+            try { await signOut(auth); } catch (_) {}
+            window.location.replace(LOGIN_PAGE);
+        };
+    </script>
+</body>
+</html>
