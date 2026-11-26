@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hangi Saha - Saha Sahibi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'media'
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        html { scroll-behavior: smooth; }
+        body { transition: background-color 0.2s, color 0.2s; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen">
+
+    <!-- YETKİ DOĞRULAMA EKRANI -->
+    <div id="manager-guard-screen" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 text-center space-y-3 shadow-2xl">
+            <div class="w-11 h-11 mx-auto rounded-2xl bg-sky-500/15 text-sky-500 flex items-center justify-center text-lg">
+                <i class="fa-solid fa-store"></i>
+            </div>
+            <h2 id="manager-guard-title" class="text-sm font-extrabold">İşletme Yetkisi Doğrulanıyor</h2>
+            <p id="manager-guard-message" class="text-xs text-slate-500 leading-relaxed">
+                Saha sahibi yetkileriniz kontrol ediliyor.
+            </p>
+        </div>
+    </div>
+
+    <!-- ÜST BAR -->
+    <header class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
+            <a href="#top" onclick="resetHomeView(event)" class="flex items-center gap-2.5 group">
+                <div class="w-8 h-8 rounded-xl bg-emerald-500 flex items-center justify-center text-slate-950 font-black text-sm shadow-sm group-hover:scale-105 transition">
+                    <i class="fa-solid fa-futbol"></i>
+                </div>
+                <span class="text-lg font-extrabold tracking-tight text-emerald-600 dark:text-emerald-400">HANGİ SAHA</span>
+                <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-300 border border-sky-500/30">Saha Sahibi</span>
+            </a>
+
+            <div class="flex items-center gap-2 relative">
+                <button onclick="openDrawerTab('notifications')" class="relative px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-xs font-bold flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-bell text-amber-500"></i>
+                    <span class="hidden sm:inline">Bildirimler</span>
+                    <span id="manager-notif-badge" class="hidden min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[10px] font-extrabold flex items-center justify-center">0</span>
+                </button>
+
+                <button id="corner-menu-btn" onclick="toggleCornerMenu(event)" class="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition">
+                    <img id="header-avatar" src="https://ui-avatars.com/api/?name=Isletme&background=0ea5e9&color=020617" alt="" referrerpolicy="no-referrer" class="w-7 h-7 rounded-full object-cover border border-sky-500">
+                    <span id="header-name" class="text-xs font-bold max-w-[110px] truncate hidden sm:inline">Saha Sahibi</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-500 dark:text-slate-400"></i>
+                </button>
+
+                <div id="corner-dropdown" class="hidden absolute right-0 top-12 w-72 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-3 space-y-2 z-50">
+                    <div class="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 dark:bg-slate-950/60">
+                        <img id="menu-avatar" onclick="openPhotoPreview(this.src)" src="https://ui-avatars.com/api/?name=Isletme&background=0ea5e9&color=020617" alt="" referrerpolicy="no-referrer" class="w-10 h-10 rounded-full object-cover border border-sky-500 cursor-pointer hover:opacity-85 transition">
+                        <div class="min-w-0">
+                            <div id="menu-name" class="text-xs font-bold truncate">Saha Sahibi</div>
+                            <div id="menu-email" class="text-[11px] text-slate-500 truncate"></div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1 pt-1">
+                        <button onclick="openDrawerTab('profile')" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                            <span class="flex items-center gap-2.5"><i class="fa-solid fa-user-pen text-emerald-500 w-4"></i> <span>Profil Bilgileri</span></span>
+                            <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
+                        </button>
+
+                        <button onclick="openDrawerTab('my_pitches')" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                            <span class="flex items-center gap-2.5"><i class="fa-solid fa-futbol text-sky-500 w-4"></i> <span>Sahalarım</span></span>
+                            <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
+                        </button>
+
+                        <button onclick="openDrawerTab('bookings_manage')" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                            <span class="flex items-center gap-2.5"><i class="fa-solid fa-calendar-check text-rose-500 w-4"></i> <span>Rezervasyonlar</span></span>
+                            <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
+                        </button>
+                    </div>
+
+                    <div class="border-t border-slate-200 dark:border-slate-800 pt-2">
+                        <button onclick="logout()" class="w-full py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition">Çıkış Yap</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ANA SAYFA İÇERİĞİ -->
+    <main id="top" class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+
+        <!-- FİLTRELEME -->
+        <section class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-500 mb-1">Tarih</label>
+                <input type="date" id="match-date" onchange="renderAll()" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs outline-none focus:border-emerald-500">
+            </div>
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-500 mb-1">Saha Ara</label>
+                <input type="text" id="filter-search" oninput="renderAll()" placeholder="Saha veya adres ara..." class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs outline-none focus:border-emerald-500">
+            </div>
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-500 mb-1">Sıralama</label>
+                <select id="filter-sort" onchange="renderAll()" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs outline-none focus:border-emerald-500">
+                    <option value="default">Varsayılan</option>
+                    <option value="price_asc">Ücret: Artan</option>
+                    <option value="price_desc">Ücret: Azalan</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- İŞLETMEYE AİT SAHALAR -->
+        <div id="pitches-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </main>
+
+    <!-- YAN ÇEKMECE -->
+    <div id="side-drawer-overlay" onclick="closeSideDrawer()" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs"></div>
+    <aside id="side-drawer" class="fixed top-0 right-0 z-50 h-full w-full max-w-lg bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl transform translate-x-full transition-transform duration-200 flex flex-col">
+        <div class="px-5 h-16 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <h3 id="drawer-title" class="text-sm font-extrabold">Profil Bilgileri</h3>
+            <button onclick="closeSideDrawer()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-xs">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="px-5 py-2.5 border-b border-slate-200 dark:border-slate-800 flex items-center gap-1.5 overflow-x-auto text-xs font-bold">
+            <button id="tab-btn-profile" onclick="switchDrawerTab('profile')" class="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 shrink-0">Profil</button>
+            <button id="tab-btn-my_pitches" onclick="switchDrawerTab('my_pitches')" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 shrink-0">Sahalarım</button>
+            <button id="tab-btn-bookings_manage" onclick="switchDrawerTab('bookings_manage')" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 shrink-0">Rezervasyonlar</button>
+            <button id="tab-btn-notifications" onclick="switchDrawerTab('notifications')" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 shrink-0">Bildirimler</button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-5 space-y-5 text-xs">
+
+            <!-- PROFİL -->
+            <div id="tab-content-profile" class="space-y-4">
+                <div class="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                    <img id="drawer-avatar-preview" onclick="openPhotoPreview(this.src)" src="" alt="" referrerpolicy="no-referrer" class="w-14 h-14 rounded-full object-cover border-2 border-sky-500 cursor-pointer hover:opacity-85 transition">
+                    <div class="space-y-2 flex-1">
+                        <div class="font-bold text-sm" id="drawer-profile-name">Saha Sahibi</div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <label class="cursor-pointer px-2.5 py-1.5 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 font-bold hover:bg-emerald-500/25 transition">
+                                <i class="fa-solid fa-camera mr-1"></i> Fotoğraf Seç
+                                <input type="file" accept="image/*" onchange="handlePhotoUpload(event)" class="hidden">
+                            </label>
+                            <button type="button" onclick="useGooglePhoto()" class="px-2.5 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 font-bold hover:opacity-80 transition">
+                                <i class="fa-brands fa-google mr-1"></i> Google Fotoğrafı
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <form onsubmit="saveManagerProfile(event)" class="space-y-3">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-500 mb-1">Ad Soyad / İşletme Adı</label>
+                        <input type="text" id="prof-name" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-500 mb-1">Telefon</label>
+                        <input type="tel" id="prof-phone" placeholder="05XX XXX XX XX" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:border-emerald-500">
+                    </div>
+                    <button type="submit" class="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold transition">
+                        Kaydet
+                    </button>
+                </form>
+            </div>
+
+            <!-- SAHALARIM -->
+            <div id="tab-content-my_pitches" class="hidden space-y-4">
+                <form onsubmit="saveOwnedPitch(event)" class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2.5">
+                    <div class="font-bold" id="owned-pitch-form-title">Yeni Saha Ekle</div>
+                    <input type="hidden" id="edit-pitch-id">
+                    <input type="hidden" id="edit-pitch-photo">
+                    <input type="text" id="pitch-name" required placeholder="Saha Adı" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                    <div class="grid grid-cols-2 gap-2">
+                        <select id="pitch-district" class="px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                            <option value="Selçuklu">Selçuklu</option>
+                            <option value="Meram">Meram</option>
+                            <option value="Karatay">Karatay</option>
+                        </select>
+                        <input type="number" id="pitch-price" required placeholder="Ücret (₺)" class="px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                    </div>
+                    <input type="text" id="pitch-phone" placeholder="Saha Telefonu (05XX XXX XX XX)" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                    <input type="text" id="pitch-address" placeholder="Adres" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" id="pitch-lat" placeholder="Enlem (örn. 38.0185)" class="px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                        <input type="text" id="pitch-lng" placeholder="Boylam (örn. 32.5152)" class="px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                    </div>
+                    <div class="flex items-center justify-between gap-2 pt-1">
+                        <label class="cursor-pointer px-3 py-1.5 rounded-lg bg-sky-500/15 text-sky-600 dark:text-sky-300 font-bold text-[11px]">
+                            <i class="fa-solid fa-image mr-1"></i> Fotoğraf Seç / Değiştir
+                            <input type="file" accept="image/*" onchange="handleFormPitchPhotoUpload(event)" class="hidden">
+                        </label>
+                        <span id="form-pitch-photo-status" class="text-[10px] text-slate-400">Fotoğraf seçilmedi</span>
+                    </div>
+                    <input type="text" id="pitch-hours" value="16:00, 17:00, 18:00, 19:00, 20:00, 21:00, 22:00, 23:00" placeholder="Saatler (virgülle ayırın)" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                    <div class="flex items-center gap-2">
+                        <button type="submit" class="flex-1 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold">Kaydet</button>
+                        <button type="button" onclick="resetOwnedPitchForm()" class="px-3 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 font-bold">Temizle</button>
+                    </div>
+                </form>
+
+                <div id="owned-pitches-list" class="space-y-2"></div>
+            </div>
+
+            <!-- REZERVASYONLAR -->
+            <div id="tab-content-bookings_manage" class="hidden space-y-3">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="font-extrabold uppercase tracking-wider text-[11px] text-slate-500">Sahalarımın Rezervasyonları</span>
+                    <span id="manager-bookings-count" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-300">0</span>
+                </div>
+                <input type="text" id="booking-search" oninput="renderBookingsList()" placeholder="Saha, üye adı, telefon veya tarih ara..." class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:border-emerald-500">
+                <div id="bookings-list" class="space-y-2"></div>
+            </div>
+
+            <!-- BİLDİRİMLER -->
+            <div id="tab-content-notifications" class="hidden space-y-2.5">
+                <div class="flex items-center justify-between">
+                    <span class="font-extrabold uppercase tracking-wider text-[11px] text-slate-500">Saha Bildirimleri</span>
+                    <button onclick="clearManagerNotifications()" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-rose-500/15 hover:text-rose-500 text-[11px] font-bold transition">
+                        Temizle
+                    </button>
+                </div>
+                <div id="manager-notifications-list" class="space-y-2"></div>
+            </div>
+
+        </div>
+    </aside>
+
+    <!-- TAM EKRAN ORİJİNAL FOTOĞRAF ÖNİZLEME -->
+    <div id="photo-preview-modal" onclick="closePhotoPreview()" class="hidden fixed inset-0 z-60 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
+        <button type="button" onclick="closePhotoPreview()" class="fixed top-4 right-4 z-70 w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center text-base transition">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <img id="photo-preview-img" onclick="event.stopPropagation()" src="" alt="" referrerpolicy="no-referrer" class="max-w-[95vw] max-h-[92vh] w-auto h-auto rounded-2xl shadow-2xl object-contain">
+    </div>
+
+    <!-- RANDEVU DETAY & İPTAL PENCERESİ -->
+    <div id="slot-detail-modal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 space-y-4 shadow-2xl">
+            <h3 id="slot-detail-title" class="text-sm font-extrabold">Randevu Detayı</h3>
+            <div id="slot-detail-body" class="text-xs text-slate-600 dark:text-slate-300 space-y-1.5 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800"></div>
+            <div id="slot-detail-actions" class="flex items-center justify-end gap-2"></div>
+        </div>
+    </div>
+
+    <!-- REZERVASYON TÜRÜ SEÇİM PENCERESİ (HAFTALIK / TEK SEFERLİK) -->
+    <div id="booking-type-modal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 space-y-4 shadow-2xl">
+            <h3 class="text-sm font-extrabold">Rezervasyon Seçeneği</h3>
+            <div id="booking-type-info" class="text-xs text-slate-500 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800"></div>
+            <div class="grid grid-cols-2 gap-2.5">
+                <button id="btn-single-booking" class="py-2.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs transition">
+                    Tek seferlik
+                </button>
+                <button id="btn-weekly-booking" class="py-2.5 px-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-extrabold text-xs transition">
+                    Haftalık
+                </button>
+            </div>
+            <button onclick="closeBookingTypeModal()" class="w-full py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold text-xs">
+                Vazgeç
+            </button>
+        </div>
+    </div>
+
+    <!-- GENEL TEYİT PENCERESİ -->
+    <div id="confirm-dialog" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 space-y-4 shadow-2xl">
+            <h3 id="confirm-title" class="text-sm font-extrabold">Onay</h3>
+            <div id="confirm-body" class="text-xs text-slate-600 dark:text-slate-300 space-y-1.5 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800"></div>
+            <div class="flex items-center justify-end gap-2">
+                <button onclick="closeConfirmDialog()" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold text-xs">
+                    Vazgeç
+                </button>
+                <button id="confirm-proceed-btn" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs">
+                    Onayla
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import {
+            getFirestore,
+            collection,
+            doc,
+            setDoc,
+            getDoc,
+            updateDoc,
+            deleteDoc,
+            addDoc,
+            onSnapshot,
+            runTransaction
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const DEFAULT_HOURS = ["16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"];
+        const LOGIN_PAGE = "index.html";
+        const FOUNDER_EMAIL = "eyupensarus@gmail.com";
+        const ALLOWED_MANAGERS_COLLECTION = "allowed_managers";
+        const PITCHES_STORAGE_KEY = "hangi_saha_manager_pitches_v1";
+        const BOOKINGS_STORAGE_KEY = "hangi_saha_manager_bookings_v1";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB1-9hGJqxAwfGhLMDAdlkG9PcuojxP0ag",
+            authDomain: "hangi-saha.firebaseapp.com",
+            projectId: "hangi-saha",
+            storageBucket: "hangi-saha.firebasestorage.app",
+            messagingSenderId: "155728012356",
+            appId: "1:155728012356:web:3b04ae7d8bd6f0f607c811",
+            measurementId: "G-STXB4852BF"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = {
+            uid: "",
+            name: "Saha Sahibi",
+            email: "",
+            phone: "",
+            photo: "",
+            originalPhoto: "",
+            googlePhoto: "",
+            customPhoto: false,
+            isManager: false
+        };
+
+        let allPitches = [];
+        let ownedPitches = [];
+        let allBookings = [];
+        let bookings = [];
+        let users = [];
+        let notifications = [];
+        let pendingConfirmAction = null;
+        let unsubscribers = [];
+        let isForcingManagerLogout = false;
+
+        function setManagerGuard(visible, title = "İşletme Yetkisi Doğrulanıyor", message = "") {
+            const el = document.getElementById("manager-guard-screen");
+            if (!el) return;
+            document.getElementById("manager-guard-title").textContent = title;
+            if (message) document.getElementById("manager-guard-message").textContent = message;
+            el.classList.toggle("hidden", !visible);
+        }
+
+        function cleanupAllListeners() {
+            unsubscribers.forEach(fn => {
+                try { fn(); } catch (_) {}
+            });
+            unsubscribers = [];
+        }
+
+        function getToday() {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+        }
+
+        function addDays(dateStr, days) {
+            const parts = String(dateStr).split("-").map(Number);
+            const dt = new Date(parts[0], (parts[1] || 1) - 1, parts[2] || 1);
+            dt.setDate(dt.getDate() + days);
+            return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
+        }
+
+        function formatTimeTR(ts) {
+            if (!ts) return "-";
+            return new Date(ts).toLocaleString("tr-TR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+        }
+
+        function getHighResGooglePhotoUrl(url) {
+            const raw = String(url || "").trim();
+            if (!raw) return "";
+            if (raw.includes("googleusercontent.com")) {
+                return raw.replace(/=s\d+(-c)?/g, "=s1024");
+            }
+            return raw;
+        }
+
+        function readLocalList(key, fallback = []) {
+            try {
+                const raw = localStorage.getItem(key);
+                return raw ? JSON.parse(raw) : fallback;
+            } catch (_) {
+                return fallback;
+            }
+        }
+
+        function writeLocalList(key, list) {
+            try {
+                localStorage.setItem(key, JSON.stringify(list));
+            } catch (_) {}
+        }
+
+        function getUserPhoto(u) {
+            if (!u) return `https://ui-avatars.com/api/?name=Uye&size=512&background=10b981&color=020617`;
+            return u.photo || u.googlePhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name || "Uye")}&size=512&background=10b981&color=020617`;
+        }
+
+        function getOriginalUserPhoto(u) {
+            if (!u) return "";
+            return getHighResGooglePhotoUrl(u.originalPhoto || u.photo || u.googlePhoto || "");
+        }
+
+        function getPitchPhoto(p) {
+            return p?.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(p?.name || "Saha")}&size=1024&background=0f172a&color=34d399`;
+        }
+
+        function compressImageFile(file, maxSize, quality, callback) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement("canvas");
+                    const scale = Math.min(maxSize / img.width, maxSize / img.height, 1);
+                    canvas.width = Math.round(img.width * scale);
+                    canvas.height = Math.round(img.height * scale);
+                    canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+                    callback(canvas.toDataURL("image/jpeg", quality));
+                };
+                img.src = reader.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function denyManagerAccess(msg = "Bu sayfa yalnızca tanımlı saha sahiplerine açıktır.") {
+            if (isForcingManagerLogout) return;
+            isForcingManagerLogout = true;
+            currentUser.isManager = false;
+            cleanupAllListeners();
+            setManagerGuard(true, "Erişim Reddedildi", msg);
+            try {
+                sessionStorage.setItem("hangi_saha_access_denied", msg);
+            } catch (_) {}
+            try { await signOut(auth); } catch (_) {}
+            setTimeout(() => {
+                window.location.replace(LOGIN_PAGE);
+            }, 900);
+        }
+
+        window.resetHomeView = (e) => {
+            if (!currentUser.isManager) return;
+            if (e) e.preventDefault();
+            closeSideDrawer();
+            document.getElementById("corner-dropdown").classList.add("hidden");
+            document.getElementById("filter-search").value = "";
+            document.getElementById("filter-sort").value = "default";
+            renderAll();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        };
+
+        document.getElementById("match-date").value = getToday();
+
+        function isPitchOwnedByCurrentUser(p) {
+            if (!p || !currentUser.isManager) return false;
+            const myUid = String(currentUser.uid || "").trim();
+            const myEmail = String(currentUser.email || "").trim().toLowerCase();
+            const pOwnerId = String(p.ownerId || "").trim();
+            const pOwnerEmail = String(p.ownerEmail || "").trim().toLowerCase();
+            return (myUid && pOwnerId && pOwnerId === myUid) || (myEmail && pOwnerEmail && pOwnerEmail === myEmail);
+        }
+
+        function recomputeOwnedData() {
+            ownedPitches = allPitches.filter(isPitchOwnedByCurrentUser);
+            const ownedPitchIds = new Set(ownedPitches.map(p => p.id));
+            bookings = allBookings.filter(b => ownedPitchIds.has(b.pitchId));
+            writeLocalList(PITCHES_STORAGE_KEY, ownedPitches);
+            writeLocalList(BOOKINGS_STORAGE_KEY, bookings);
+        }
+
+        function syncProfileUI() {
+            const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.name || "Isletme")}&size=512&background=0ea5e9&color=020617`;
+            const imgSrc = currentUser.photo || currentUser.googlePhoto || fallback;
+            document.getElementById("header-avatar").src = imgSrc;
+            document.getElementById("menu-avatar").src = imgSrc;
+            document.getElementById("drawer-avatar-preview").src = imgSrc;
+            document.getElementById("header-name").textContent = currentUser.name;
+            document.getElementById("menu-name").textContent = currentUser.name;
+            document.getElementById("menu-email").textContent = currentUser.email || "";
+            document.getElementById("drawer-profile-name").textContent = currentUser.name;
+            document.getElementById("prof-name").value = currentUser.name || "";
+            document.getElementById("prof-phone").value = currentUser.phone || "";
+        }
+
+        function getFilteredManagerNotifications() {
+            if (!currentUser.isManager) return [];
+            const ownedIds = new Set(ownedPitches.map(p => p.id));
+            const myEmail = String(currentUser.email || "").trim().toLowerCase();
+            const myUid = String(currentUser.uid || "").trim();
+
+            return notifications
+                .filter(n => {
+                    const nOwnerId = String(n.ownerId || "").trim();
+                    const nOwnerEmail = String(n.ownerEmail || "").trim().toLowerCase();
+                    const nPitchId = String(n.pitchId || "").trim();
+                    return (myUid && nOwnerId === myUid) ||
+                        (myEmail && nOwnerEmail === myEmail) ||
+                        (nPitchId && ownedIds.has(nPitchId));
+                })
+                .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        }
+
+        function updateNotifBadge() {
+            const badge = document.getElementById("manager-notif-badge");
+            if (!badge) return;
+            const list = getFilteredManagerNotifications();
+            badge.textContent = String(list.length);
+            badge.classList.toggle("hidden", list.length === 0);
+        }
+
+        window.clearManagerNotifications = async () => {
+            if (!currentUser.isManager) return;
+            const targetList = getFilteredManagerNotifications();
+            const targetIds = new Set(targetList.map(x => x.id));
+            notifications = notifications.filter(x => !targetIds.has(x.id));
+            updateNotifBadge();
+            renderNotifications();
+
+            for (const item of targetList) {
+                if (item.id) {
+                    try {
+                        await deleteDoc(doc(db, "notifications", item.id));
+                    } catch (_) {}
+                }
+            }
+        };
+
+        function renderNotifications() {
+            const el = document.getElementById("manager-notifications-list");
+            if (!el || !currentUser.isManager) return;
+            const list = getFilteredManagerNotifications();
+            if (list.length === 0) {
+                el.innerHTML = `<div class="text-slate-500 text-center py-6">Sahanıza ait bildirim yok.</div>`;
+                return;
+            }
+            el.innerHTML = list.map(n => {
+                const uDoc = users.find(u => (u.uid || u.id) === (n.userId || n.requesterUid));
+                const avatarSrc = getUserPhoto(uDoc || { name: n.userName || "Uye" });
+                const fullPhoto = getOriginalUserPhoto(uDoc) || avatarSrc;
+                return `
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-start gap-2.5">
+                        <img src="${avatarSrc}" onclick="openPhotoPreview('${fullPhoto.replace(/'/g, "")}')" alt="" referrerpolicy="no-referrer" class="w-9 h-9 rounded-full object-cover border border-slate-700 cursor-pointer shrink-0 mt-0.5">
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="font-bold">${n.title || "Bildirim"}</span>
+                                <span class="text-[10px] text-slate-400 shrink-0">${formatTimeTR(n.createdAt)}</span>
+                            </div>
+                            <div class="text-slate-500 mt-0.5 break-words">${n.detail || ""}</div>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        window.toggleCornerMenu = (e) => {
+            if (!currentUser.isManager) return;
+            if (e) e.stopPropagation();
+            document.getElementById("corner-dropdown").classList.toggle("hidden");
+        };
+
+        document.addEventListener("click", (e) => {
+            const menu = document.getElementById("corner-dropdown");
+            const btn = document.getElementById("corner-menu-btn");
+            if (menu && !menu.contains(e.target) && btn && !btn.contains(e.target)) {
+                menu.classList.add("hidden");
+            }
+        });
+
+        window.openDrawerTab = (tab) => {
+            if (!currentUser.isManager) return;
+            document.getElementById("corner-dropdown").classList.add("hidden");
+            document.getElementById("side-drawer-overlay").classList.remove("hidden");
+            document.getElementById("side-drawer").classList.remove("translate-x-full");
+            switchDrawerTab(tab);
+        };
+
+        window.closeSideDrawer = () => {
+            document.getElementById("side-drawer-overlay").classList.add("hidden");
+            document.getElementById("side-drawer").classList.add("translate-x-full");
+        };
+
+        window.switchDrawerTab = (tab) => {
+            if (!currentUser.isManager) return;
+            const tabs = ["profile", "my_pitches", "bookings_manage", "notifications"];
+            const titles = {
+                profile: "Profil Bilgileri",
+                my_pitches: "Sahalarım",
+                bookings_manage: "Rezervasyonlar",
+                notifications: "Bildirimler"
+            };
+            document.getElementById("drawer-title").textContent = titles[tab] || "Seçenekler";
+            tabs.forEach(t => {
+                document.getElementById(`tab-content-${t}`).classList.toggle("hidden", t !== tab);
+                const btn = document.getElementById(`tab-btn-${t}`);
+                btn.className = t === tab
+                    ? "px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold shrink-0"
+                    : "px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 font-bold shrink-0";
+            });
+            if (tab === "my_pitches") renderOwnedPitchesList();
+            if (tab === "bookings_manage") renderBookingsList();
+            if (tab === "notifications") renderNotifications();
+        };
+
+        window.openPhotoPreview = (src) => {
+            if (!src || !currentUser.isManager) return;
+            const fullSrc = currentUser.originalPhoto && (src === currentUser.photo || src === currentUser.googlePhoto)
+                ? currentUser.originalPhoto
+                : getHighResGooglePhotoUrl(src);
+            document.getElementById("photo-preview-img").src = fullSrc;
+            document.getElementById("photo-preview-modal").classList.remove("hidden");
+        };
+
+        window.closePhotoPreview = () => {
+            document.getElementById("photo-preview-modal").classList.add("hidden");
+        };
+
+        window.closeBookingTypeModal = () => {
+            document.getElementById("booking-type-modal").classList.add("hidden");
+        };
+
+        window.handlePhotoUpload = (e) => {
+            if (!currentUser.isManager) return;
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            compressImageFile(file, 1400, 0.9, async (dataUrl) => {
+                currentUser.photo = dataUrl;
+                currentUser.originalPhoto = dataUrl;
+                currentUser.customPhoto = true;
+                syncProfileUI();
+                if (currentUser.uid) {
+                    try {
+                        await setDoc(doc(db, "users", currentUser.uid), {
+                            photo: dataUrl,
+                            originalPhoto: dataUrl,
+                            customPhoto: true
+                        }, { merge: true });
+                    } catch (_) {}
+                }
+            });
+        };
+
+        window.useGooglePhoto = async () => {
+            if (!currentUser.isManager) return;
+            const rawGPhoto = currentUser.googlePhoto || (auth.currentUser && auth.currentUser.photoURL) || "";
+            const gPhoto = getHighResGooglePhotoUrl(rawGPhoto);
+            if (!gPhoto) return;
+            currentUser.photo = gPhoto;
+            currentUser.originalPhoto = gPhoto;
+            currentUser.googlePhoto = gPhoto;
+            currentUser.customPhoto = false;
+            syncProfileUI();
+            if (currentUser.uid) {
+                try {
+                    await setDoc(doc(db, "users", currentUser.uid), {
+                        photo: gPhoto,
+                        originalPhoto: gPhoto,
+                        googlePhoto: gPhoto,
+                        customPhoto: false
+                    }, { merge: true });
+                } catch (_) {}
+            }
+        };
+
+        window.saveManagerProfile = async (e) => {
+            e.preventDefault();
+            if (!currentUser.isManager) return;
+            currentUser.name = document.getElementById("prof-name").value.trim() || currentUser.name;
+            currentUser.phone = document.getElementById("prof-phone").value.trim();
+            syncProfileUI();
+            if (currentUser.uid) {
+                try {
+                    await setDoc(doc(db, "users", currentUser.uid), {
+                        name: currentUser.name,
+                        phone: currentUser.phone,
+                        photo: currentUser.photo,
+                        originalPhoto: currentUser.originalPhoto || currentUser.photo,
+                        customPhoto: Boolean(currentUser.customPhoto)
+                    }, { merge: true });
+                } catch (_) {}
+            }
+            closeSideDrawer();
+        };
+
+        window.handleFormPitchPhotoUpload = (e) => {
+            if (!currentUser.isManager) return;
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            compressImageFile(file, 1400, 0.9, (dataUrl) => {
+                document.getElementById("edit-pitch-photo").value = dataUrl;
+                document.getElementById("form-pitch-photo-status").textContent = "Yeni fotoğraf hazır";
+            });
+        };
+
+        window.updateOwnedPitchPhotoDirect = async (e, pitchId) => {
+            if (!currentUser.isManager) return;
+            const file = e.target.files && e.target.files[0];
+            if (!file || !pitchId) return;
+            const targetPitch = ownedPitches.find(p => p.id === pitchId);
+            if (!targetPitch) return;
+
+            compressImageFile(file, 1400, 0.9, async (dataUrl) => {
+                allPitches = allPitches.map(p => p.id === pitchId ? { ...p, photo: dataUrl } : p);
+                recomputeOwnedData();
+                renderAll();
+                renderOwnedPitchesList();
+                try {
+                    await updateDoc(doc(db, "pitches", pitchId), { photo: dataUrl });
+                } catch (_) {}
+            });
+        };
+
+        window.resetOwnedPitchForm = () => {
+            document.getElementById("owned-pitch-form-title").textContent = "Yeni Saha Ekle";
+            document.getElementById("edit-pitch-id").value = "";
+            document.getElementById("edit-pitch-photo").value = "";
+            document.getElementById("form-pitch-photo-status").textContent = "Fotoğraf seçilmedi";
+            document.getElementById("pitch-name").value = "";
+            document.getElementById("pitch-district").value = "Selçuklu";
+            document.getElementById("pitch-price").value = "";
+            document.getElementById("pitch-phone").value = currentUser.phone || "";
+            document.getElementById("pitch-address").value = "";
+            document.getElementById("pitch-lat").value = "";
+            document.getElementById("pitch-lng").value = "";
+            document.getElementById("pitch-hours").value = DEFAULT_HOURS.join(", ");
+        };
+
+        window.editOwnedPitch = (pitchId) => {
+            if (!currentUser.isManager) return;
+            const p = ownedPitches.find(x => x.id === pitchId);
+            if (!p) return;
+            document.getElementById("owned-pitch-form-title").textContent = "Sahayı Düzenle";
+            document.getElementById("edit-pitch-id").value = p.id;
+            document.getElementById("edit-pitch-photo").value = p.photo || "";
+            document.getElementById("form-pitch-photo-status").textContent = p.photo ? "Mevcut fotoğraf korundu" : "Fotoğraf seçilmedi";
+            document.getElementById("pitch-name").value = p.name || "";
+            document.getElementById("pitch-district").value = p.district || "Selçuklu";
+            document.getElementById("pitch-price").value = p.price || "";
+            document.getElementById("pitch-phone").value = p.phone || p.ownerPhone || currentUser.phone || "";
+            document.getElementById("pitch-address").value = p.address || "";
+            document.getElementById("pitch-lat").value = p.lat || "";
+            document.getElementById("pitch-lng").value = p.lng || "";
+            document.getElementById("pitch-hours").value = (p.hours && p.hours.length ? p.hours : DEFAULT_HOURS).join(", ");
+        };
+
+        window.saveOwnedPitch = async (e) => {
+            e.preventDefault();
+            if (!currentUser.isManager) return;
+            const editId = document.getElementById("edit-pitch-id").value.trim();
+            const id = editId || ("pitch_" + Date.now());
+            const existing = ownedPitches.find(x => x.id === id);
+            const hours = document.getElementById("pitch-hours").value.split(",").map(s => s.trim()).filter(Boolean);
+            const latVal = parseFloat(document.getElementById("pitch-lat").value.trim());
+            const lngVal = parseFloat(document.getElementById("pitch-lng").value.trim());
+
+            const item = {
+                id,
+                name: document.getElementById("pitch-name").value.trim(),
+                district: document.getElementById("pitch-district").value,
+                price: Number(document.getElementById("pitch-price").value || 0),
+                phone: document.getElementById("pitch-phone").value.trim() || currentUser.phone || "",
+                address: document.getElementById("pitch-address").value.trim(),
+                lat: Number.isFinite(latVal) ? latVal : (existing?.lat || null),
+                lng: Number.isFinite(lngVal) ? lngVal : (existing?.lng || null),
+                photo: document.getElementById("edit-pitch-photo").value || existing?.photo || "",
+                hours: hours.length ? hours : [...DEFAULT_HOURS],
+                ownerId: currentUser.uid,
+                ownerName: currentUser.name,
+                ownerEmail: String(currentUser.email || "").trim().toLowerCase()
+            };
+
+            if (editId) {
+                allPitches = allPitches.map(x => x.id === id ? item : x);
+            } else {
+                allPitches = [item, ...allPitches];
+            }
+
+            recomputeOwnedData();
+            try {
+                await setDoc(doc(db, "pitches", id), item, { merge: true });
+            } catch (_) {}
+
+            resetOwnedPitchForm();
+            renderAll();
+            renderOwnedPitchesList();
+        };
+
+        window.deleteOwnedPitch = async (pitchId) => {
+            if (!currentUser.isManager) return;
+            const target = ownedPitches.find(x => x.id === pitchId);
+            if (!target) return;
+
+            openConfirmDialog({
+                title: "Sahayı Sil",
+                html: `<div><b>${target.name}</b> sahasını silmek istediğinize emin misiniz?</div>`,
+                onConfirm: async () => {
+                    allPitches = allPitches.filter(x => x.id !== pitchId);
+                    recomputeOwnedData();
+                    try {
+                        await deleteDoc(doc(db, "pitches", pitchId));
+                    } catch (_) {}
+                    renderAll();
+                    renderOwnedPitchesList();
+                }
+            });
+        };
+
+        function renderOwnedPitchesList() {
+            const el = document.getElementById("owned-pitches-list");
+            if (!el || !currentUser.isManager) return;
+            if (ownedPitches.length === 0) {
+                el.innerHTML = `<div class="text-slate-500 text-center py-4">Size atanmış saha bulunmuyor. Yukarıdan yeni saha ekleyebilirsiniz.</div>`;
+                return;
+            }
+            el.innerHTML = ownedPitches.map(p => {
+                const thumb = getPitchPhoto(p);
+                return `
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <img src="${thumb}" onclick="openPhotoPreview(this.src)" alt="" referrerpolicy="no-referrer" class="w-11 h-11 rounded-lg object-cover border border-slate-700 cursor-pointer shrink-0">
+                            <div class="min-w-0">
+                                <div class="font-bold truncate">${p.name}</div>
+                                <div class="text-[11px] text-slate-500">${p.district} • ${Number(p.price || 0).toLocaleString("tr-TR")} ₺</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 shrink-0">
+                            <label class="cursor-pointer px-2 py-1 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 font-bold text-[11px]">
+                                Foto
+                                <input type="file" accept="image/*" onchange="updateOwnedPitchPhotoDirect(event, '${p.id}')" class="hidden">
+                            </label>
+                            <button onclick="editOwnedPitch('${p.id}')" class="px-2 py-1 rounded-lg bg-sky-500/15 text-sky-600 dark:text-sky-300 font-bold">Düzenle</button>
+                            <button onclick="deleteOwnedPitch('${p.id}')" class="px-2 py-1 rounded-lg bg-rose-500/15 text-rose-500 font-bold">Sil</button>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function openConfirmDialog({ title, html, onConfirm }) {
+            if (!currentUser.isManager) return;
+            document.getElementById("confirm-title").textContent = title;
+            document.getElementById("confirm-body").innerHTML = html;
+            pendingConfirmAction = onConfirm;
+            document.getElementById("confirm-proceed-btn").onclick = async () => {
+                const fn = pendingConfirmAction;
+                closeConfirmDialog();
+                if (fn) await fn();
+            };
+            document.getElementById("confirm-dialog").classList.remove("hidden");
+        }
+
+        window.closeConfirmDialog = () => {
+            document.getElementById("confirm-dialog").classList.add("hidden");
+            pendingConfirmAction = null;
+        };
+
+        window.closeSlotDetailModal = () => {
+            document.getElementById("slot-detail-modal").classList.add("hidden");
+        };
+
+        window.openBookingDetailModal = (bookingId) => {
+            if (!currentUser.isManager) return;
+            const bk = bookings.find(b => b.id === bookingId);
+            if (!bk) return;
+            const modeLabel = bk.bookingType === "weekly" ? "Haftalık" : "Tek seferlik";
+            const uDoc = users.find(u => (u.uid || u.id) === bk.userId);
+            const photoUrl = getUserPhoto(uDoc || { name: bk.userName || "Uye" });
+            const fullPhoto = getOriginalUserPhoto(uDoc) || photoUrl;
+            document.getElementById("slot-detail-title").textContent = `${bk.pitchName} • ${bk.hour}`;
+            document.getElementById("slot-detail-body").innerHTML = `
+                <div class="flex items-center gap-2.5 pb-2 border-b border-slate-200 dark:border-slate-800">
+                    <img src="${photoUrl}" onclick="openPhotoPreview('${fullPhoto.replace(/'/g, "")}')" alt="" referrerpolicy="no-referrer" class="w-10 h-10 rounded-full object-cover border border-emerald-500 cursor-pointer shrink-0">
+                    <div>
+                        <div class="font-bold text-slate-900 dark:text-slate-100">${bk.userName || "Üye"}</div>
+                        <div class="text-[11px] text-slate-500">${bk.userPhone || "-"}</div>
+                    </div>
+                </div>
+                <div><b>Tarih:</b> ${bk.date}</div>
+                <div><b>Tür:</b> ${modeLabel}</div>
+                <div><b>E-posta:</b> ${bk.userEmail || "-"}</div>
+            `;
+            document.getElementById("slot-detail-actions").innerHTML = `
+                <button onclick="closeSlotDetailModal()" class="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold text-xs">Kapat</button>
+                <button onclick="cancelBookingByManager('${bk.id}')" class="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs">İptal et</button>
+            `;
+            document.getElementById("slot-detail-modal").classList.remove("hidden");
+        };
+
+        async function notifyBookingCancelledByManager(bk) {
+            if (!bk || !currentUser.isManager) return;
+            const now = Date.now();
+            const bkEmail = (bk.userEmail || "").trim().toLowerCase();
+            let targetUserId = (bk.userId || "").trim();
+
+            if (!targetUserId && bkEmail) {
+                const matched = users.find(u => (u.email || "").trim().toLowerCase() === bkEmail);
+                if (matched) targetUserId = matched.uid || matched.id || "";
+            }
+
+            const detailText = `Rezervasyonunuz saha sahibi tarafından iptal edilmiştir. (${bk.pitchName} • ${bk.date} • ${bk.hour})`;
+            const notifKey = `mgr_cancel_${bk.id}_${now}`;
+
+            if (targetUserId && targetUserId !== currentUser.uid) {
+                const userNotifId = `unotif_${notifKey}`;
+                try {
+                    await setDoc(doc(db, "users", targetUserId, "notifications", userNotifId), {
+                        id: userNotifId,
+                        notifKey,
+                        userId: targetUserId,
+                        recipientUid: targetUserId,
+                        recipientEmail: bkEmail,
+                        type: "booking_cancelled_by_manager",
+                        title: "Rezervasyon İptal Edildi",
+                        detail: detailText,
+                        pitchId: bk.pitchId || "",
+                        pitchName: bk.pitchName || "",
+                        date: bk.date || "",
+                        hour: bk.hour || "",
+                        cancelledBy: "manager",
+                        createdAt: now
+                    });
+                } catch (_) {}
+            }
+
+            try {
+                await addDoc(collection(db, "notifications"), {
+                    notifKey,
+                    type: "booking_cancelled_by_manager",
+                    title: "Rezervasyon İptal Edildi",
+                    detail: detailText,
+                    recipientUid: targetUserId,
+                    recipientEmail: bkEmail,
+                    userId: targetUserId,
+                    userName: bk.userName || "",
+                    userEmail: bk.userEmail || "",
+                    pitchId: bk.pitchId || "",
+                    pitchName: bk.pitchName || "",
+                    ownerId: currentUser.uid,
+                    ownerEmail: currentUser.email,
+                    createdAt: now
+                });
+            } catch (_) {}
+        }
+
+        window.cancelBookingByManager = async (bookingId) => {
+            if (!currentUser.isManager) return;
+            const bk = bookings.find(b => b.id === bookingId);
+            if (!bk) return;
+            closeSlotDetailModal();
+            allBookings = allBookings.filter(b => b.id !== bookingId);
+            recomputeOwnedData();
+            renderAll();
+            renderBookingsList();
+            try {
+                await deleteDoc(doc(db, "bookings", bookingId));
+            } catch (_) {}
+            await notifyBookingCancelledByManager(bk);
+        };
+
+        async function createBookingRecord({ pitchId, pitchName, district, address, price, date, hour, bookingType }) {
+            if (!currentUser.isManager) return;
+            const targetDates = bookingType === "weekly" ? [0, 7, 14, 21].map(d => addDays(date, d)) : [date];
+            const createdRecords = [];
+
+            for (const dStr of targetDates) {
+                const slotDocId = `${pitchId}_${dStr}_${hour.replace(":", "")}`;
+                if (bookings.some(b => b.id === slotDocId)) continue;
+                createdRecords.push({
+                    id: slotDocId,
+                    pitchId,
+                    ownerId: currentUser.uid,
+                    ownerEmail: currentUser.email,
+                    pitchName,
+                    district,
+                    address: address || "",
+                    price,
+                    date: dStr,
+                    hour,
+                    bookingType,
+                    userId: currentUser.uid,
+                    userName: currentUser.name,
+                    userEmail: currentUser.email,
+                    userPhone: currentUser.phone || "",
+                    createdAt: Date.now()
+                });
+            }
+
+            if (createdRecords.length === 0) return;
+            allBookings = [...createdRecords, ...allBookings];
+            recomputeOwnedData();
+            renderAll();
+            renderBookingsList();
+
+            for (const rec of createdRecords) {
+                try {
+                    const slotRef = doc(db, "bookings", rec.id);
+                    await runTransaction(db, async (tx) => {
+                        const snap = await tx.get(slotRef);
+                        if (!snap.exists()) tx.set(slotRef, rec);
+                    });
+                } catch (_) {}
+            }
+        }
+
+        window.rentSlot = (pitchId, pitchName, district, address, price, date, hour) => {
+            if (!currentUser.isManager) return;
+            const slotDocId = `${pitchId}_${date}_${hour.replace(":", "")}`;
+            if (bookings.some(b => b.id === slotDocId)) return;
+
+            openConfirmDialog({
+                title: "Rezervasyon Teyidi",
+                html: `<div><b>${pitchName}</b> • ${date} • ${hour}</div><div>Seçimi onaylıyor musunuz?</div>`,
+                onConfirm: () => {
+                    document.getElementById("booking-type-info").innerHTML = `<div><b>${pitchName}</b></div><div>${date} • ${hour}</div>`;
+                    document.getElementById("btn-single-booking").onclick = () => {
+                        closeBookingTypeModal();
+                        createBookingRecord({ pitchId, pitchName, district, address, price, date, hour, bookingType: "single" });
+                    };
+                    document.getElementById("btn-weekly-booking").onclick = () => {
+                        closeBookingTypeModal();
+                        createBookingRecord({ pitchId, pitchName, district, address, price, date, hour, bookingType: "weekly" });
+                    };
+                    document.getElementById("booking-type-modal").classList.remove("hidden");
+                }
+            });
+        };
+
+        window.renderBookingsList = () => {
+            const bookingsEl = document.getElementById("bookings-list");
+            const countEl = document.getElementById("manager-bookings-count");
+            if (!bookingsEl || !currentUser.isManager) return;
+
+            const q = (document.getElementById("booking-search")?.value || "").trim().toLowerCase();
+            const sortedBookings = [...bookings]
+                .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+                .filter(b => {
+                    if (!q) return true;
+                    const blob = [b.pitchName, b.userName, b.userPhone, b.userEmail, b.date, b.hour].join(" ").toLowerCase();
+                    return blob.includes(q);
+                });
+
+            if (countEl) countEl.textContent = String(sortedBookings.length);
+
+            if (sortedBookings.length === 0) {
+                bookingsEl.innerHTML = `<div class="text-slate-500 text-center py-6">Rezervasyon yok.</div>`;
+                return;
+            }
+
+            bookingsEl.innerHTML = sortedBookings.map(b => {
+                const uDoc = users.find(u => (u.uid || u.id) === b.userId);
+                const avatarSrc = getUserPhoto(uDoc || { name: b.userName || "Uye" });
+                const fullPhoto = getOriginalUserPhoto(uDoc) || avatarSrc;
+                const modeLabel = b.bookingType === "weekly" ? "Haftalık" : "Tek seferlik";
+                return `
+                    <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-3 py-2.5 rounded-xl gap-2">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <img src="${avatarSrc}" onclick="openPhotoPreview('${fullPhoto.replace(/'/g, "")}')" alt="" referrerpolicy="no-referrer" class="w-8 h-8 rounded-full object-cover border border-slate-700 cursor-pointer shrink-0">
+                            <div class="min-w-0">
+                                <div class="font-bold truncate">${b.pitchName} <span class="text-[10px] font-normal text-slate-400">(${modeLabel})</span></div>
+                                <div class="text-[11px] text-slate-500 truncate">${b.date} • <span class="text-rose-500 font-bold">${b.hour}</span> • ${b.userName || "Üye"}${b.userPhone ? " (" + b.userPhone + ")" : ""}</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <button onclick="openBookingDetailModal('${b.id}')" class="px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-slate-800 font-bold">Bilgi</button>
+                            <button onclick="cancelBookingByManager('${b.id}')" class="px-2.5 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold transition">İptal et</button>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        };
+
+        window.renderAll = () => {
+            if (!currentUser.isManager) return;
+            const date = document.getElementById("match-date").value || getToday();
+            const search = document.getElementById("filter-search").value.trim().toLowerCase();
+            const sortMode = document.getElementById("filter-sort").value;
+
+            let filtered = ownedPitches.filter(p => {
+                return !search ||
+                    (p.name || "").toLowerCase().includes(search) ||
+                    (p.address || "").toLowerCase().includes(search) ||
+                    (p.district || "").toLowerCase().includes(search);
+            });
+
+            if (sortMode === "price_asc") filtered.sort((a, b) => (a.price || 0) - (b.price || 0));
+            if (sortMode === "price_desc") filtered.sort((a, b) => (b.price || 0) - (a.price || 0));
+
+            const listEl = document.getElementById("pitches-list");
+            if (filtered.length === 0) {
+                listEl.innerHTML = `<div class="col-span-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 text-center text-xs text-slate-500 space-y-2"><div>Size atanmış saha bulunamadı.</div><button onclick="openDrawerTab('my_pitches')" class="px-3.5 py-1.5 rounded-xl bg-emerald-500 text-slate-950 font-extrabold text-xs">Saha Ekle / Görüntüle</button></div>`;
+            } else {
+                listEl.innerHTML = filtered.map(p => {
+                    const pHours = p.hours && p.hours.length ? p.hours : DEFAULT_HOURS;
+                    const buttons = pHours.map(h => {
+                        const slotId = `${p.id}_${date}_${h.replace(":", "")}`;
+                        const taken = bookings.find(b => b.id === slotId);
+
+                        if (taken) {
+                            if (taken.userId === currentUser.uid) {
+                                return `<button onclick="cancelBookingByManager('${taken.id}')" class="h-12 w-full rounded-xl bg-emerald-500 hover:bg-emerald-400 border border-emerald-600 text-slate-950 text-xs font-extrabold flex flex-col items-center justify-center leading-tight transition"><span>${h}</span><span class="text-[10px]">İptal et</span></button>`;
+                            }
+                            return `<button onclick="openBookingDetailModal('${taken.id}')" class="h-12 w-full rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold flex flex-col items-center justify-center leading-tight transition"><span>${h}</span><span class="text-[10px] font-normal">Dolu</span></button>`;
+                        }
+
+                        return `<button onclick="rentSlot('${p.id}', '${p.name.replace(/'/g, "")}', '${p.district}', '${(p.address || "").replace(/'/g, "")}', ${p.price || 0}, '${date}', '${h}')" class="h-12 w-full rounded-xl bg-white hover:bg-slate-100 text-slate-900 border border-slate-300 text-xs font-bold flex flex-col items-center justify-center leading-tight transition"><span>${h}</span></button>`;
+                    }).join("");
+
+                    const photoUrl = getPitchPhoto(p);
+
+                    return `
+                        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden space-y-3 pb-4">
+                            <img src="${photoUrl}" onclick="openPhotoPreview(this.src)" alt="${p.name}" referrerpolicy="no-referrer" class="w-full h-52 object-cover cursor-pointer hover:opacity-95 transition">
+                            <div class="px-4 flex items-start justify-between gap-3">
+                                <div>
+                                    <h3 class="font-extrabold text-sm">${p.name}</h3>
+                                    <p class="text-xs text-slate-500 mt-0.5">${p.district} • <span class="font-bold text-emerald-600 dark:text-emerald-400">${Number(p.price || 0).toLocaleString("tr-TR")} ₺</span></p>
+                                    ${p.address ? `<p class="text-[11px] text-slate-400 mt-0.5"><i class="fa-solid fa-location-dot mr-1"></i>${p.address}</p>` : ""}
+                                </div>
+                                <button onclick="openDrawerTab('my_pitches'); editOwnedPitch('${p.id}')" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-[11px] font-bold shrink-0">
+                                    Düzenle
+                                </button>
+                            </div>
+                            <div class="px-4 grid grid-cols-4 gap-2">${buttons}</div>
+                        </div>
+                    `;
+                }).join("");
+            }
+
+            renderBookingsList();
+        };
+
+        async function checkAuthorizedManager(user, email, existing) {
+            if (!email) return false;
+            if (existing?.role === "manager" || email === FOUNDER_EMAIL.toLowerCase()) {
+                return true;
+            }
+            const docId = encodeURIComponent(email);
+            try {
+                const allowSnap = await getDoc(doc(db, ALLOWED_MANAGERS_COLLECTION, docId));
+                if (allowSnap.exists()) {
+                    const allowData = allowSnap.data() || {};
+                    if (allowData.active !== false && allowData.enabled !== false) {
+                        return true;
+                    }
+                }
+            } catch (_) {}
+            return false;
+        }
+
+        async function loadManagerUser(user) {
+            const googleInfo = Array.isArray(user.providerData)
+                ? user.providerData.find(p => p && p.providerId === "google.com")
+                : null;
+            const rawGPhoto = (googleInfo && googleInfo.photoURL) || user.photoURL || "";
+            const gPhoto = getHighResGooglePhotoUrl(rawGPhoto);
+            const googleName = (googleInfo && googleInfo.displayName) || user.displayName || "";
+            const email = ((googleInfo && googleInfo.email) || user.email || "").trim().toLowerCase();
+
+            let existing = {};
+            try {
+                const snap = await getDoc(doc(db, "users", user.uid));
+                if (snap.exists()) existing = snap.data() || {};
+            } catch (_) {}
+
+            const authorized = await checkAuthorizedManager(user, email, existing);
+            if (!authorized) {
+                await denyManagerAccess("Hesabınız kayıtlı saha sahibi listesinde bulunmuyor.");
+                return;
+            }
+
+            const useCustomPhoto = Boolean(existing.customPhoto);
+            const resolvedPhoto = useCustomPhoto
+                ? (existing.photo || gPhoto || "")
+                : (gPhoto || existing.photo || "");
+            const resolvedOriginalPhoto = useCustomPhoto
+                ? (existing.originalPhoto || existing.photo || gPhoto || "")
+                : (gPhoto || existing.originalPhoto || existing.photo || "");
+
+            currentUser = {
+                uid: user.uid,
+                name: googleName || existing.name || (email || "Saha Sahibi").split("@")[0],
+                email,
+                phone: existing.phone || "",
+                photo: resolvedPhoto,
+                originalPhoto: resolvedOriginalPhoto,
+                googlePhoto: gPhoto,
+                customPhoto: useCustomPhoto,
+                isManager: true
+            };
+
+            try {
+                await setDoc(doc(db, "users", user.uid), {
+                    uid: user.uid,
+                    name: currentUser.name,
+                    email: currentUser.email,
+                    phone: currentUser.phone,
+                    photo: currentUser.photo,
+                    originalPhoto: currentUser.originalPhoto,
+                    googlePhoto: currentUser.googlePhoto,
+                    customPhoto: currentUser.customPhoto,
+                    role: "manager",
+                    lastLoginAt: Date.now()
+                }, { merge: true });
+            } catch (_) {}
+
+            ownedPitches = readLocalList(PITCHES_STORAGE_KEY, []);
+            bookings = readLocalList(BOOKINGS_STORAGE_KEY, []);
+
+            syncProfileUI();
+            setManagerGuard(false);
+            renderAll();
+        }
+
+        function attachFirestoreListeners() {
+            if (!currentUser.isManager) return;
+            cleanupAllListeners();
+
+            unsubscribers.push(onSnapshot(collection(db, "pitches"), (snap) => {
+                allPitches = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                recomputeOwnedData();
+                renderAll();
+                renderOwnedPitchesList();
+                updateNotifBadge();
+                renderNotifications();
+            }, () => {}));
+
+            unsubscribers.push(onSnapshot(collection(db, "bookings"), (snap) => {
+                allBookings = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                recomputeOwnedData();
+                renderAll();
+            }, () => {}));
+
+            unsubscribers.push(onSnapshot(collection(db, "users"), (snap) => {
+                users = snap.docs.map(d => ({ id: d.id, uid: d.id, ...d.data() }));
+                renderBookingsList();
+                renderNotifications();
+            }, () => {}));
+
+            unsubscribers.push(onSnapshot(collection(db, "notifications"), (snap) => {
+                notifications = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                updateNotifBadge();
+                renderNotifications();
+            }, () => {}));
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (isForcingManagerLogout) return;
+            if (!user) {
+                currentUser.isManager = false;
+                cleanupAllListeners();
+                setManagerGuard(true, "Giriş Gerekli", "Giriş sayfasına yönlendiriliyorsunuz.");
+                window.location.replace(LOGIN_PAGE);
+                return;
+            }
+
+            await loadManagerUser(user);
+            if (currentUser.isManager) {
+                attachFirestoreListeners();
+            }
+        });
+
+        window.logout = async () => {
+            currentUser.isManager = false;
+            cleanupAllListeners();
+            try {
+                await signOut(auth);
+            } catch (_) {}
+            window.location.replace(LOGIN_PAGE);
+        };
+    </script>
+</body>
+</html>
