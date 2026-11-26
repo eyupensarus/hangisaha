@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hangi Saha - Kurucu Paneli</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'media' }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen text-xs">
+
+    <div id="founder-guard" class="fixed inset-0 z-50 bg-slate-950 flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center space-y-2 text-white">
+            <div class="font-extrabold text-sm"><i class="fa-solid fa-crown mr-1.5 text-amber-400"></i>Kurucu Yetkisi Doğrulanıyor</div>
+            <p class="text-slate-400">Lütfen bekleyin...</p>
+        </div>
+    </div>
+
+    <header class="bg-white/90 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30">
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-3 flex-wrap">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-xl bg-emerald-500 flex items-center justify-center text-slate-950 font-black">
+                    <i class="fa-solid fa-futbol"></i>
+                </div>
+                <span class="text-base font-extrabold text-emerald-500">HANGİ SAHA</span>
+                <span class="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-300 font-bold text-[11px]"><i class="fa-solid fa-crown mr-1"></i>Kurucu</span>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+                <button onclick="switchSection('pitches_slots')" class="px-3 py-2 rounded-xl bg-emerald-500 text-slate-950 font-extrabold">
+                    <i class="fa-solid fa-futbol mr-1"></i> Sahalar & Rezervasyon
+                </button>
+                <button onclick="switchSection('notes')" class="px-3 py-2 rounded-xl bg-amber-500 text-slate-950 font-extrabold">
+                    <i class="fa-solid fa-note-sticky mr-1"></i> Kullanıcı Notları
+                </button>
+                <button onclick="switchSection('users')" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold">
+                    <i class="fa-solid fa-users mr-1"></i> Kullanıcılar
+                </button>
+                <button onclick="switchSection('notifs')" class="relative px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold">
+                    <i class="fa-solid fa-bell text-amber-500 mr-1"></i> Bildirimler
+                    <span id="founder-notif-badge" class="ml-1 px-1.5 py-0.2 rounded-full bg-rose-600 text-white text-[10px]">0</span>
+                </button>
+                <button onclick="logout()" class="px-3 py-2 rounded-xl bg-rose-600 text-white font-bold">
+                    <i class="fa-solid fa-right-from-bracket mr-1"></i> Çıkış
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+
+        <!-- SAHALAR VE FOTOĞRAFLI REZERVASYON SLOTLARI -->
+        <section id="section-pitches_slots" class="space-y-4">
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 flex items-center justify-between gap-3 flex-wrap">
+                <div class="flex items-center gap-2">
+                    <label class="font-bold text-slate-500"><i class="fa-regular fa-calendar mr-1 text-emerald-500"></i>Tarih:</label>
+                    <input type="date" id="founder-match-date" onchange="renderFounderPitches()" class="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                </div>
+                <span class="text-[11px] text-slate-500">Boş saate tıklayarak üye adına rezervasyon açabilir, dolu saate tıklayarak iptal onay penceresini açabilirsiniz.</span>
+            </div>
+            <div id="founder-pitches-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </section>
+
+        <!-- KULLANICI NOTLARI -->
+        <section id="section-notes" class="hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 space-y-4">
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+                <h2 class="text-sm font-extrabold"><i class="fa-solid fa-note-sticky mr-1.5 text-amber-500"></i>Kullanıcı Notları ve İşaretleme</h2>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <input type="text" id="note-filter-query" oninput="renderNotesSection()" placeholder="Kullanıcı veya not ara..." class="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                    <select id="note-filter-color" onchange="renderNotesSection()" class="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                        <option value="">Tüm Etiketler</option>
+                        <option value="yellow">Sarı (Uyarı)</option>
+                        <option value="red">Kırmızı (Kritik / İhlal)</option>
+                    </select>
+                </div>
+            </div>
+
+            <form onsubmit="addManualUserNote(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2.5 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                <select id="note-target-user" required class="px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800"></select>
+                <select id="note-color-select" class="px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                    <option value="yellow">Sarı İşaret (Uyarı)</option>
+                    <option value="red">Kırmızı İşaret (Kritik)</option>
+                </select>
+                <input type="text" id="note-text-input" required placeholder="Kullanıcı notu yazın..." class="px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                <button type="submit" class="py-2 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold"><i class="fa-solid fa-plus mr-1"></i>Notu Kaydet</button>
+            </form>
+
+            <div id="user-notes-list" class="space-y-2"></div>
+        </section>
+
+        <!-- KULLANICILAR, TAKMA İSİM, DOĞRULAMA, ENGEL / SİLME -->
+        <section id="section-users" class="hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 space-y-3">
+            <h2 class="text-sm font-extrabold"><i class="fa-solid fa-users mr-1.5 text-emerald-500"></i>Kullanıcı Yönetimi</h2>
+            <div id="founder-users-list" class="space-y-2"></div>
+        </section>
+
+        <!-- BİLDİRİMLER -->
+        <section id="section-notifs" class="hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 space-y-3">
+            <div class="flex items-center justify-between">
+                <h2 class="text-sm font-extrabold"><i class="fa-solid fa-bell mr-1.5 text-amber-500"></i>Sistem & Üye Bildirimleri</h2>
+                <button onclick="clearFounderNotifs()" class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold"><i class="fa-solid fa-broom mr-1"></i>Temizle</button>
+            </div>
+            <div id="founder-notifs-list" class="space-y-2"></div>
+        </section>
+
+    </main>
+
+    <!-- KURUCU REZERVASYON OLUŞTURMA MODALI -->
+    <div id="founder-create-booking-modal" onclick="closeFounderCreateBookingModal()" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+        <div onclick="event.stopPropagation()" class="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 space-y-3 shadow-2xl text-xs">
+            <div class="flex items-center justify-between">
+                <h3 class="text-sm font-extrabold"><i class="fa-solid fa-user-plus mr-1.5 text-emerald-500"></i>Kurucu Adına Rezervasyon</h3>
+                <button onclick="closeFounderCreateBookingModal()" class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="fnd-slot-summary" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 font-bold"></div>
+
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-500 mb-1">Kayıtlı Üyelerden Seç</label>
+                <select id="fnd-select-existing-user" onchange="fillFounderBookingFromExistingUser(this.value)" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800"></select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-500 mb-1">Ad Soyad</label>
+                    <input type="text" id="fnd-bk-name" placeholder="Kişi adı" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-500 mb-1">Takma İsim</label>
+                    <input type="text" id="fnd-bk-nickname" placeholder="Takma isim" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-500 mb-1">Telefon</label>
+                    <input type="tel" id="fnd-bk-phone" placeholder="05XX XXX XX XX" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-500 mb-1">E-posta / Google</label>
+                    <input type="text" id="fnd-bk-email" placeholder="ornek@gmail.com" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between gap-2 pt-1">
+                <label class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-500/15 text-sky-600 dark:text-sky-300 font-bold text-[11px]">
+                    <i class="fa-solid fa-camera"></i> Fotoğraf Ekle
+                    <input type="file" accept="image/*" onchange="handleFounderCustomerPhoto(event)" class="hidden">
+                </label>
+                <img id="fnd-bk-photo-preview" src="https://ui-avatars.com/api/?name=Uye&background=10b981&color=020617" class="w-9 h-9 rounded-full object-cover border border-emerald-500">
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 pt-2">
+                <button type="button" onclick="confirmFounderBooking('single')" class="py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold">Tek Seferlik Al</button>
+                <button type="button" onclick="confirmFounderBooking('weekly')" class="py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-extrabold">Abone Al</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- KURUCU İPTAL ONAY PENCERESİ -->
+    <div id="fnd-cancel-modal" onclick="closeFndCancelModal()" class="hidden fixed inset-0 z-60 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+        <div onclick="event.stopPropagation()" class="w-full max-w-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 space-y-3 shadow-2xl text-xs">
+            <h3 class="text-sm font-extrabold text-rose-500"><i class="fa-solid fa-calendar-xmark mr-1.5"></i>Rezervasyon İptal Onayı</h3>
+            <div id="fnd-cancel-info" class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 font-semibold"></div>
+            <div id="fnd-cancel-actions" class="space-y-2"></div>
+            <button onclick="closeFndCancelModal()" class="w-full py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold">Vazgeç</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import {
+            getFirestore,
+            collection,
+            doc,
+            setDoc,
+            updateDoc,
+            deleteDoc,
+            addDoc,
+            onSnapshot
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const DEFAULT_HOURS = ["16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"];
+        const FOUNDER_EMAIL = "eyupensarus@gmail.com";
+        const LOGIN_PAGE = "index.html";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB1-9hGJqxAwfGhLMDAdlkG9PcuojxP0ag",
+            authDomain: "hangi-saha.firebaseapp.com",
+            projectId: "hangi-saha",
+            storageBucket: "hangi-saha.firebasestorage.app",
+            messagingSenderId: "155728012356",
+            appId: "1:155728012356:web:3b04ae7d8bd6f0f607c811",
+            measurementId: "G-STXB4852BF"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let pitches = [];
+        let bookings = [];
+        let users = [];
+        let userNotes = [];
+        let notifications = [];
+        let pendingFndSlot = null;
+        let fndCustomerPhotoData = "";
+
+        function getToday() {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+        }
+
+        function addDays(dateStr, days) {
+            const parts = String(dateStr).split("-").map(Number);
+            const dt = new Date(parts[0], (parts[1] || 1) - 1, parts[2] || 1);
+            dt.setDate(dt.getDate() + days);
+            return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
+        }
+
+        function formatTimeTR(ts) {
+            if (!ts) return "-";
+            return new Date(ts).toLocaleString("tr-TR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+        }
+
+        document.getElementById("founder-match-date").value = getToday();
+
+        window.switchSection = (sec) => {
+            document.getElementById("section-pitches_slots").classList.toggle("hidden", sec !== "pitches_slots");
+            document.getElementById("section-notes").classList.toggle("hidden", sec !== "notes");
+            document.getElementById("section-users").classList.toggle("hidden", sec !== "users");
+            document.getElementById("section-notifs").classList.toggle("hidden", sec !== "notifs");
+            if (sec === "pitches_slots") renderFounderPitches();
+            if (sec === "notes") renderNotesSection();
+            if (sec === "users") renderUsersSection();
+            if (sec === "notifs") renderFounderNotifs();
+        };
+
+        function compressFile(file, cb) {
+            const r = new FileReader();
+            r.onload = () => {
+                const img = new Image();
+                img.onload = () => {
+                    const c = document.createElement("canvas");
+                    const s = Math.min(1200 / img.width, 1200 / img.height, 1);
+                    c.width = Math.round(img.width * s);
+                    c.height = Math.round(img.height * s);
+                    c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+                    cb(c.toDataURL("image/jpeg", 0.85));
+                };
+                img.src = r.result;
+            };
+            r.readAsDataURL(file);
+        }
+
+        window.openFounderCreateBookingModal = (pitchId, date, hour) => {
+            const pitch = pitches.find(p => p.id === pitchId);
+            if (!pitch) return;
+            pendingFndSlot = { pitchId, date, hour, pitch };
+            fndCustomerPhotoData = "";
+            document.getElementById("fnd-slot-summary").textContent = `${pitch.name} • ${date} • ${hour}`;
+            document.getElementById("fnd-bk-name").value = "";
+            document.getElementById("fnd-bk-nickname").value = "";
+            document.getElementById("fnd-bk-phone").value = "";
+            document.getElementById("fnd-bk-email").value = "";
+            document.getElementById("fnd-bk-photo-preview").src = "https://ui-avatars.com/api/?name=Uye&background=10b981&color=020617";
+
+            const sel = document.getElementById("fnd-select-existing-user");
+            sel.innerHTML = `<option value="">-- Listeden Üye Seç (veya elle yaz) --</option>` + users.map(u => {
+                const uid = u.uid || u.id;
+                const nickPart = u.nickname ? ` (@${u.nickname})` : "";
+                return `<option value="${uid}">${u.name || "Üye"}${nickPart} • ${u.phone || u.email || ""}</option>`;
+            }).join("");
+
+            document.getElementById("founder-create-booking-modal").classList.remove("hidden");
+        };
+
+        window.closeFounderCreateBookingModal = () => {
+            document.getElementById("founder-create-booking-modal").classList.add("hidden");
+            pendingFndSlot = null;
+        };
+
+        window.fillFounderBookingFromExistingUser = (uid) => {
+            const u = users.find(x => (x.uid || x.id) === uid);
+            if (!u) return;
+            document.getElementById("fnd-bk-name").value = u.name || "";
+            document.getElementById("fnd-bk-nickname").value = u.nickname || "";
+            document.getElementById("fnd-bk-phone").value = u.phone || "";
+            document.getElementById("fnd-bk-email").value = u.email || "";
+            const pUrl = u.photo || u.googlePhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name || "Uye")}&background=10b981&color=020617`;
+            fndCustomerPhotoData = pUrl;
+            document.getElementById("fnd-bk-photo-preview").src = pUrl;
+        };
+
+        window.handleFounderCustomerPhoto = (e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            compressFile(file, (dataUrl) => {
+                fndCustomerPhotoData = dataUrl;
+                document.getElementById("fnd-bk-photo-preview").src = dataUrl;
+            });
+        };
+
+        window.confirmFounderBooking = async (bookingType) => {
+            if (!pendingFndSlot) return;
+            const { pitchId, date, hour, pitch } = pendingFndSlot;
+            const selectedUid = document.getElementById("fnd-select-existing-user").value;
+            const uName = document.getElementById("fnd-bk-name").value.trim() || "Üye";
+            const uNick = document.getElementById("fnd-bk-nickname").value.trim();
+            const uPhone = document.getElementById("fnd-bk-phone").value.trim();
+            const uEmail = document.getElementById("fnd-bk-email").value.trim().toLowerCase();
+            const photo = fndCustomerPhotoData || `https://ui-avatars.com/api/?name=${encodeURIComponent(uName)}&background=10b981&color=020617`;
+
+            const targetUserId = selectedUid || ("manual_" + Date.now());
+            const datesList = bookingType === "weekly" ? [0, 7, 14, 21].map(d => addDays(date, d)) : [date];
+            const now = Date.now();
+            const seriesId = bookingType === "weekly" ? `abone_${pitchId}_${now}` : "";
+
+            const sameDayCount = bookings.filter(b => b.userId === targetUserId && String(b.date) === String(date)).length;
+            const isSecondBooking = (sameDayCount + 1) >= 2;
+
+            for (const dStr of datesList) {
+                const slotDocId = `${pitchId}_${dStr}_${hour.replace(":", "")}`;
+                await setDoc(doc(db, "bookings", slotDocId), {
+                    id: slotDocId,
+                    seriesId,
+                    pitchId,
+                    ownerId: pitch.ownerId || "",
+                    ownerEmail: pitch.ownerEmail || "",
+                    pitchName: pitch.name,
+                    district: pitch.district || "",
+                    address: pitch.address || "",
+                    price: Number(pitch.price || 0),
+                    date: dStr,
+                    hour,
+                    bookingType,
+                    userId: targetUserId,
+                    userName: uName,
+                    userNickname: uNick,
+                    userPhone: uPhone,
+                    userEmail: uEmail,
+                    userPhoto: photo,
+                    createdAt: now
+                }, { merge: true });
+            }
+
+            if (isSecondBooking) {
+                await addDoc(collection(db, "notifications"), {
+                    type: "second_booking_alert",
+                    forFounder: true,
+                    forOwner: true,
+                    title: "Aynı Gün 2. Rezervasyon",
+                    detail: `${uName}${uNick ? ` (${uNick})` : ""} -> ${date} tarihinde 2. rezervasyonunu yaptı: ${pitch.name} ${hour}`,
+                    userId: targetUserId,
+                    userName: uName,
+                    userEmail: uEmail,
+                    pitchId,
+                    pitchName: pitch.name,
+                    ownerId: pitch.ownerId || "",
+                    ownerEmail: pitch.ownerEmail || "",
+                    createdAt: now
+                });
+            }
+
+            closeFounderCreateBookingModal();
+        };
+
+        window.openFounderCancelModal = (bookingId) => {
+            const bk = bookings.find(b => b.id === bookingId);
+            if (!bk) return;
+            const isWeekly = bk.bookingType === "weekly";
+            const continuingSeries = isWeekly
+                ? bookings.filter(item =>
+                    item.userId === bk.userId &&
+                    item.pitchId === bk.pitchId &&
+                    item.hour === bk.hour &&
+                    item.bookingType === "weekly" &&
+                    String(item.date) >= String(bk.date)
+                )
+                : [bk];
+
+            document.getElementById("fnd-cancel-info").innerHTML = `
+                <div><b>${bk.pitchName}</b> • ${bk.date} • ${bk.hour}</div>
+                <div class="text-slate-500 mt-0.5">Kişi: ${bk.userName || "-"} (${isWeekly ? "Abone" : "Tek seferlik"})</div>
+            `;
+            document.getElementById("fnd-cancel-actions").innerHTML = `
+                <button type="button" id="fnd-btn-cancel-one" class="w-full py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-extrabold">
+                    ${isWeekly && continuingSeries.length > 1 ? "Sadece Bu Tarihi İptal Et" : "İptali Onaylıyorum"}
+                </button>
+                ${isWeekly && continuingSeries.length > 1 ? `
+                    <button type="button" id="fnd-btn-cancel-all" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold">
+                        Tüm Abonelik Serisini İptal Et (${continuingSeries.length} hafta)
+                    </button>
+                ` : ""}
+            `;
+
+            setTimeout(() => {
+                document.getElementById("fnd-btn-cancel-one").onclick = async () => {
+                    closeFndCancelModal();
+                    try { await deleteDoc(doc(db, "bookings", bk.id)); } catch (_) {}
+                };
+                const allBtn = document.getElementById("fnd-btn-cancel-all");
+                if (allBtn) {
+                    allBtn.onclick = async () => {
+                        closeFndCancelModal();
+                        for (const item of continuingSeries) {
+                            try { await deleteDoc(doc(db, "bookings", item.id)); } catch (_) {}
+                        }
+                    };
+                }
+            }, 0);
+
+            document.getElementById("fnd-cancel-modal").classList.remove("hidden");
+        };
+
+        window.closeFndCancelModal = () => {
+            document.getElementById("fnd-cancel-modal").classList.add("hidden");
+        };
+
+        window.markNoShowByFounder = async (bookingId) => {
+            const bk = bookings.find(b => b.id === bookingId);
+            if (!bk) return;
+            const now = Date.now();
+            const penaltyAmount = Math.round(Number(bk.price || 0) * 0.20);
+            const reportText = `İptal Etmeyen / Gelmeyen Müşteri (Kurucu Kaydı): ${bk.userName} (${bk.userEmail || bk.userPhone || "-"}) | ${bk.pitchName} • ${bk.date} ${bk.hour} | %20 Tediye: ${penaltyAmount.toLocaleString("tr-TR")} ₺`;
+
+            await addDoc(collection(db, "user_notes"), {
+                targetUserId: bk.userId,
+                targetUserName: bk.userName,
+                targetUserEmail: bk.userEmail,
+                color: "red",
+                source: "founder_no_show",
+                text: reportText,
+                ownerId: bk.ownerId || "",
+                ownerEmail: bk.ownerEmail || "",
+                createdAt: now
+            });
+            await addDoc(collection(db, "notifications"), {
+                type: "no_show",
+                forFounder: true,
+                forOwner: true,
+                red: true,
+                severity: "critical",
+                title: "İptal Etmeyen Müşteri",
+                detail: reportText,
+                ownerId: bk.ownerId || "",
+                ownerEmail: bk.ownerEmail || "",
+                createdAt: now
+            });
+            alert("İptal etmeyen müşteri kaydedildi.");
+        };
+
+        window.renderFounderPitches = () => {
+            const date = document.getElementById("founder-match-date").value || getToday();
+            const el = document.getElementById("founder-pitches-list");
+            if (!pitches.length) {
+                el.innerHTML = `<div class="col-span-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 text-center text-slate-500">Saha yok.</div>`;
+                return;
+            }
+            el.innerHTML = pitches.map(p => {
+                const hours = p.hours && p.hours.length ? p.hours : DEFAULT_HOURS;
+                const btns = hours.map(h => {
+                    const slotId = `${p.id}_${date}_${h.replace(":", "")}`;
+                    const taken = bookings.find(b => b.id === slotId);
+                    if (taken) {
+                        const matchedU = users.find(u => (u.uid || u.id) === taken.userId);
+                        const uAvatar = taken.userPhoto || matchedU?.photo || matchedU?.googlePhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(taken.userName || "Uye")}&background=10b981&color=020617`;
+                        const dispName = taken.userNickname || matchedU?.nickname || taken.userName || "Üye";
+                        return `
+                            <div class="rounded-xl bg-rose-500/15 border border-rose-500/40 p-1.5 space-y-1">
+                                <button onclick="openFounderCancelModal('${taken.id}')" class="w-full text-rose-700 dark:text-rose-200 text-[10px] font-bold flex items-center gap-1.5 leading-tight text-left">
+                                    <img src="${uAvatar}" class="w-6 h-6 rounded-full object-cover border border-rose-400 shrink-0">
+                                    <span class="truncate"><b>${h}</b><br>${dispName}</span>
+                                </button>
+                                <button onclick="markNoShowByFounder('${taken.id}')" class="w-full py-0.5 rounded bg-rose-600 text-white text-[9px] font-extrabold">Gelmedi</button>
+                            </div>
+                        `;
+                    }
+                    return `
+                        <button onclick="openFounderCreateBookingModal('${p.id}', '${date}', '${h}')" class="h-14 w-full rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-emerald-500/20 text-slate-700 dark:text-slate-200 text-xs font-bold flex flex-col items-center justify-center leading-tight">
+                            <span>${h}</span>
+                            <span class="text-[9px] text-emerald-500">+ Rezerve Et</span>
+                        </button>
+                    `;
+                }).join("");
+                return `
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-extrabold text-sm"><i class="fa-solid fa-futbol mr-1.5 text-emerald-500"></i>${p.name}</h3>
+                            <span class="font-bold text-emerald-500">${Number(p.price || 0).toLocaleString("tr-TR")} ₺</span>
+                        </div>
+                        <div class="grid grid-cols-4 gap-2">${btns}</div>
+                    </div>
+                `;
+            }).join("");
+        };
+
+        function populateUserDropdown() {
+            const sel = document.getElementById("note-target-user");
+            const prev = sel.value;
+            sel.innerHTML = `<option value="">Kullanıcı Seçin</option>` + users.map(u => {
+                const uid = u.uid || u.id;
+                return `<option value="${uid}">${u.name || "Üye"}${u.nickname ? ` (@${u.nickname})` : ""} (${u.email || uid})</option>`;
+            }).join("");
+            if (prev) sel.value = prev;
+        }
+
+        window.addManualUserNote = async (e) => {
+            e.preventDefault();
+            const uid = document.getElementById("note-target-user").value;
+            const color = document.getElementById("note-color-select").value;
+            const text = document.getElementById("note-text-input").value.trim();
+            if (!uid || !text) return;
+
+            const u = users.find(x => (x.uid || x.id) === uid);
+            const now = Date.now();
+            const detail = `Kurucu Notu (${color === "red" ? "Kırmızı" : "Sarı"}) -> ${u?.name || uid}: ${text}`;
+
+            try {
+                await addDoc(collection(db, "user_notes"), {
+                    targetUserId: uid,
+                    targetUserName: u?.name || "",
+                    targetUserEmail: u?.email || "",
+                    color,
+                    source: "founder_manual",
+                    text,
+                    createdAt: now
+                });
+                await setDoc(doc(db, "users", uid, "notifications", `fnote_${now}`), {
+                    id: `fnote_${now}`,
+                    type: color === "red" ? "violation" : "info",
+                    red: color === "red",
+                    severity: color === "red" ? "critical" : "info",
+                    title: color === "red" ? "Kritik Hesap Notu" : "Hesap Bilgilendirme Notu",
+                    detail: text,
+                    createdAt: now
+                }, { merge: true });
+                await addDoc(collection(db, "notifications"), {
+                    type: color === "red" ? "violation" : "info",
+                    forFounder: true,
+                    red: color === "red",
+                    title: "Kullanıcı Notu Eklendi",
+                    detail,
+                    userId: uid,
+                    userName: u?.name || "",
+                    createdAt: now
+                });
+            } catch (_) {}
+            document.getElementById("note-text-input").value = "";
+        };
+
+        window.setNoteColor = async (noteId, color) => {
+            try { await updateDoc(doc(db, "user_notes", noteId), { color }); } catch (_) {}
+        };
+
+        window.deleteNoteItem = async (noteId) => {
+            try { await deleteDoc(doc(db, "user_notes", noteId)); } catch (_) {}
+        };
+
+        window.renderNotesSection = () => {
+            const q = (document.getElementById("note-filter-query")?.value || "").trim().toLowerCase();
+            const cFilter = document.getElementById("note-filter-color")?.value || "";
+            const el = document.getElementById("user-notes-list");
+
+            const list = [...userNotes]
+                .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+                .filter(n => {
+                    if (cFilter && n.color !== cFilter) return false;
+                    if (!q) return true;
+                    return [n.targetUserName, n.targetUserEmail, n.text].join(" ").toLowerCase().includes(q);
+                });
+
+            if (!list.length) {
+                el.innerHTML = `<div class="text-slate-500 text-center py-6">Not bulunamadı.</div>`;
+                return;
+            }
+
+            el.innerHTML = list.map(n => {
+                const isRed = n.color === "red";
+                const boxCls = isRed
+                    ? "bg-rose-500/10 border-rose-500/50 text-rose-900 dark:text-rose-100"
+                    : "bg-amber-500/10 border-amber-500/50 text-amber-900 dark:text-amber-100";
+                return `
+                    <div class="p-3.5 rounded-xl border ${boxCls} flex items-start justify-between gap-3">
+                        <div class="space-y-1 min-w-0 flex-1">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase ${isRed ? "bg-rose-600 text-white" : "bg-amber-400 text-slate-950"}">${isRed ? "Kırmızı" : "Sarı"}</span>
+                                <span class="font-extrabold">${n.targetUserName || "Kullanıcı"}</span>
+                                <span class="text-[11px] opacity-75">(${n.targetUserEmail || ""})</span>
+                                <span class="text-[10px] opacity-60">${formatTimeTR(n.createdAt)}</span>
+                            </div>
+                            <div class="text-xs leading-relaxed">${n.text || ""}</div>
+                        </div>
+                        <div class="flex items-center gap-1 shrink-0">
+                            <button onclick="setNoteColor('${n.id}', 'yellow')" class="px-2 py-1 rounded-lg bg-amber-400 text-slate-950 font-bold text-[10px]">Sarı</button>
+                            <button onclick="setNoteColor('${n.id}', 'red')" class="px-2 py-1 rounded-lg bg-rose-600 text-white font-bold text-[10px]">Kırmızı</button>
+                            <button onclick="deleteNoteItem('${n.id}')" class="px-2 py-1 rounded-lg bg-slate-200 dark:bg-slate-800 font-bold text-[10px]">Sil</button>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        };
+
+        window.saveUserNicknameAndVerify = async (uid, fieldToToggle = null) => {
+            const u = users.find(x => (x.uid || x.id) === uid);
+            if (!u) return;
+            const nickInput = document.getElementById(`fnd-nick-${uid}`);
+            const patch = {};
+            if (nickInput) patch.nickname = nickInput.value.trim();
+            if (fieldToToggle) patch[fieldToToggle] = !(u[fieldToToggle] === true);
+            try { await updateDoc(doc(db, "users", uid), patch); } catch (_) {}
+        };
+
+        window.toggleUserBlock = async (uid) => {
+            const u = users.find(x => (x.uid || x.id) === uid);
+            if (!u) return;
+            const nextBlocked = !(u.blocked === true);
+            try {
+                await updateDoc(doc(db, "users", uid), {
+                    blocked: nextBlocked,
+                    suspendedUntil: nextBlocked ? (Date.now() + 365 * 24 * 60 * 60 * 1000) : 0
+                });
+            } catch (_) {}
+        };
+
+        window.deleteUserCompletely = async (uid) => {
+            try {
+                await setDoc(doc(db, "deleted_sessions", uid), { uid, deletedAt: Date.now() }, { merge: true });
+                await deleteDoc(doc(db, "users", uid));
+            } catch (_) {}
+        };
+
+        function renderUsersSection() {
+            const el = document.getElementById("founder-users-list");
+            el.innerHTML = users.map(u => {
+                const uid = u.uid || u.id;
+                const blocked = u.blocked === true || Number(u.suspendedUntil || 0) > Date.now();
+                const avatar = u.photo || u.googlePhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name || "Uye")}&background=10b981&color=020617`;
+                return `
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <img src="${avatar}" class="w-8 h-8 rounded-full object-cover border border-emerald-500 shrink-0">
+                                <div class="min-w-0">
+                                    <div class="font-bold truncate">${u.name || "Üye"} <span class="text-[10px] text-slate-400">(${u.role || "user"})</span></div>
+                                    <div class="text-[11px] text-slate-500 truncate">${u.email || ""} • ${u.phone || ""}</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1.5 shrink-0 flex-wrap">
+                                <button onclick="saveUserNicknameAndVerify('${uid}', 'accountVerified')" class="px-2 py-1 rounded-lg font-bold text-[10px] ${u.accountVerified ? "bg-emerald-500 text-slate-950" : "bg-slate-200 dark:bg-slate-800"}">${u.accountVerified ? "Hesap ✓" : "Hesap Onayla"}</button>
+                                <button onclick="saveUserNicknameAndVerify('${uid}', 'phoneVerified')" class="px-2 py-1 rounded-lg font-bold text-[10px] ${u.phoneVerified ? "bg-sky-500 text-slate-950" : "bg-slate-200 dark:bg-slate-800"}">${u.phoneVerified ? "Tel ✓" : "Tel Onayla"}</button>
+                                <button onclick="toggleUserBlock('${uid}')" class="px-2.5 py-1 rounded-lg font-bold ${blocked ? "bg-emerald-500 text-slate-950" : "bg-amber-500/20 text-amber-600"}">${blocked ? "Engeli Kaldır" : "Engelle"}</button>
+                                <button onclick="deleteUserCompletely('${uid}')" class="px-2.5 py-1 rounded-lg bg-rose-600 text-white font-bold">Sil</button>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <input type="text" id="fnd-nick-${uid}" value="${u.nickname || ""}" placeholder="Takma isim ver..." class="flex-1 px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[11px]">
+                            <button onclick="saveUserNicknameAndVerify('${uid}')" class="px-2.5 py-1 rounded-lg bg-amber-500 text-slate-950 font-bold text-[10px]">Takma İsim Kaydet</button>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function renderFounderNotifs() {
+            const el = document.getElementById("founder-notifs-list");
+            const badge = document.getElementById("founder-notif-badge");
+            const sorted = [...notifications].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            badge.textContent = String(sorted.length);
+            if (!sorted.length) {
+                el.innerHTML = `<div class="text-slate-500 text-center py-6">Bildirim yok.</div>`;
+                return;
+            }
+            el.innerHTML = sorted.map(n => `
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-start justify-between gap-2">
+                    <div>
+                        <div class="font-bold">${n.title || "Bildirim"} <span class="text-[10px] text-slate-400">(${formatTimeTR(n.createdAt)})</span></div>
+                        <div class="text-[11px] text-slate-500 mt-0.5">${n.detail || ""}</div>
+                    </div>
+                    <button onclick="deleteFounderNotif('${n.id}')" class="text-slate-400 hover:text-rose-500"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            `).join("");
+        }
+
+        window.deleteFounderNotif = async (id) => {
+            try { await deleteDoc(doc(db, "notifications", id)); } catch (_) {}
+        };
+
+        window.clearFounderNotifs = async () => {
+            for (const n of [...notifications]) {
+                try { await deleteDoc(doc(db, "notifications", n.id)); } catch (_) {}
+            }
+        };
+
+        onAuthStateChanged(auth, async (user) => {
+            const email = (user?.email || "").trim().toLowerCase();
+            if (!user || email !== FOUNDER_EMAIL.toLowerCase()) {
+                window.location.replace(LOGIN_PAGE);
+                return;
+            }
+            document.getElementById("founder-guard").classList.add("hidden");
+
+            onSnapshot(collection(db, "pitches"), (snap) => {
+                pitches = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderFounderPitches();
+            }, () => {});
+
+            onSnapshot(collection(db, "bookings"), (snap) => {
+                bookings = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderFounderPitches();
+            }, () => {});
+
+            onSnapshot(collection(db, "users"), (snap) => {
+                users = snap.docs.map(d => ({ id: d.id, uid: d.id, ...d.data() }));
+                populateUserDropdown();
+                renderUsersSection();
+                renderFounderPitches();
+            }, () => {});
+
+            onSnapshot(collection(db, "user_notes"), (snap) => {
+                userNotes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderNotesSection();
+            }, () => {});
+
+            onSnapshot(collection(db, "notifications"), (snap) => {
+                notifications = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderFounderNotifs();
+            }, () => {});
+        });
+
+        window.logout = async () => {
+            try { await signOut(auth); } catch (_) {}
+            window.location.replace(LOGIN_PAGE);
+        };
+    </script>
+</body>
+</html>
