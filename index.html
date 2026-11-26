@@ -64,8 +64,10 @@
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import {
             getFirestore,
+            collection,
             doc,
             getDoc,
+            getDocs,
             setDoc
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         import {
@@ -74,6 +76,7 @@
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 
         const FOUNDER_EMAIL = "eyupensarus@gmail.com";
+        const ALLOWED_MANAGERS_COLLECTION = "allowed_managers";
         const PAGES = {
             founder: "ana-sayfa-kurucu.html",
             manager: "ana-sayfa-isletme.html",
@@ -127,6 +130,48 @@
             document.getElementById("error-box").classList.add("hidden");
         }
 
+        async function hasAssignedPitchForEmail(email, uid = "") {
+            const cleanEmail = String(email || "").trim().toLowerCase();
+            try {
+                const snap = await getDocs(collection(db, "pitches"));
+                return snap.docs.some(d => {
+                    const data = d.data() || {};
+                    const ownerEmail = String(data.ownerEmail || "").trim().toLowerCase();
+                    const ownerId = String(data.ownerId || "").trim();
+                    return (cleanEmail && ownerEmail === cleanEmail) || (uid && ownerId === uid);
+                });
+            } catch (_) {
+                return false;
+            }
+        }
+
+        async function isExplicitlyAllowedManager(email, uid = "") {
+            const cleanEmail = String(email || "").trim().toLowerCase();
+            if (!cleanEmail) return false;
+            try {
+                const allowSnap = await getDoc(doc(db, ALLOWED_MANAGERS_COLLECTION, encodeURIComponent(cleanEmail)));
+                if (allowSnap.exists()) {
+                    const d = allowSnap.data() || {};
+                    if (d.active !== false && d.enabled !== false) return true;
+                }
+            } catch (_) {}
+            return await hasAssignedPitchForEmail(cleanEmail, uid);
+        }
+
+        async function ensureManagerAllowDoc(email, uid = "") {
+            const cleanEmail = String(email || "").trim().toLowerCase();
+            if (!cleanEmail) return;
+            try {
+                await setDoc(doc(db, ALLOWED_MANAGERS_COLLECTION, encodeURIComponent(cleanEmail)), {
+                    email: cleanEmail,
+                    uid: uid || "",
+                    active: true,
+                    enabled: true,
+                    updatedAt: Date.now()
+                }, { merge: true });
+            } catch (_) {}
+        }
+
         async function routeUserByRole(user) {
             if (!user || routing) return;
             routing = true;
@@ -136,7 +181,7 @@
                 const googleInfo = Array.isArray(user.providerData)
                     ? user.providerData.find(p => p && p.providerId === "google.com")
                     : null;
-                const email = ((googleInfo && googleInfo.email) || user.email || "").toLowerCase();
+                const email = String((googleInfo && googleInfo.email) || user.email || "").trim().toLowerCase();
                 const displayName = (googleInfo && googleInfo.displayName) || user.displayName || (email ? email.split("@")[0] : "Üye");
                 const photoURL = (googleInfo && googleInfo.photoURL) || user.photoURL || "";
 
@@ -145,9 +190,6 @@
                     const userSnap = await getDoc(doc(db, "users", user.uid));
                     if (userSnap.exists()) {
                         existing = userSnap.data() || {};
-                    } else {
-                        const archSnap = await getDoc(doc(db, "archived_users", user.uid));
-                        if (archSnap.exists()) existing = archSnap.data() || {};
                     }
                 } catch (readErr) {
                     console.warn("Kullanıcı kaydı okunamadı:", readErr);
@@ -156,8 +198,12 @@
                 let role = "user";
                 if (email === FOUNDER_EMAIL.toLowerCase() || existing.role === "founder") {
                     role = "founder";
-                } else if (existing.role === "manager" || existing.role === "owner") {
-                    role = "manager";
+                } else {
+                    const allowedAsManager = await isExplicitlyAllowedManager(email, user.uid);
+                    if (allowedAsManager || existing.role === "manager" || existing.role === "owner") {
+                        role = "manager";
+                        await ensureManagerAllowDoc(email, user.uid);
+                    }
                 }
 
                 try {
@@ -168,11 +214,17 @@
                         photo: existing.photo || photoURL,
                         googlePhoto: photoURL,
                         role,
+                        deleted: false,
                         lastLoginAt: Date.now()
                     }, { merge: true });
                 } catch (writeErr) {
                     console.warn("Kullanıcı kaydı yazılamadı:", writeErr);
                 }
+
+                try {
+                    sessionStorage.removeItem("hangi_saha_access_denied");
+                    localStorage.setItem("hangi_saha_active_role", role);
+                } catch (_) {}
 
                 window.location.replace(PAGES[role] || PAGES.user);
             } catch (err) {
