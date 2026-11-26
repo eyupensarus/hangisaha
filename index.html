@@ -104,6 +104,19 @@
 
         let routing = false;
 
+        function setUiRedirecting(isRedirecting) {
+            const btn = document.getElementById("google-login-btn");
+            const redirectBox = document.getElementById("redirect-box");
+            if (isRedirecting) {
+                btn.classList.add("hidden");
+                redirectBox.classList.remove("hidden");
+            } else {
+                btn.disabled = false;
+                btn.classList.remove("hidden", "opacity-70");
+                redirectBox.classList.add("hidden");
+            }
+        }
+
         function showError(msg) {
             document.getElementById("error-text").textContent = msg;
             document.getElementById("error-box").classList.remove("hidden");
@@ -117,50 +130,57 @@
         async function routeUserByRole(user) {
             if (!user || routing) return;
             routing = true;
+            setUiRedirecting(true);
 
-            const btn = document.getElementById("google-login-btn");
-            const redirectBox = document.getElementById("redirect-box");
-            btn.classList.add("hidden");
-            redirectBox.classList.remove("hidden");
-
-            const googleInfo = Array.isArray(user.providerData)
-                ? user.providerData.find(p => p && p.providerId === "google.com")
-                : null;
-            const email = ((googleInfo && googleInfo.email) || user.email || "").toLowerCase();
-            const displayName = (googleInfo && googleInfo.displayName) || user.displayName || email.split("@")[0] || "Üye";
-            const photoURL = (googleInfo && googleInfo.photoURL) || user.photoURL || "";
-
-            let existing = {};
             try {
-                const userSnap = await getDoc(doc(db, "users", user.uid));
-                if (userSnap.exists()) {
-                    existing = userSnap.data();
-                } else {
-                    const archSnap = await getDoc(doc(db, "archived_users", user.uid));
-                    if (archSnap.exists()) existing = archSnap.data();
+                const googleInfo = Array.isArray(user.providerData)
+                    ? user.providerData.find(p => p && p.providerId === "google.com")
+                    : null;
+                const email = ((googleInfo && googleInfo.email) || user.email || "").toLowerCase();
+                const displayName = (googleInfo && googleInfo.displayName) || user.displayName || (email ? email.split("@")[0] : "Üye");
+                const photoURL = (googleInfo && googleInfo.photoURL) || user.photoURL || "";
+
+                let existing = {};
+                try {
+                    const userSnap = await getDoc(doc(db, "users", user.uid));
+                    if (userSnap.exists()) {
+                        existing = userSnap.data() || {};
+                    } else {
+                        const archSnap = await getDoc(doc(db, "archived_users", user.uid));
+                        if (archSnap.exists()) existing = archSnap.data() || {};
+                    }
+                } catch (readErr) {
+                    console.warn("Kullanıcı kaydı okunamadı:", readErr);
                 }
-            } catch (_) {}
 
-            let role = "user";
-            if (email === FOUNDER_EMAIL.toLowerCase() || existing.role === "founder") {
-                role = "founder";
-            } else if (existing.role === "manager" || existing.role === "owner") {
-                role = "manager";
+                let role = "user";
+                if (email === FOUNDER_EMAIL.toLowerCase() || existing.role === "founder") {
+                    role = "founder";
+                } else if (existing.role === "manager" || existing.role === "owner") {
+                    role = "manager";
+                }
+
+                try {
+                    await setDoc(doc(db, "users", user.uid), {
+                        uid: user.uid,
+                        name: existing.name || displayName,
+                        email,
+                        photo: existing.photo || photoURL,
+                        googlePhoto: photoURL,
+                        role,
+                        lastLoginAt: Date.now()
+                    }, { merge: true });
+                } catch (writeErr) {
+                    console.warn("Kullanıcı kaydı yazılamadı:", writeErr);
+                }
+
+                window.location.replace(PAGES[role] || PAGES.user);
+            } catch (err) {
+                console.error("Yönlendirme hatası:", err);
+                routing = false;
+                setUiRedirecting(false);
+                showError("Oturum yönlendirmesi tamamlanamadı.");
             }
-
-            try {
-                await setDoc(doc(db, "users", user.uid), {
-                    uid: user.uid,
-                    name: existing.name || displayName,
-                    email,
-                    photo: existing.photo || photoURL,
-                    googlePhoto: photoURL,
-                    role,
-                    lastLoginAt: Date.now()
-                }, { merge: true });
-            } catch (_) {}
-
-            window.location.replace(PAGES[role] || PAGES.user);
         }
 
         onAuthStateChanged(auth, (user) => {
@@ -170,6 +190,7 @@
         });
 
         window.loginWithGoogle = async () => {
+            if (routing) return;
             clearError();
             const btn = document.getElementById("google-login-btn");
             btn.disabled = true;
@@ -179,14 +200,16 @@
                 const result = await signInWithPopup(auth, provider);
                 await routeUserByRole(result.user);
             } catch (err) {
+                console.error("Google giriş hatası:", err);
                 routing = false;
-                btn.disabled = false;
-                btn.classList.remove("opacity-70");
+                setUiRedirecting(false);
                 const code = err?.code || "";
                 if (code === "auth/popup-closed-by-user") {
                     showError("Giriş penceresi kapatıldı.");
                 } else if (code === "auth/popup-blocked") {
                     showError("Açılır pencere engellendi. İzin verip tekrar deneyin.");
+                } else if (code === "auth/unauthorized-domain") {
+                    showError("Bu alan adı Firebase'de yetkili değil.");
                 } else {
                     showError("Giriş başarısız.");
                 }
